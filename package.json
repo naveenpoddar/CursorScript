@@ -1,6 +1,12 @@
 {
-  "name": "cursorpp",
+  "name": "cursorscript",
+  "version": "0.0.1",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "cursorx": "bun run src/main.ts",
+    "build": "bun run build.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

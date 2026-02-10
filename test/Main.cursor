@@ -1,5 +1,14 @@
 let foo = 50 / 2;
 
+let person = {
+    age: 30,
+    isMonster: true,
+    address: {
+        pincode: 123456,
+        countryCode: 12
+    }
+};
+
 print(foo, 45, time())
 
 fn makeAdder(offset){

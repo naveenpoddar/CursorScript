@@ -19,6 +19,57 @@
       }
     },
     {
+      "kind": "VarDeclaration",
+      "identifier": "person",
+      "constant": false,
+      "value": {
+        "kind": "ObjectLiteral",
+        "properties": [
+          {
+            "kind": "Property",
+            "key": "age",
+            "value": {
+              "kind": "NumericLiteral",
+              "value": 30
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "isMonster",
+            "value": {
+              "kind": "Identifier",
+              "symbol": "true"
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "address",
+            "value": {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "pincode",
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "value": 123456
+                  }
+                },
+                {
+                  "kind": "Property",
+                  "key": "countryCode",
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "value": 12
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "kind": "CallExpr",
       "caller": {
         "kind": "Identifier",

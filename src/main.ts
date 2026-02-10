@@ -1,35 +1,42 @@
 import Parser from "./frontend/parser";
 import { createGlobalEnv } from "./runtime/environment";
 import { evaluate } from "./runtime/interpreter";
-import {
-  MK_BOOL,
-  MK_NULL,
-  MK_NUMBER,
-  type NumberValue,
-} from "./runtime/values";
 
-// repl();
+main();
 
-async function run() {
+async function main() {
+  const args = Bun.argv.slice(2); // Remove 'bun' and 'script-name'
+
+  if (args.length === 0) {
+    // No arguments provided -> Start REPL
+    await repl();
+  } else {
+    // Argument provided -> Execute file
+    const filePath = args[0];
+    await run(filePath);
+  }
+}
+
+async function run(filePath: string = "./test/Main.Cursor") {
   const parser = new Parser();
   const env = createGlobalEnv();
 
-  const input = await Bun.file("./test/Main.Cursor").text();
-  const program = parser.produceAST(input);
+  try {
+    const input = await Bun.file(filePath).text();
+    const program = parser.produceAST(input);
 
-  await Bun.write(
-    "./test/Main.Cursor.program.json",
-    JSON.stringify(program, null, 2),
-  );
+    await Bun.write(
+      `${filePath}.program.json`,
+      JSON.stringify(program, null, 2),
+    );
 
-  const result = evaluate(program, env);
-  await Bun.write(
-    "./test/Main.Cursor.result.json",
-    JSON.stringify(result, null, 2),
-  );
+    const result = evaluate(program, env);
+    await Bun.write(`${filePath}.result.json`, JSON.stringify(result, null, 2));
+  } catch (e) {
+    console.error(`Could not read file: ${filePath}`);
+    process.exit(1);
+  }
 }
-
-run();
 
 async function repl() {
   const parser = new Parser();

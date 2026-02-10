@@ -32,8 +32,6 @@ for (const target of targets) {
   try {
     await $`bun build ${entryPoint} \
       --compile \
-      --minify \
-      --bytecode \
       --target=${target} \
       --outfile=${path}`.quiet();
 

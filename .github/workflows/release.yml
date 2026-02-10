@@ -25,7 +25,7 @@ jobs:
         run: bun install
 
       - name: Run Build Script
-        run: bun run release # This runs your scripts/build.ts
+        run: bun run build # This runs your scripts/build.ts
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

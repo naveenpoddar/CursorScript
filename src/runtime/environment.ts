@@ -4,6 +4,7 @@ import {
   MK_NATIVE_FN,
   type RuntimeValue,
   MK_NUMBER,
+  MakePrintable,
 } from "./values";
 
 export function createGlobalEnv() {
@@ -15,7 +16,8 @@ export function createGlobalEnv() {
   // Define a native build in method
   env.declareVar(
     "print",
-    MK_NATIVE_FN((args, scope) => {
+    MK_NATIVE_FN((_args, scope) => {
+      const args = _args.map(MakePrintable);
       console.log(...args);
       return MK_NULL();
     }),

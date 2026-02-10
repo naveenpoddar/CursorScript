@@ -1,6 +1,41 @@
 import type { Stmt } from "../frontend/ast";
 import type Environment from "./environment";
 
+export function MakePrintable(
+  value: RuntimeValue,
+): string | number | boolean | null | Map<string, any> {
+  if (value.type === "number") {
+    return (value as NumberValue).value;
+  }
+  if (value.type === "null") {
+    return null;
+  }
+  if (value.type === "boolean") {
+    return (value as BooleanValue).value;
+  }
+  if (value.type === "object") {
+    const transformed = new Map<string, any>();
+    const obj = value as ObjectValue;
+
+    for (const [key, value] of obj.properties) {
+      transformed.set(key, MakePrintable(value));
+    }
+
+    return transformed;
+  }
+  if (value.type === "native-fn") {
+    // Make pretty Print e.g: fn add(x, y)
+    const fn = value as NativeFnValue;
+    return `fn nativeFn(...)`;
+  }
+  if (value.type === "function") {
+    // Make pretty Print e.g: fn add(x, y) { ... }
+    const fn = value as FunctionValue;
+    return `fn ${fn.name}(${fn.parameters.join(", ")}) { ... }`;
+  }
+  return "Unknown Value";
+}
+
 export type ValueType =
   | "number"
   | "null"

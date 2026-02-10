@@ -33,3 +33,5 @@ const adder = makeAdder(10);
 const result = adder(10, 4);
 
 print(result)
+
+print(print)

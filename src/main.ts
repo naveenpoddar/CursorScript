@@ -33,7 +33,7 @@ async function run(filePath: string = "./test/Main.Cursor") {
     const result = evaluate(program, env);
     await Bun.write(`${filePath}.result.json`, JSON.stringify(result, null, 2));
   } catch (e) {
-    console.error(`Could not read file: ${filePath}`);
+    console.error(e, filePath);
     process.exit(1);
   }
 }

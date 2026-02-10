@@ -248,6 +248,19 @@
           "symbol": "result"
         }
       ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "symbol": "print"
+        }
+      ]
     }
   ]
 }

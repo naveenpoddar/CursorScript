@@ -13,7 +13,7 @@ const targets = [
   "bun-linux-arm64",
   "bun-darwin-x64",
   "bun-darwin-arm64",
-  "bun-windows-x64",
+  "bun-windows-x64-baseline",
 ];
 
 // 3. Clean up old builds

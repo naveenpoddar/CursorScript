@@ -1,0 +1,202 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "VarDeclaration",
+      "identifier": "foo",
+      "constant": false,
+      "value": {
+        "kind": "BinaryExpr",
+        "operator": "/",
+        "left": {
+          "kind": "NumericLiteral",
+          "value": 50
+        },
+        "right": {
+          "kind": "NumericLiteral",
+          "value": 2
+        }
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "symbol": "foo"
+        },
+        {
+          "kind": "NumericLiteral",
+          "value": 45
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "symbol": "time"
+          },
+          "args": []
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "makeAdder",
+      "parameters": [
+        "offset"
+      ],
+      "body": [
+        {
+          "kind": "FunctionDeclaration",
+          "name": "add",
+          "parameters": [
+            "x",
+            "y"
+          ],
+          "body": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "Identifier",
+                  "symbol": "y"
+                }
+              },
+              "right": {
+                "kind": "Identifier",
+                "symbol": "offset"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "sub",
+      "parameters": [
+        "x",
+        "y"
+      ],
+      "body": [
+        {
+          "kind": "FunctionDeclaration",
+          "name": "add",
+          "parameters": [
+            "x",
+            "y"
+          ],
+          "body": [
+            {
+              "kind": "VarDeclaration",
+              "identifier": "result",
+              "constant": false,
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "symbol": "x"
+                },
+                "right": {
+                  "kind": "Identifier",
+                  "symbol": "y"
+                }
+              }
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "symbol": "print"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "symbol": "result"
+                }
+              ]
+            },
+            {
+              "kind": "Identifier",
+              "symbol": "result"
+            }
+          ]
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "foo",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "value": 35
+          }
+        }
+      ]
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "adder",
+      "constant": true,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "Identifier",
+          "symbol": "makeAdder"
+        },
+        "args": [
+          {
+            "kind": "NumericLiteral",
+            "value": 10
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "result",
+      "constant": true,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "Identifier",
+          "symbol": "adder"
+        },
+        "args": [
+          {
+            "kind": "NumericLiteral",
+            "value": 10
+          },
+          {
+            "kind": "NumericLiteral",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "symbol": "result"
+        }
+      ]
+    }
+  ]
+}

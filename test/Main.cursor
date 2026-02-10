@@ -1,0 +1,26 @@
+let foo = 50 / 2;
+
+print(foo, 45, time())
+
+fn makeAdder(offset){
+    fn add(x, y) {
+        x + y + offset
+    }
+}
+
+fn sub(x, y) {
+    fn add(x, y) {
+        let result = x + y;
+        print(result)
+        
+        result
+    }
+
+    let foo = 35;
+}
+
+const adder = makeAdder(10);
+
+const result = adder(10, 4);
+
+print(result)

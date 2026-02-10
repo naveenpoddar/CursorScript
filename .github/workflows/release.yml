@@ -26,7 +26,6 @@ jobs:
 
       - name: Run Build Script
         run: bun run build # This runs your scripts/build.ts
-        shell: pwsh # <--- Explicitly use PowerShell for stability
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

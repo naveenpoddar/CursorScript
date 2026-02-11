@@ -1,6 +1,7 @@
 import Parser from "./frontend/parser";
 import { createGlobalEnv } from "./runtime/environment";
 import { evaluate } from "./runtime/interpreter";
+import { MakePrintable } from "./runtime/values";
 
 main();
 
@@ -60,10 +61,12 @@ async function repl() {
       break;
     }
 
-    const program = parser.produceAST(input, "<repl>");
-    console.dir(program, { depth: null });
+    try {
+      const program = parser.produceAST(input, "<repl>");
 
-    const result = evaluate(program, env);
-    console.log(result);
+      console.log(MakePrintable(evaluate(program, env)));
+    } catch (e) {
+      console.error("[Error]", e);
+    }
   }
 }

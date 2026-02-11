@@ -3,12 +3,12 @@ import type Environment from "./environment";
 
 export function MakePrintable(
   value: RuntimeValue,
-): string | number | boolean | null | Map<string, any> {
+): string | number | boolean | Map<string, any> {
   if (value.type === "number") {
     return (value as NumberValue).value;
   }
   if (value.type === "null") {
-    return null;
+    return "null";
   }
   if (value.type === "boolean") {
     return (value as BooleanValue).value;

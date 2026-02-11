@@ -1,3 +1,4 @@
+import { MathL } from "../lib/MathLib";
 import {
   MK_BOOL,
   MK_NULL,
@@ -131,6 +132,8 @@ export function createGlobalEnv() {
     }),
     true,
   );
+
+  env.declareVar("Math", MathL, true);
 
   // TODO: readFile, writeFile, deleteFile -> Implment async await
 

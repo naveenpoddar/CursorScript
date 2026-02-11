@@ -1,0 +1,77 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "value": "Hello World"
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "value": "PI is:"
+        },
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "symbol": "Math"
+          },
+          "property": {
+            "kind": "Identifier",
+            "symbol": "PI"
+          },
+          "computed": false
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "value": "abs(-5) is:"
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "symbol": "Math"
+            },
+            "property": {
+              "kind": "Identifier",
+              "symbol": "abs"
+            },
+            "computed": false
+          },
+          "args": [
+            {
+              "kind": "NumericLiteral",
+              "value": -5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

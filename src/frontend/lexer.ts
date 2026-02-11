@@ -54,14 +54,17 @@ function isskippable(src: string | undefined) {
 
 function isalpha(src: string | undefined) {
   if (src == null) return false;
-  return src.toUpperCase() != src.toLowerCase();
+  return /^[a-zA-Z_$]$/.test(src);
+}
+
+// Add this helper
+function isAlphanumeric(src: string | undefined) {
+  return isalpha(src) || isint(src) || src === "_";
 }
 
 function isint(src: string | undefined) {
   if (src == null) return false;
-  const c = src.charCodeAt(0);
-  const bounds = ["0".charCodeAt(0), "9".charCodeAt(0)];
-  return c >= bounds[0]! && c <= bounds[1]!;
+  return src >= "0" && src <= "9";
 }
 
 export function tokenise(sourceCode: string, filename: string): Token[] {
@@ -116,14 +119,31 @@ export function tokenise(sourceCode: string, filename: string): Token[] {
       tokens.push(token(src.shift(), TokenType.CloseBracket, line));
     } else if (char === "=") {
       tokens.push(token(src.shift(), TokenType.Equals, line));
-    } else if (
-      char === "+" ||
-      char === "-" ||
-      char === "*" ||
-      char === "/" ||
-      char === "%"
-    ) {
+    } else if (char === "+" || char === "*" || char === "/" || char === "%") {
       tokens.push(token(src.shift(), TokenType.BinaryOperator, line));
+    }
+    // Handle ' - ' seperately
+    else if (char === "-") {
+      const nextChar = src[1];
+      const lastToken = tokens[tokens.length - 1];
+
+      const isNegativeSign =
+        isint(nextChar) &&
+        (!lastToken ||
+          (lastToken.type !== TokenType.Identifier &&
+            lastToken.type !== TokenType.Number &&
+            lastToken.type !== TokenType.CloseParen));
+
+      if (isNegativeSign) {
+        let num = src.shift()!; // Consume '-'
+        while (src.length > 0 && (isint(src[0]) || src[0] === ".")) {
+          num += src.shift()!;
+        }
+        tokens.push(token(num, TokenType.Number, line));
+      } else {
+        // Treat as standard subtraction operator
+        tokens.push(token(src.shift(), TokenType.BinaryOperator, line));
+      }
     } else if (char === ";") {
       tokens.push(token(src.shift(), TokenType.Semicolon, line));
     } else if (char === ":") {
@@ -144,16 +164,23 @@ export function tokenise(sourceCode: string, filename: string): Token[] {
     } else {
       // Handle Multi Character Token
 
-      if (isint(char)) {
-        let num = "";
-        while (src.length > 0 && isint(src[0])) {
+      if (isint(char) || (char === "-" && isint(src[1]))) {
+        let num = src.shift()!; // Consume first digit or '-'
+
+        let foundDecimal = false;
+        while (src.length > 0 && (isint(src[0]) || src[0] === ".")) {
+          if (src[0] === ".") {
+            if (foundDecimal) break; // Don't allow 4.5.5
+            foundDecimal = true;
+          }
           num += src.shift()!;
         }
 
         tokens.push(token(num, TokenType.Number, line));
-      } else if (isalpha(char)) {
+      } else if (isalpha(char) || isAlphanumeric(char)) {
         let identifier = ""; // foo or let (user-defined OR keywords)
-        while (src.length > 0 && isalpha(src[0])) {
+
+        while (src.length > 0 && isAlphanumeric(src[0])) {
           identifier += src.shift()!;
         }
 

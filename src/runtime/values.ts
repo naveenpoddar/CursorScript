@@ -3,7 +3,9 @@ import type Environment from "./environment";
 
 export function MakePrintable(
   value: RuntimeValue,
-): string | number | boolean | Map<string, any> {
+): string | number | boolean | Map<string, any> | null {
+  if (!value) return null;
+
   if (value.type === "number") {
     return (value as NumberValue).value;
   }
@@ -101,6 +103,13 @@ export function MK_BOOL(b = true): BooleanValue {
     type: "boolean",
     value: b,
   } as BooleanValue;
+}
+
+export function MK_OBJECT(properties: Map<string, RuntimeValue>): ObjectValue {
+  return {
+    type: "object",
+    properties,
+  };
 }
 
 export type FunctionCall = (

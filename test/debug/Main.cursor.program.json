@@ -669,6 +669,98 @@
           ]
         }
       ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "symbol": "Math"
+            },
+            "property": {
+              "kind": "Identifier",
+              "symbol": "min"
+            },
+            "computed": false
+          },
+          "args": [
+            {
+              "kind": "NumericLiteral",
+              "value": 1
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 2
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 3
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 4
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "symbol": "Math"
+            },
+            "property": {
+              "kind": "Identifier",
+              "symbol": "max"
+            },
+            "computed": false
+          },
+          "args": [
+            {
+              "kind": "NumericLiteral",
+              "value": 1
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 2
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 3
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 4
+            },
+            {
+              "kind": "NumericLiteral",
+              "value": 5
+            }
+          ]
+        }
+      ]
     }
   ]
 }

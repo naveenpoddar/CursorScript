@@ -26,6 +26,7 @@ export enum TokenType {
   Colon, // :
   Comma, // ,
   Dot, // .
+  Quote, // "
 
   EOF, // End of File
 }
@@ -66,11 +67,36 @@ export function tokenise(sourceCode: string): Token[] {
   const tokens: Token[] = [];
   const src = sourceCode.split("");
 
+  let isReadingComment = false;
+
+  let isReadingString = false;
+  let accuStr = "";
+
   while (src.length > 0) {
     const char = src[0];
     if (char == null) {
       console.error("Unexpected end of source code");
       break;
+    }
+
+    if (char !== '"' && isReadingString) {
+      accuStr += src.shift();
+      continue;
+    }
+
+    if (src[0] === "/" && src[1] === "/") {
+      isReadingComment = true;
+      src.shift();
+      src.shift();
+      continue;
+    }
+
+    if (isReadingComment) {
+      const char = src.shift();
+      if (char === "\n") {
+        isReadingComment = false;
+      }
+      continue;
     }
 
     if (char === "(") {
@@ -103,6 +129,15 @@ export function tokenise(sourceCode: string): Token[] {
       tokens.push(token(src.shift(), TokenType.Comma));
     } else if (char === ".") {
       tokens.push(token(src.shift(), TokenType.Dot));
+    } else if (char === '"') {
+      src.shift();
+
+      if (isReadingString) {
+        tokens.push(token(accuStr, TokenType.String));
+        accuStr = "";
+      }
+
+      isReadingString = !isReadingString;
     } else {
       // Handle Multi Character Token
 

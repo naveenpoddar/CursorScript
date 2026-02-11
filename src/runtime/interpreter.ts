@@ -2,6 +2,7 @@ import {
   MK_NULL,
   type NumberValue,
   type RuntimeValue,
+  type StringValue,
   type ValueType,
 } from "./values";
 import type {
@@ -10,11 +11,13 @@ import type {
   CallExpr,
   FunctionDeclaration,
   Identifier,
+  MemberExpr,
   NodeType,
   NumericLiteral,
   ObjectLiteral,
   Program,
   Stmt,
+  StringLiteral,
   VarDeclaration,
 } from "../frontend/ast";
 import type Environment from "./environment";
@@ -29,6 +32,7 @@ import {
   evaluateAssignment,
   evaluateBinaryExpr,
   evaluateIdentifier,
+  evaluateMemberExpr,
 } from "./eval/expressions";
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
@@ -39,8 +43,17 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
         value: (astNode as NumericLiteral).value,
       } as NumberValue;
 
+    case "StringLiteral":
+      return {
+        type: "string",
+        value: (astNode as StringLiteral).value,
+      } as StringValue;
+
     case "Identifier":
       return evaluateIdentifier(astNode as Identifier, env);
+
+    case "MemberExpr":
+      return evaluateMemberExpr(astNode as MemberExpr, env);
 
     case "ObjectLiteral":
       return evalObjectExpr(astNode as ObjectLiteral, env);

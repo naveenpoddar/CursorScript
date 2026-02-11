@@ -27,6 +27,14 @@
         "properties": [
           {
             "kind": "Property",
+            "key": "name",
+            "value": {
+              "kind": "StringLiteral",
+              "value": "John"
+            }
+          },
+          {
+            "kind": "Property",
             "key": "age",
             "value": {
               "kind": "NumericLiteral",
@@ -259,6 +267,99 @@
         {
           "kind": "Identifier",
           "symbol": "print"
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "symbol": "person"
+          },
+          "property": {
+            "kind": "Identifier",
+            "symbol": "name"
+          },
+          "computed": false
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "symbol": "person"
+          },
+          "property": {
+            "kind": "StringLiteral",
+            "value": "age"
+          },
+          "computed": true
+        }
+      ]
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "key",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "value": "isMonster"
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "symbol": "person"
+          },
+          "property": {
+            "kind": "Identifier",
+            "symbol": "key"
+          },
+          "computed": true
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "symbol": "person"
+          },
+          "property": {
+            "kind": "Identifier",
+            "symbol": "key"
+          },
+          "computed": true
         }
       ]
     }

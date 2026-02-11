@@ -33,11 +33,13 @@ export function MakePrintable(
     const fn = value as FunctionValue;
     return `fn ${fn.name}(${fn.parameters.join(", ")}) { ... }`;
   }
-  return "Unknown Value";
+
+  return String((value as any).value).toString();
 }
 
 export type ValueType =
   | "number"
+  | "string"
   | "null"
   | "boolean"
   | "object"
@@ -51,6 +53,11 @@ export interface RuntimeValue {
 export interface NumberValue extends RuntimeValue {
   type: "number";
   value: number;
+}
+
+export interface StringValue extends RuntimeValue {
+  type: "string";
+  value: string;
 }
 
 export interface NullValue extends RuntimeValue {
@@ -73,6 +80,13 @@ export function MK_NUMBER(n = 0): NumberValue {
     type: "number",
     value: n,
   } as NumberValue;
+}
+
+export function MK_STRING(s = ""): StringValue {
+  return {
+    type: "string",
+    value: s,
+  } as StringValue;
 }
 
 export function MK_NULL(): NullValue {

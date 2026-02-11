@@ -3,6 +3,7 @@ import type {
   BinaryExpr,
   CallExpr,
   Identifier,
+  MemberExpr,
   ObjectLiteral,
 } from "../../frontend/ast";
 import Environment from "../environment";
@@ -14,6 +15,7 @@ import {
   type NumberValue,
   type ObjectValue,
   type RuntimeValue,
+  type StringValue,
 } from "../values";
 
 function eval_numeric_binary_expr(
@@ -73,6 +75,24 @@ export function evaluateIdentifier(
   env: Environment,
 ): RuntimeValue {
   return env.lookupVar(ident.symbol);
+}
+
+export function evaluateMemberExpr(
+  member: MemberExpr,
+  env: Environment,
+): RuntimeValue {
+  const object = evaluate(member.object, env) as ObjectValue;
+
+  if (object.type !== "object") return MK_NULL();
+
+  const property = member.computed
+    ? evaluate(member.property, env)
+    : ({
+        type: "string",
+        value: (member.property as Identifier).symbol,
+      } as any);
+
+  return object.properties.get((property as any).value) || MK_NULL();
 }
 
 export function evalObjectExpr(

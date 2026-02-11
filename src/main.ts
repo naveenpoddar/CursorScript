@@ -25,13 +25,22 @@ async function run(filePath: string = "./test/Main.Cursor") {
     const input = await Bun.file(filePath).text();
     const program = parser.produceAST(input);
 
+    const parts = filePath.split("\\");
+    const filename = parts[parts.length - 1];
+    const path = parts.slice(0, parts.length - 1).join("\\");
+
+    const newFilePath = `${path}\\debug\\${filename}`;
+
     await Bun.write(
-      `${filePath}.program.json`,
+      `${newFilePath}.program.json`,
       JSON.stringify(program, null, 2),
     );
 
     const result = evaluate(program, env);
-    await Bun.write(`${filePath}.result.json`, JSON.stringify(result, null, 2));
+    await Bun.write(
+      `${newFilePath}.result.json`,
+      JSON.stringify(result, null, 2),
+    );
   } catch (e) {
     console.error(e, filePath);
     process.exit(1);

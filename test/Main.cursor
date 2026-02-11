@@ -1,6 +1,7 @@
 let foo = 50 / 2;
 
 let person = {
+    name: "John",
     age: 30,
     isMonster: true,
     address: {
@@ -35,3 +36,11 @@ const result = adder(10, 4);
 print(result)
 
 print(print)
+
+print(person.name)
+print(person["age"])
+let key = "isMonster";
+print(person[key])
+// print(person.address.pincode)
+
+print(person[key])

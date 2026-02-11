@@ -1,0 +1,27 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "VarDeclaration",
+      "identifier": "x",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "value": "Hello World"
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "symbol": "x"
+        }
+      ]
+    }
+  ]
+}

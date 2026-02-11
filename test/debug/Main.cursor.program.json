@@ -261,6 +261,40 @@
       "kind": "CallExpr",
       "caller": {
         "kind": "Identifier",
+        "symbol": "help"
+      },
+      "args": []
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "currentWorkingDir",
+      "constant": true,
+      "value": {
+        "kind": "Identifier",
+        "symbol": "dir"
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "value": "Current working directory: "
+        },
+        {
+          "kind": "Identifier",
+          "symbol": "currentWorkingDir"
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
         "symbol": "print"
       },
       "args": [
@@ -360,6 +394,224 @@
             "symbol": "key"
           },
           "computed": true
+        }
+      ]
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "otp",
+      "constant": true,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "Identifier",
+          "symbol": "rand"
+        },
+        "args": [
+          {
+            "kind": "NumericLiteral",
+            "value": 100000
+          },
+          {
+            "kind": "NumericLiteral",
+            "value": 999999
+          }
+        ]
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "value": "Your OTP is"
+        },
+        {
+          "kind": "Identifier",
+          "symbol": "otp"
+        },
+        {
+          "kind": "StringLiteral",
+          "value": "and it is of length"
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "symbol": "len"
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "symbol": "str"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "symbol": "otp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "symbol": "typeof"
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "symbol": "otp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "symbol": "len"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "value": "Hello World"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "ObjectLiteral",
+          "properties": [
+            {
+              "kind": "Property",
+              "key": "firstName",
+              "value": {
+                "kind": "StringLiteral",
+                "value": "John"
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "lastName",
+              "value": {
+                "kind": "StringLiteral",
+                "value": "Doe"
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "middleName",
+              "value": {
+                "kind": "StringLiteral",
+                "value": "Smith"
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "age",
+              "value": {
+                "kind": "NumericLiteral",
+                "value": 30
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "isMonster",
+              "value": {
+                "kind": "Identifier",
+                "symbol": "true"
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "address",
+              "value": {
+                "kind": "ObjectLiteral",
+                "properties": [
+                  {
+                    "kind": "Property",
+                    "key": "pincode",
+                    "value": {
+                      "kind": "NumericLiteral",
+                      "value": 123456
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "countryCode",
+                    "value": {
+                      "kind": "NumericLiteral",
+                      "value": 12
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "symbol": "concat"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "value": "John"
+            },
+            {
+              "kind": "StringLiteral",
+              "value": "Doe"
+            },
+            {
+              "kind": "StringLiteral",
+              "value": "Smith"
+            }
+          ]
         }
       ]
     }

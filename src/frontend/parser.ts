@@ -35,14 +35,23 @@ export default class Parser {
   private expect(type: TokenType, msg: string): Token {
     const prev = this.eat();
     if (prev.type !== type) {
-      console.error(`Parser Error:\n`, msg, prev, " - Expecting: ", type);
+      console.error(
+        msg,
+        prev,
+        "- Expecting:",
+        type,
+        `at ${this.filename}:${prev.line}`,
+      );
       process.exit(1);
     }
     return prev;
   }
 
-  public produceAST(sourceCode: string): Program {
-    this.tokens = tokenise(sourceCode);
+  private filename: string = "";
+
+  public produceAST(sourceCode: string, filename: string): Program {
+    this.filename = filename;
+    this.tokens = tokenise(sourceCode, filename);
     const program: Program = { kind: "Program", body: [] };
 
     // Parse until the end of the file

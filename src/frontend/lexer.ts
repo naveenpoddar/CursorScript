@@ -40,10 +40,11 @@ const KEYWORDS: Record<string, TokenType> = {
 export interface Token {
   value: string;
   type: TokenType;
+  line: number;
 }
 
-function token(value: string = "", type: TokenType): Token {
-  return { value, type };
+function token(value: string = "", type: TokenType, line: number): Token {
+  return { value, type, line };
 }
 
 function isskippable(src: string | undefined) {
@@ -63,7 +64,7 @@ function isint(src: string | undefined) {
   return c >= bounds[0]! && c <= bounds[1]!;
 }
 
-export function tokenise(sourceCode: string): Token[] {
+export function tokenise(sourceCode: string, filename: string): Token[] {
   const tokens: Token[] = [];
   const src = sourceCode.split("");
 
@@ -72,10 +73,12 @@ export function tokenise(sourceCode: string): Token[] {
   let isReadingString = false;
   let accuStr = "";
 
+  let line = 1;
+
   while (src.length > 0) {
     const char = src[0];
     if (char == null) {
-      console.error("Unexpected end of source code");
+      console.error("Unexpected end of source code", filename);
       break;
     }
 
@@ -100,19 +103,19 @@ export function tokenise(sourceCode: string): Token[] {
     }
 
     if (char === "(") {
-      tokens.push(token(src.shift(), TokenType.OpenParen));
+      tokens.push(token(src.shift(), TokenType.OpenParen, line));
     } else if (char === ")") {
-      tokens.push(token(src.shift(), TokenType.CloseParen));
+      tokens.push(token(src.shift(), TokenType.CloseParen, line));
     } else if (char === "{") {
-      tokens.push(token(src.shift(), TokenType.OpenBrace));
+      tokens.push(token(src.shift(), TokenType.OpenBrace, line));
     } else if (char === "}") {
-      tokens.push(token(src.shift(), TokenType.CloseBrace));
+      tokens.push(token(src.shift(), TokenType.CloseBrace, line));
     } else if (char === "[") {
-      tokens.push(token(src.shift(), TokenType.OpenBracket));
+      tokens.push(token(src.shift(), TokenType.OpenBracket, line));
     } else if (char === "]") {
-      tokens.push(token(src.shift(), TokenType.CloseBracket));
+      tokens.push(token(src.shift(), TokenType.CloseBracket, line));
     } else if (char === "=") {
-      tokens.push(token(src.shift(), TokenType.Equals));
+      tokens.push(token(src.shift(), TokenType.Equals, line));
     } else if (
       char === "+" ||
       char === "-" ||
@@ -120,20 +123,20 @@ export function tokenise(sourceCode: string): Token[] {
       char === "/" ||
       char === "%"
     ) {
-      tokens.push(token(src.shift(), TokenType.BinaryOperator));
+      tokens.push(token(src.shift(), TokenType.BinaryOperator, line));
     } else if (char === ";") {
-      tokens.push(token(src.shift(), TokenType.Semicolon));
+      tokens.push(token(src.shift(), TokenType.Semicolon, line));
     } else if (char === ":") {
-      tokens.push(token(src.shift(), TokenType.Colon));
+      tokens.push(token(src.shift(), TokenType.Colon, line));
     } else if (char === ",") {
-      tokens.push(token(src.shift(), TokenType.Comma));
+      tokens.push(token(src.shift(), TokenType.Comma, line));
     } else if (char === ".") {
-      tokens.push(token(src.shift(), TokenType.Dot));
+      tokens.push(token(src.shift(), TokenType.Dot, line));
     } else if (char === '"') {
       src.shift();
 
       if (isReadingString) {
-        tokens.push(token(accuStr, TokenType.String));
+        tokens.push(token(accuStr, TokenType.String, line));
         accuStr = "";
       }
 
@@ -147,7 +150,7 @@ export function tokenise(sourceCode: string): Token[] {
           num += src.shift()!;
         }
 
-        tokens.push(token(num, TokenType.Number));
+        tokens.push(token(num, TokenType.Number, line));
       } else if (isalpha(char)) {
         let identifier = ""; // foo or let (user-defined OR keywords)
         while (src.length > 0 && isalpha(src[0])) {
@@ -158,20 +161,24 @@ export function tokenise(sourceCode: string): Token[] {
         const reserved = KEYWORDS[identifier];
 
         if (typeof reserved === "number") {
-          tokens.push(token(identifier, reserved));
+          tokens.push(token(identifier, reserved, line));
         } else {
-          tokens.push(token(identifier, TokenType.Identifier));
+          tokens.push(token(identifier, TokenType.Identifier, line));
         }
       } else if (isskippable(char)) {
+        line += char === "\n" ? 1 : 0;
         src.shift(); // Skip whitespace
       } else {
-        console.error("Unrecognised character found at source: " + char);
+        // improve error printing
+        console.error(
+          `Unrecognised character found: ${char} at line no ${filename}:${line}`,
+        );
         process.exit(1);
       }
     }
   }
 
-  tokens.push({ type: TokenType.EOF, value: "EndOfFile" });
+  tokens.push({ type: TokenType.EOF, value: "EndOfFile", line });
   return tokens;
 }
 

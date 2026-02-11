@@ -35,6 +35,11 @@ const result = adder(10, 4);
 
 print(result)
 
+help()
+
+const currentWorkingDir = dir;
+print("Current working directory: ", currentWorkingDir)
+
 print(print)
 
 print(person.name)
@@ -44,3 +49,25 @@ print(person[key])
 // print(person.address.pincode)
 
 print(person[key])
+
+const otp = rand(100000, 999999);
+
+print("Your OTP is", otp, "and it is of length", len(str(otp)))
+
+print(typeof(otp))
+
+print(len("Hello World"))
+
+print({
+    firstName: "John",
+    lastName: "Doe",
+    middleName: "Smith",
+    age: 30,
+    isMonster: true,
+    address: {
+        pincode: 123456,
+        countryCode: 12
+    }
+})
+
+print(concat("John", "Doe", "Smith"))

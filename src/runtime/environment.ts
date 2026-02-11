@@ -5,6 +5,9 @@ import {
   type RuntimeValue,
   MK_NUMBER,
   MakePrintable,
+  MK_STRING,
+  type StringValue,
+  type NumberValue,
 } from "./values";
 
 export function createGlobalEnv() {
@@ -24,10 +27,112 @@ export function createGlobalEnv() {
     true,
   );
 
-  function timeFunc(args: RuntimeValue[], scope: Environment): RuntimeValue {
+  function timeFunc(): RuntimeValue {
     return MK_NUMBER(Date.now());
   }
+
   env.declareVar("time", MK_NATIVE_FN(timeFunc), true);
+
+  env.declareVar(
+    "exit",
+    MK_NATIVE_FN(() => {
+      process.exit(1);
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "clear",
+    MK_NATIVE_FN(() => {
+      console.clear();
+      return MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "help",
+    MK_NATIVE_FN(() => {
+      console.log("[====================================================]");
+      console.log("Available commands:");
+      console.log("print(args...) - prints any value");
+      console.log("time() - returns the current time in milliseconds");
+      console.log("exit() - exits the program");
+      console.log("clear() - clears the console");
+      console.log("[====================================================]");
+      return MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar("dir", MK_STRING(process.cwd()), true);
+
+  env.declareVar(
+    "rand",
+    MK_NATIVE_FN(([start, end], scope) => {
+      const s = start as NumberValue;
+      const e = end as NumberValue;
+
+      if (s.type !== "number" || e.type !== "number") {
+        throw "rand() expects two arguments of type number.";
+      }
+
+      return MK_NUMBER(
+        Math.floor(Math.random() * (e.value - s.value + 1)) + s.value,
+      );
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "len",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as StringValue;
+
+      if (arg.type !== "string") {
+        throw "len() expects one argument of type string.";
+      }
+
+      return MK_NUMBER(arg.value.length);
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "str",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as RuntimeValue;
+      const strValue = MakePrintable(arg);
+
+      return strValue !== null ? MK_STRING(String(strValue)) : MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "typeof",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as RuntimeValue;
+
+      return MK_STRING(arg.type);
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "concat",
+    MK_NATIVE_FN((args, scope) => {
+      const strings = args.map((arg) => {
+        const strValue = MakePrintable(arg);
+        return strValue !== null ? String(strValue) : "";
+      });
+
+      return MK_STRING(strings.join(" "));
+    }),
+    true,
+  );
+
+  // TODO: readFile, writeFile, deleteFile -> Implment async await
 
   return env;
 }

@@ -23,7 +23,7 @@ async function run(filePath: string = "./test/Main.Cursor") {
 
   try {
     const input = await Bun.file(filePath).text();
-    const program = parser.produceAST(input);
+    const program = parser.produceAST(input, filePath);
 
     const parts = filePath.split("\\");
     const filename = parts[parts.length - 1];
@@ -42,7 +42,7 @@ async function run(filePath: string = "./test/Main.Cursor") {
       JSON.stringify(result, null, 2),
     );
   } catch (e) {
-    console.error(e, filePath);
+    console.error("[Crashed]", e);
     process.exit(1);
   }
 }
@@ -60,7 +60,7 @@ async function repl() {
       break;
     }
 
-    const program = parser.produceAST(input);
+    const program = parser.produceAST(input, "<repl>");
     console.dir(program, { depth: null });
 
     const result = evaluate(program, env);

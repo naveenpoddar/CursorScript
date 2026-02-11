@@ -1,11 +1,45 @@
 import type {
   FunctionDeclaration,
+  IfStmt,
   Program,
   VarDeclaration,
 } from "../../frontend/ast";
 import type Environment from "../environment";
 import { evaluate } from "../interpreter";
-import { MK_NULL, type FunctionValue, type RuntimeValue } from "../values";
+import {
+  MK_NULL,
+  type BooleanValue,
+  type FunctionValue,
+  type RuntimeValue,
+} from "../values";
+
+export function evaluateIfStmt(stmt: IfStmt, env: Environment): RuntimeValue {
+  const condition = evaluate(stmt.condition, env);
+
+  // Truthy check
+  let isTruthy = false;
+  if (condition.type === "boolean")
+    isTruthy = (condition as BooleanValue).value;
+  else if (condition.type === "number")
+    isTruthy = (condition as any).value !== 0;
+  else if (condition.type !== "null") isTruthy = true;
+
+  if (isTruthy) {
+    let lastEvaluatedValue: RuntimeValue = MK_NULL();
+    for (const child of stmt.thenBranch) {
+      lastEvaluatedValue = evaluate(child, env);
+    }
+    return lastEvaluatedValue;
+  } else if (stmt.elseBranch) {
+    let lastEvaluatedValue: RuntimeValue = MK_NULL();
+    for (const child of stmt.elseBranch) {
+      lastEvaluatedValue = evaluate(child, env);
+    }
+    return lastEvaluatedValue;
+  }
+
+  return MK_NULL();
+}
 
 export function evaluateProgram(
   program: Program,

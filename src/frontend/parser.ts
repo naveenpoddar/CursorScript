@@ -72,9 +72,50 @@ export default class Parser {
       case TokenType.Fn:
         return this.parse_function_declaration();
 
+      case TokenType.If:
+        return this.parse_if_stmt();
+
       default:
         return this.parse_expr();
     }
+  }
+
+  private parse_if_stmt(): Stmt {
+    this.eat(); // consume if
+    this.expect(TokenType.OpenParen, "Expected '(' after if");
+    const condition = this.parse_expr();
+    this.expect(TokenType.CloseParen, "Expected ')' after if condition");
+
+    this.expect(TokenType.OpenBrace, "Expected '{' after if condition");
+    const thenBranch: Stmt[] = [];
+    while (this.notEOF() && this.at().type !== TokenType.CloseBrace) {
+      thenBranch.push(this.parse_stmt());
+    }
+    this.expect(TokenType.CloseBrace, "Expected '}' after if body");
+
+    let elseBranch: Stmt[] | undefined;
+    if (this.at().type === TokenType.Else) {
+      this.eat(); // consume else
+      if (this.at().type === TokenType.If) {
+        elseBranch = [this.parse_if_stmt()];
+      } else {
+        this.expect(TokenType.OpenBrace, "Expected '{' after else");
+        elseBranch = [];
+        while (this.notEOF() && this.at().type !== TokenType.CloseBrace) {
+          elseBranch.push(this.parse_stmt());
+        }
+        this.expect(TokenType.CloseBrace, "Expected '}' after else body");
+      }
+    }
+
+    return {
+      kind: "IfStmt",
+      condition,
+      thenBranch,
+      elseBranch,
+      line: 0,
+      column: 0,
+    } as any;
   }
 
   private parse_function_declaration(): Stmt {
@@ -181,7 +222,7 @@ export default class Parser {
 
   private parse_object_expr(): Expr {
     if (this.at().type !== TokenType.OpenBrace) {
-      return this.parse_additive_expr();
+      return this.parse_comparison_expr();
     }
 
     this.eat(); // consume '{'
@@ -227,6 +268,30 @@ export default class Parser {
 
     this.expect(TokenType.CloseBrace, "Expected '}' closing object literal");
     return { kind: "ObjectLiteral", properties } as ObjectLiteral;
+  }
+
+  private parse_comparison_expr(): Expr {
+    let left = this.parse_additive_expr();
+
+    while (
+      this.at().type === TokenType.LessThan ||
+      this.at().type === TokenType.GreaterThan ||
+      this.at().type === TokenType.EqualsEquals ||
+      this.at().type === TokenType.NotEquals
+    ) {
+      const operator = this.eat().value;
+      const right = this.parse_additive_expr();
+      left = {
+        kind: "BinaryExpr",
+        operator,
+        left,
+        right,
+        line: this.at().line,
+        column: this.at().column,
+      } as BinaryExpr;
+    }
+
+    return left;
   }
 
   private parse_additive_expr(): Expr {

@@ -1,5 +1,6 @@
 import { MathL } from "../lib/MathLib";
 import { GameL } from "../lib/GameLib";
+import { createWindowLib } from "../lib/WindowLib";
 import {
   MK_BOOL,
   MK_NULL,
@@ -136,6 +137,7 @@ export function createGlobalEnv() {
 
   env.declareVar("Math", MathL, true);
   env.declareVar("Game", GameL, true);
+  env.declareVar("Window", createWindowLib(), true);
 
   // TODO: readFile, writeFile, deleteFile -> Implment async await
 

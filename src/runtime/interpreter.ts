@@ -11,6 +11,7 @@ import type {
   CallExpr,
   FunctionDeclaration,
   Identifier,
+  IfStmt,
   MemberExpr,
   NodeType,
   NumericLiteral,
@@ -23,6 +24,7 @@ import type {
 import type Environment from "./environment";
 import {
   evaluateFunctionDeclaration,
+  evaluateIfStmt,
   evaluateProgram,
   evaluateVarDeclaration,
 } from "./eval/statements";
@@ -76,6 +78,9 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
 
     case "FunctionDeclaration":
       return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
+
+    case "IfStmt":
+      return evaluateIfStmt(astNode as IfStmt, env);
 
     default:
       console.error(

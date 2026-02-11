@@ -12,6 +12,8 @@ export enum TokenType {
   Let,
   Const,
   Fn,
+  If,
+  Else,
 
   // Operators & Delimiters
   OpenParen, // (
@@ -27,6 +29,10 @@ export enum TokenType {
   Comma, // ,
   Dot, // .
   Quote, // "
+  LessThan, // <
+  GreaterThan, // >
+  EqualsEquals, // ==
+  NotEquals, // !=
 
   EOF, // End of File
 }
@@ -38,6 +44,8 @@ const KEYWORDS: Record<string, TokenType> = {
   let: TokenType.Let,
   const: TokenType.Const,
   fn: TokenType.Fn,
+  if: TokenType.If,
+  else: TokenType.Else,
 };
 
 /**
@@ -161,7 +169,26 @@ class Lexer {
         this.addToken(TokenType.Dot);
         break;
       case "=":
-        this.addToken(TokenType.Equals);
+        if (this.match("=")) {
+          this.addToken(TokenType.EqualsEquals);
+        } else {
+          this.addToken(TokenType.Equals);
+        }
+        break;
+      case "<":
+        this.addToken(TokenType.LessThan);
+        break;
+      case ">":
+        this.addToken(TokenType.GreaterThan);
+        break;
+      case "!":
+        if (this.match("=")) {
+          this.addToken(TokenType.NotEquals);
+        } else {
+          // Maybe logical NOT later
+          console.error("Unexpected character '!'");
+          process.exit(1);
+        }
         break;
 
       // Operators

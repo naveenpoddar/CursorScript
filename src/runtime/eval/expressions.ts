@@ -41,6 +41,15 @@ function eval_numeric_binary_expr(
     case "%":
       result = LHS.value % RHS.value;
       break;
+    case "<":
+      return { type: "boolean", value: LHS.value < RHS.value } as any;
+    case ">":
+      return { type: "boolean", value: LHS.value > RHS.value } as any;
+    case "==":
+      return { type: "boolean", value: LHS.value === RHS.value } as any;
+    case "!=":
+      return { type: "boolean", value: LHS.value !== RHS.value } as any;
+
     default:
       console.error("This operator has not yet been setup for interpretation");
       process.exit(0);

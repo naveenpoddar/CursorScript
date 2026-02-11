@@ -1,16 +1,23 @@
 {
   "name": "cursorscript",
   "version": "0.0.1",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "cursorx": "bun run src/main.ts",
-    "build": "bun run build.ts"
-  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
-  }
+  },
+  "private": true,
+  "scripts": {
+    "cursorx": "bun run src/main.ts",
+    "build": "bun run build.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "skia-canvas": "^3.0.8"
+  },
+  "trustedDependencies": [
+    "skia-canvas",
+    "raylib"
+  ]
 }

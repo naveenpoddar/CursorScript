@@ -40,7 +40,7 @@ export default class Parser {
         prev,
         "- Expecting:",
         type,
-        `at ${this.filename}:${prev.line}`,
+        `at ${this.filename}:${prev.line}:${prev.column}`,
       );
       process.exit(1);
     }
@@ -52,7 +52,7 @@ export default class Parser {
   public produceAST(sourceCode: string, filename: string): Program {
     this.filename = filename;
     this.tokens = tokenise(sourceCode, filename);
-    const program: Program = { kind: "Program", body: [] };
+    const program: Program = { kind: "Program", body: [], line: 0, column: 0 };
 
     // Parse until the end of the file
     while (this.notEOF()) {
@@ -161,6 +161,8 @@ export default class Parser {
     const left = this.parse_object_expr();
 
     if (this.at().type === TokenType.Equals) {
+      const line = this.at().line;
+      const column = this.at().column;
       this.eat();
 
       const value = this.parse_assignment_expr();
@@ -169,6 +171,8 @@ export default class Parser {
         kind: "AssignmentExpr",
         assignee: left,
         value,
+        line,
+        column,
       } as AssignmentExpr;
     }
 
@@ -194,12 +198,16 @@ export default class Parser {
         properties.push({
           kind: "Property",
           key,
+          line: this.at().line,
+          column: this.at().column,
         });
         continue;
       } else if (this.at().type === TokenType.CloseBrace) {
         properties.push({
           kind: "Property",
           key,
+          line: this.at().line,
+          column: this.at().column,
         });
         continue;
       }
@@ -232,6 +240,8 @@ export default class Parser {
         operator,
         left,
         right,
+        line: this.at().line,
+        column: this.at().column,
       } as BinaryExpr;
     }
 
@@ -253,6 +263,8 @@ export default class Parser {
         operator,
         left,
         right,
+        line: this.at().line,
+        column: this.at().column,
       } as BinaryExpr;
     }
 
@@ -274,6 +286,8 @@ export default class Parser {
       kind: "CallExpr",
       caller,
       args: this.parse_args(),
+      line: this.at().line,
+      column: this.at().column,
     } as CallExpr;
 
     if (this.at().type === TokenType.OpenParen) {
@@ -341,6 +355,8 @@ export default class Parser {
         object,
         property,
         computed,
+        line: this.at().line,
+        column: this.at().column,
       } as MemberExpr;
     }
 
@@ -352,17 +368,26 @@ export default class Parser {
 
     switch (tk) {
       case TokenType.Identifier:
-        return { kind: "Identifier", symbol: this.eat().value } as Identifier;
+        return {
+          kind: "Identifier",
+          line: this.at().line,
+          column: this.at().column,
+          symbol: this.eat().value,
+        } as Identifier;
 
       case TokenType.Number:
         return {
           kind: "NumericLiteral",
+          line: this.at().line,
+          column: this.at().column,
           value: parseFloat(this.eat().value),
         } as NumericLiteral;
 
       case TokenType.String:
         return {
           kind: "StringLiteral",
+          line: this.at().line,
+          column: this.at().column,
           value: this.eat().value,
         } as StringLiteral;
 
@@ -376,7 +401,10 @@ export default class Parser {
         return value;
 
       default:
-        console.error("Unexpected token found during parsing: ", this.at());
+        console.error(
+          `Unexpected token found during parsing at ${this.filename}:${this.at().line}:${this.at().column}:`,
+          this.at(),
+        );
         process.exit(1);
     }
   }

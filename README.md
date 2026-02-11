@@ -10,6 +10,7 @@ CursorScript is a dynamic, interpreted programming language written in TypeScrip
 - **Simple Syntax**: derived from modern JavaScript/TypeScript conventions.
 - **First-Class Functions**: Support for closures, nested functions, and higher-order functions.
 - **Object Literals**: JSON-like object definitions with nested support.
+- **Built-in Libraries**: Includes `Math` and `Game` libraries for advanced logic. Read the [API Documentation](API.md) 📖.
 - **REPL**: Interactive Read-Eval-Print Loop for quick experimentation.
 - **Cross-Platform**: Builds native binaries for Windows, macOS, and Linux.
 

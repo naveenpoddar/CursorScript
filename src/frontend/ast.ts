@@ -19,6 +19,8 @@ export type NodeType =
 
 export interface Stmt {
   kind: NodeType;
+  line: number;
+  column: number;
 }
 
 export interface Program extends Stmt {

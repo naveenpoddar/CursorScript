@@ -1,9 +1,14 @@
+import type { Stmt } from "./frontend/ast";
 import Parser from "./frontend/parser";
 import { createGlobalEnv } from "./runtime/environment";
 import { evaluate } from "./runtime/interpreter";
 import { MakePrintable } from "./runtime/values";
 
 main();
+
+declare global {
+  var lastStmt: Stmt | null;
+}
 
 async function main() {
   const args = Bun.argv.slice(2); // Remove 'bun' and 'script-name'
@@ -43,7 +48,11 @@ async function run(filePath: string = "./test/Main.Cursor") {
       JSON.stringify(result, null, 2),
     );
   } catch (e) {
-    console.error("[Crashed]", e);
+    console.error(
+      "[Crashed]",
+      e,
+      `${filePath}:${lastStmt?.line ?? 0}:${lastStmt?.column ?? 0}`,
+    );
     process.exit(1);
   }
 }

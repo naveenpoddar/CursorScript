@@ -47,6 +47,7 @@ export interface Token {
   value: string;
   type: TokenType;
   line: number;
+  column: number;
 }
 
 /**
@@ -59,6 +60,7 @@ class Lexer {
   private start: number = 0;
   private current: number = 0;
   private line: number = 1;
+  private lineStart: number = 0;
 
   constructor(source: string, filename: string) {
     this.source = source;
@@ -78,6 +80,7 @@ class Lexer {
       type: TokenType.EOF,
       value: "EndOfFile",
       line: this.line,
+      column: this.current - this.lineStart + 1,
     });
 
     return this.tokens;
@@ -114,7 +117,12 @@ class Lexer {
       value !== undefined
         ? value
         : this.source.substring(this.start, this.current);
-    this.tokens.push({ type, value: text, line: this.line });
+    this.tokens.push({
+      type,
+      value: text,
+      line: this.line,
+      column: this.start - this.lineStart + 1,
+    });
   }
 
   private scanToken(): void {
@@ -182,6 +190,7 @@ class Lexer {
         break;
       case "\n":
         this.line++;
+        this.lineStart = this.current;
         break;
 
       // Literals
@@ -196,7 +205,7 @@ class Lexer {
           this.handleIdentifier();
         } else {
           console.error(
-            `Unrecognised character '${char}' at ${this.filename}:${this.line}`,
+            `Unrecognised character '${char}' at ${this.filename}:${this.line}:${this.start - this.lineStart + 1}`,
           );
           process.exit(1);
         }
@@ -229,12 +238,17 @@ class Lexer {
   private handleString(): void {
     let value = "";
     while (this.peek() !== '"' && !this.isAtEnd()) {
-      if (this.peek() === "\n") this.line++;
+      if (this.peek() === "\n") {
+        this.line++;
+        this.lineStart = this.current + 1;
+      }
       value += this.advance();
     }
 
     if (this.isAtEnd()) {
-      console.error(`Unterminated string at ${this.filename}:${this.line}`);
+      console.error(
+        `Unterminated string at ${this.filename}:${this.line}:${this.current - this.lineStart + 1}`,
+      );
       process.exit(1);
     }
 

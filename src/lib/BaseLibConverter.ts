@@ -35,22 +35,28 @@ export default function ConvertTOMK_Object(obj: any) {
       const method = obj[name] as Function;
       // We create a wrapper function that intercepts the execution
       const interceptor = (args: RuntimeValue[], _: Environment) => {
-        // 1. Execute the actual class method
-        const result = method.apply(
-          obj,
-          args.map((arg) => (arg as any).value),
-        );
+        try {
+          // 1. Map arguments and execute the native method
+          // We wrap 'apply' to catch any logic errors inside the TS class
+          const rawArgs = args.map((arg) => (arg as any).value);
+          const result = method.apply(obj, rawArgs);
 
-        // 2. Intercept and Convert the return value back to CursorScript types
-        const runtimeResult = GetCursorXType(result);
+          // 2. Convert result to CursorScript type
+          const runtimeResult = GetCursorXType(result);
 
-        if (runtimeResult === null) {
-          throw new Error(
-            `Method ${name} returned an incompatible type: ${typeof result}`,
-          );
+          if (runtimeResult === null) {
+            throw `Method "${name}" returned an incompatible type: ${typeof result}`;
+          }
+
+          return runtimeResult;
+        } catch (error: any) {
+          // 3. Intercept the failure
+          // You can customize this to provide better debugging info
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+
+          throw `Runtime Error in native method "${name}": ${errorMessage}`;
         }
-
-        return runtimeResult;
       };
 
       propertiesMap.set(name, MK_NATIVE_FN(interceptor));

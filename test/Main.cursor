@@ -79,4 +79,4 @@ fn getFullName(obj){
 print(getFullName(a))
 
 print(Math.min(1, 2, 3, 4, 5))
-print(Math.max(1, 2, 3, 4, 5))
+print(Math.max(1, 2, 3, 4, "dasd"))

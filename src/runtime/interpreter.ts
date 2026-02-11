@@ -36,6 +36,7 @@ import {
 } from "./eval/expressions";
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
+  global.lastStmt = astNode;
   switch (astNode.kind) {
     case "NumericLiteral":
       return {
@@ -80,6 +81,8 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
       console.error(
         "This AST Node has not yet been setup for interpretation",
         astNode,
+        astNode.line,
+        astNode.column,
       );
       process.exit(0);
   }

@@ -78,10 +78,8 @@ This will generate the following binaries in the `./dist` folder:
 Here's a snippet demonstrating variables, objects, and closures in CursorScript:
 
 ```cursor
-// Variable Declaration
 let foo = 50 / 2;
 
-// Object Literals
 let config = {
     version: 1,
     settings: {
@@ -90,7 +88,6 @@ let config = {
     }
 };
 
-// Functions & Closures
 fn makeAdder(offset) {
     fn add(x, y) {
         x + y + offset

@@ -6,6 +6,7 @@ import {
   type ValueType,
 } from "./values";
 import type {
+  ArrayLiteral,
   AssignmentExpr,
   BinaryExpr,
   CallExpr,
@@ -19,22 +20,28 @@ import type {
   Program,
   Stmt,
   StringLiteral,
+  UnaryExpr,
   VarDeclaration,
+  WhileStmt,
 } from "../frontend/ast";
 import type Environment from "./environment";
 import {
   evaluateFunctionDeclaration,
   evaluateIfStmt,
+  evaluateWhileStmt,
   evaluateProgram,
   evaluateVarDeclaration,
 } from "./eval/statements";
+
 import {
-  evalCallExpr,
   evalObjectExpr,
+  evaluateArrayLiteral,
   evaluateAssignment,
   evaluateBinaryExpr,
+  evaluateCallExpr,
   evaluateIdentifier,
   evaluateMemberExpr,
+  evaluateUnaryExpr,
 } from "./eval/expressions";
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
@@ -61,14 +68,20 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
     case "ObjectLiteral":
       return evalObjectExpr(astNode as ObjectLiteral, env);
 
+    case "ArrayLiteral":
+      return evaluateArrayLiteral(astNode as ArrayLiteral, env);
+
     case "CallExpr":
-      return evalCallExpr(astNode as CallExpr, env);
+      return evaluateCallExpr(astNode as CallExpr, env);
 
     case "AssignmentExpr":
       return evaluateAssignment(astNode as AssignmentExpr, env);
 
     case "BinaryExpr":
       return evaluateBinaryExpr(astNode as BinaryExpr, env);
+
+    case "UnaryExpr":
+      return evaluateUnaryExpr(astNode as UnaryExpr, env);
 
     case "Program":
       return evaluateProgram(astNode as Program, env);
@@ -81,6 +94,9 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
 
     case "IfStmt":
       return evaluateIfStmt(astNode as IfStmt, env);
+
+    case "WhileStmt":
+      return evaluateWhileStmt(astNode as WhileStmt, env);
 
     default:
       console.error(

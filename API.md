@@ -107,13 +107,18 @@ The `Window` library provides native windowing and 2D drawing capabilities using
 - `<` - Less Than
 - `>` - Greater Than
 
+### Logical Operators (Gates) ⚡
+
+- `&&` - AND
+- `||` - OR
+- `!` - NOT (Unary)
+
 ### If Statements
 
 ```cursor
-if (x > 10) {
-    print("Large");
-} else {
-    print("Small");
+// Combining conditions with AND/OR
+if (score > 10 && gameOver == false) {
+    print("Keep playing!");
 }
 ```
 

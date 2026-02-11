@@ -14,6 +14,7 @@ export enum TokenType {
   Fn,
   If,
   Else,
+  While,
 
   // Operators & Delimiters
   OpenParen, // (
@@ -33,6 +34,9 @@ export enum TokenType {
   GreaterThan, // >
   EqualsEquals, // ==
   NotEquals, // !=
+  AmpersandAmpersand, // &&
+  BarBar, // ||
+  Bang, // !
 
   EOF, // End of File
 }
@@ -46,6 +50,7 @@ const KEYWORDS: Record<string, TokenType> = {
   fn: TokenType.Fn,
   if: TokenType.If,
   else: TokenType.Else,
+  while: TokenType.While,
 };
 
 /**
@@ -185,8 +190,22 @@ class Lexer {
         if (this.match("=")) {
           this.addToken(TokenType.NotEquals);
         } else {
-          // Maybe logical NOT later
-          console.error("Unexpected character '!'");
+          this.addToken(TokenType.Bang);
+        }
+        break;
+      case "&":
+        if (this.match("&")) {
+          this.addToken(TokenType.AmpersandAmpersand);
+        } else {
+          console.error("Unexpected character '&'");
+          process.exit(1);
+        }
+        break;
+      case "|":
+        if (this.match("|")) {
+          this.addToken(TokenType.BarBar);
+        } else {
+          console.error("Unexpected character '|'");
           process.exit(1);
         }
         break;

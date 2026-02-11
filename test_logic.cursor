@@ -1,0 +1,25 @@
+let a = true;
+let b = false;
+
+if (a && b) {
+    print("AND test failed")
+} else {
+    print("AND test passed")
+}
+
+if (a || b) {
+    print("OR test passed")
+} else {
+    print("OR test failed")
+}
+
+if (!b) {
+    print("NOT test passed")
+} else {
+    print("NOT test failed")
+}
+
+let x = 10;
+if (x > 5 && x < 15) {
+    print("Comparison with AND passed")
+}

@@ -13,6 +13,8 @@ import {
   type MemberExpr,
   type FunctionDeclaration,
   type StringLiteral,
+  type WhileStmt,
+  type ArrayLiteral,
 } from "./ast";
 import { tokenise, type Token, TokenType } from "./lexer";
 
@@ -75,9 +77,32 @@ export default class Parser {
       case TokenType.If:
         return this.parse_if_stmt();
 
+      case TokenType.While:
+        return this.parse_while_stmt();
+
       default:
         return this.parse_expr();
     }
+  }
+
+  private parse_while_stmt(): Stmt {
+    this.eat(); // consume while
+    this.expect(TokenType.OpenParen, "Expected '(' after while");
+    const condition = this.parse_expr();
+    this.expect(TokenType.CloseParen, "Expected ')' after while condition");
+
+    this.expect(TokenType.OpenBrace, "Expected '{' after while condition");
+    const body: Stmt[] = [];
+    while (this.notEOF() && this.at().type !== TokenType.CloseBrace) {
+      body.push(this.parse_stmt());
+    }
+    this.expect(TokenType.CloseBrace, "Expected '}' after while body");
+
+    return {
+      kind: "WhileStmt",
+      condition,
+      body,
+    } as WhileStmt;
   }
 
   private parse_if_stmt(): Stmt {
@@ -199,7 +224,7 @@ export default class Parser {
   }
 
   private parse_assignment_expr(): Expr {
-    const left = this.parse_object_expr();
+    const left = this.parse_logical_or_expr();
 
     if (this.at().type === TokenType.Equals) {
       const line = this.at().line;
@@ -215,6 +240,44 @@ export default class Parser {
         line,
         column,
       } as AssignmentExpr;
+    }
+
+    return left;
+  }
+
+  private parse_logical_or_expr(): Expr {
+    let left = this.parse_logical_and_expr();
+
+    while (this.at().type === TokenType.BarBar) {
+      const operator = this.eat().value;
+      const right = this.parse_logical_and_expr();
+      left = {
+        kind: "BinaryExpr",
+        operator,
+        left,
+        right,
+        line: this.at().line,
+        column: this.at().column,
+      } as BinaryExpr;
+    }
+
+    return left;
+  }
+
+  private parse_logical_and_expr(): Expr {
+    let left = this.parse_object_expr();
+
+    while (this.at().type === TokenType.AmpersandAmpersand) {
+      const operator = this.eat().value;
+      const right = this.parse_object_expr();
+      left = {
+        kind: "BinaryExpr",
+        operator,
+        left,
+        right,
+        line: this.at().line,
+        column: this.at().column,
+      } as BinaryExpr;
     }
 
     return left;
@@ -314,7 +377,7 @@ export default class Parser {
   }
 
   private parse_multiplicative_expr(): Expr {
-    let left = this.parse_call_member_expr();
+    let left = this.parse_unary_expr();
 
     while (
       this.at().value === "*" ||
@@ -322,7 +385,7 @@ export default class Parser {
       this.at().value === "%"
     ) {
       const operator = this.eat().value;
-      const right = this.parse_call_member_expr();
+      const right = this.parse_unary_expr();
       left = {
         kind: "BinaryExpr",
         operator,
@@ -334,6 +397,25 @@ export default class Parser {
     }
 
     return left;
+  }
+
+  private parse_unary_expr(): Expr {
+    if (
+      this.at().type === TokenType.Bang ||
+      (this.at().type === TokenType.BinaryOperator && this.at().value === "-")
+    ) {
+      const operator = this.eat().value;
+      const argument = this.parse_unary_expr();
+      return {
+        kind: "UnaryExpr",
+        operator,
+        argument,
+        line: this.at().line,
+        column: this.at().column,
+      } as any;
+    }
+
+    return this.parse_call_member_expr();
   }
 
   private parse_call_member_expr(): Expr {
@@ -465,6 +547,9 @@ export default class Parser {
         ); // eat the closing paren
         return value;
 
+      case TokenType.OpenBracket:
+        return this.parse_array_literal();
+
       default:
         console.error(
           `Unexpected token found during parsing at ${this.filename}:${this.at().line}:${this.at().column}:`,
@@ -472,5 +557,24 @@ export default class Parser {
         );
         process.exit(1);
     }
+  }
+
+  private parse_array_literal(): Expr {
+    this.eat(); // [
+    const elements = new Array<Expr>();
+
+    while (this.notEOF() && this.at().type !== TokenType.CloseBracket) {
+      elements.push(this.parse_expr());
+      if (this.at().type === TokenType.Comma) {
+        this.eat();
+      }
+    }
+
+    this.expect(TokenType.CloseBracket, "Expected ']' after array literal");
+
+    return {
+      kind: "ArrayLiteral",
+      elements,
+    } as ArrayLiteral;
   }
 }

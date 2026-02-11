@@ -11,6 +11,8 @@ import {
   MK_STRING,
   type StringValue,
   type NumberValue,
+  type ArrayValue,
+  MK_ARRAY,
 } from "./values";
 
 export function createGlobalEnv() {
@@ -90,13 +92,61 @@ export function createGlobalEnv() {
   env.declareVar(
     "len",
     MK_NATIVE_FN((args, scope) => {
-      const arg = args[0] as StringValue;
+      const arg = args[0] as any;
 
-      if (arg.type !== "string") {
-        throw "len() expects one argument of type string.";
+      if (arg.type === "string") {
+        return MK_NUMBER(arg.value.length);
+      } else if (arg.type === "array") {
+        return MK_NUMBER(arg.elements.length);
+      } else {
+        throw "len() expects one argument of type string | array.";
       }
+    }),
+    true,
+  );
 
-      return MK_NUMBER(arg.value.length);
+  env.declareVar(
+    "push",
+    MK_NATIVE_FN(([arrValue, val], scope) => {
+      const arr = arrValue as ArrayValue;
+      if (arr.type !== "array")
+        throw "push() expects first argument to be an array.";
+      arr.elements.push(val!);
+      return val!;
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "pop",
+    MK_NATIVE_FN(([arrValue], scope) => {
+      const arr = arrValue as ArrayValue;
+      if (arr.type !== "array")
+        throw "pop() expects first argument to be an array.";
+      return arr.elements.pop() || MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "shift",
+    MK_NATIVE_FN(([arrValue], scope) => {
+      const arr = arrValue as ArrayValue;
+      if (arr.type !== "array")
+        throw "shift() expects first argument to be an array.";
+      return arr.elements.shift() || MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "unshift",
+    MK_NATIVE_FN(([arrValue, val], scope) => {
+      const arr = arrValue as ArrayValue;
+      if (arr.type !== "array")
+        throw "unshift() expects first argument to be an array.";
+      arr.elements.unshift(val!);
+      return val!;
     }),
     true,
   );

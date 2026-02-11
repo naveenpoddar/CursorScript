@@ -1,0 +1,9 @@
+let a = [1, 2, 3];
+print(a)
+push(a, 4)
+print(a)
+print("Len: " + str(len(a)))
+print("Index 1: " + str(a[1]))
+a[1] = 100
+print("Modified: " + str(a[1]))
+print(a)

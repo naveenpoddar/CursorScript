@@ -4,6 +4,7 @@ export type NodeType =
   | "VarDeclaration"
   | "FunctionDeclaration"
   | "IfStmt"
+  | "WhileStmt"
 
   // Expressions
   | "AssignmentExpr"
@@ -16,7 +17,22 @@ export type NodeType =
   | "NumericLiteral"
   | "StringLiteral"
   | "Identifier"
-  | "BinaryExpr";
+  | "BinaryExpr"
+  | "UnaryExpr"
+  | "ArrayLiteral";
+
+// ...
+export interface ArrayLiteral extends Expr {
+  kind: "ArrayLiteral";
+  elements: Expr[];
+}
+
+// ...
+export interface UnaryExpr extends Expr {
+  kind: "UnaryExpr";
+  operator: string;
+  argument: Expr;
+}
 
 export interface Stmt {
   kind: NodeType;
@@ -48,6 +64,12 @@ export interface IfStmt extends Stmt {
   condition: Expr;
   thenBranch: Stmt[];
   elseBranch?: Stmt[];
+}
+
+export interface WhileStmt extends Stmt {
+  kind: "WhileStmt";
+  condition: Expr;
+  body: Stmt[];
 }
 
 export interface Expr extends Stmt {}

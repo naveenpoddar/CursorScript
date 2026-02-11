@@ -1,0 +1,138 @@
+Window.create(600, 600, "CursorScript Snake Game")
+
+let snake = [{x: 10, y: 10}];
+let dx = 1;
+let dy = 0;
+let food = { x: 5, y: 5 };
+let score = 0;
+let frameCount = 0;
+let gameOver = false;
+
+fn spawnFood() {
+    food.x = Math.randomInt(0, 29)
+    food.y = Math.randomInt(0, 29)
+}
+
+fn resetGame() {
+    snake = [{x: 10, y: 10}]
+    dx = 1
+    dy = 0
+    score = 0
+    gameOver = false
+    spawnFood()
+}
+
+fn update() {
+    if (gameOver == true) {
+        Window.clear("black")
+        Window.setColor("red")
+        Window.drawText("GAME OVER", 180, 250, 48)
+        
+        Window.setColor("white")
+        Window.drawText("Score: " + str(score), 250, 310, 24)
+
+        // Restart Button
+        let btnX = 200;
+        let btnY = 350;
+        let btnW = 200;
+        let btnH = 50;
+
+        Window.setColor("#2ed573")
+        Window.drawRect(btnX, btnY, btnW, btnH)
+        Window.setColor("black")
+        Window.drawText("RESTART", btnX + 50, btnY + 35, 24)
+
+        // Mouse Check for Restart
+        if (Window.getMouseButton()) {
+            let mx = Window.getMouseX();
+            let my = Window.getMouseY();
+            
+            if (mx > btnX && mx < btnX + btnW && my > btnY && my < btnY + btnH) {
+                resetGame()
+            }
+        }
+    } else {
+        // Handle Input
+        if (Window.getKeyDown("ArrowUp") && dy == 0) { 
+            dx = 0
+            dy = -1
+        }
+        if (Window.getKeyDown("ArrowDown") && dy == 0) { 
+            dx = 0
+            dy = 1
+        }
+        if (Window.getKeyDown("ArrowLeft") && dx == 0) { 
+            dx = -1
+            dy = 0
+        }
+        if (Window.getKeyDown("ArrowRight") && dx == 0) { 
+            dx = 1
+            dy = 0
+        }
+
+        // Logic (Game Speed)
+        frameCount = frameCount + 1
+        if (frameCount == 10) {
+            frameCount = 0
+            
+            let head = snake[0];
+            let newHead = { x: head.x + dx, y: head.y + dy };
+
+            // Wall Collision
+            if (newHead.x < 0 || newHead.x > 29 || newHead.y < 0 || newHead.y > 29) {
+                gameOver = true
+            }
+
+            // Self Collision
+            let i = 0;
+            let sLen = len(snake);
+            while (i < sLen) {
+                let segment = snake[i];
+                if (segment.x == newHead.x && segment.y == newHead.y) {
+                    gameOver = true
+                }
+                i = i + 1
+            }
+
+            if (gameOver == false) {
+                unshift(snake, newHead)
+
+                // Food Collision
+                if (newHead.x == food.x && newHead.y == food.y) {
+                    score = score + 1
+                    spawnFood()
+                } else {
+                    pop(snake)
+                }
+            }
+        }
+
+        // Rendering
+        Window.clear("#1a1a1a")
+        
+        // Draw Food
+        Window.setColor("#ff4757")
+        Window.drawRect(food.x * 20, food.y * 20, 18, 18)
+
+        // Draw Snake
+        let j = 0;
+        let currentLen = len(snake);
+        while (j < currentLen) {
+            if (j == 0) {
+                Window.setColor("#7bed9f")
+            } else {
+                Window.setColor("#2ed573")
+            }
+            let seg = snake[j];
+            Window.drawRect(seg.x * 20, seg.y * 20, 18, 18)
+            j = j + 1
+        }
+
+        // Score
+        Window.setColor("white")
+        Window.drawText("Score: " + str(score), 10, 30, 20)
+    }
+}
+
+spawnFood()
+Window.onUpdate(update)

@@ -1,44 +1,63 @@
 import type {
   FunctionDeclaration,
   IfStmt,
+  WhileStmt,
   Program,
   VarDeclaration,
 } from "../../frontend/ast";
-import type Environment from "../environment";
+import Environment from "../environment";
 import { evaluate } from "../interpreter";
 import {
   MK_NULL,
   type BooleanValue,
   type FunctionValue,
+  type NumberValue,
   type RuntimeValue,
 } from "../values";
+
+function isTruthy(val: RuntimeValue): boolean {
+  if (val.type === "boolean") return (val as BooleanValue).value;
+  if (val.type === "number") return (val as NumberValue).value !== 0;
+  if (val.type === "null") return false;
+  return true;
+}
 
 export function evaluateIfStmt(stmt: IfStmt, env: Environment): RuntimeValue {
   const condition = evaluate(stmt.condition, env);
 
-  // Truthy check
-  let isTruthy = false;
-  if (condition.type === "boolean")
-    isTruthy = (condition as BooleanValue).value;
-  else if (condition.type === "number")
-    isTruthy = (condition as any).value !== 0;
-  else if (condition.type !== "null") isTruthy = true;
-
-  if (isTruthy) {
+  if (isTruthy(condition)) {
+    const scope = new Environment(env);
     let lastEvaluatedValue: RuntimeValue = MK_NULL();
     for (const child of stmt.thenBranch) {
-      lastEvaluatedValue = evaluate(child, env);
+      lastEvaluatedValue = evaluate(child, scope);
     }
     return lastEvaluatedValue;
   } else if (stmt.elseBranch) {
+    const scope = new Environment(env);
     let lastEvaluatedValue: RuntimeValue = MK_NULL();
     for (const child of stmt.elseBranch) {
-      lastEvaluatedValue = evaluate(child, env);
+      lastEvaluatedValue = evaluate(child, scope);
     }
     return lastEvaluatedValue;
   }
 
   return MK_NULL();
+}
+
+export function evaluateWhileStmt(
+  stmt: WhileStmt,
+  env: Environment,
+): RuntimeValue {
+  let lastEvaluatedValue: RuntimeValue = MK_NULL();
+
+  while (isTruthy(evaluate(stmt.condition, env))) {
+    const scope = new Environment(env);
+    for (const child of stmt.body) {
+      lastEvaluatedValue = evaluate(child, scope);
+    }
+  }
+
+  return lastEvaluatedValue;
 }
 
 export function evaluateProgram(

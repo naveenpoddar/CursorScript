@@ -3,7 +3,7 @@ import type Environment from "./environment";
 
 export function MakePrintable(
   value: RuntimeValue,
-): string | number | boolean | Map<string, any> | null {
+): string | number | boolean | Map<string, any> | Array<any> | null {
   if (!value) return null;
 
   if (value.type === "number") {
@@ -25,6 +25,10 @@ export function MakePrintable(
 
     return transformed;
   }
+  if (value.type === "array") {
+    const arr = value as ArrayValue;
+    return arr.elements.map(MakePrintable);
+  }
   if (value.type === "native-fn") {
     // Make pretty Print e.g: fn add(x, y)
     const fn = value as NativeFnValue;
@@ -45,11 +49,24 @@ export type ValueType =
   | "null"
   | "boolean"
   | "object"
+  | "array"
   | "native-fn"
   | "function";
 
 export interface RuntimeValue {
   type: ValueType;
+}
+
+export interface ArrayValue extends RuntimeValue {
+  type: "array";
+  elements: RuntimeValue[];
+}
+
+export function MK_ARRAY(elements: RuntimeValue[] = []): ArrayValue {
+  return {
+    type: "array",
+    elements,
+  } as ArrayValue;
 }
 
 export interface NumberValue extends RuntimeValue {

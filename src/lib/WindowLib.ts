@@ -1,14 +1,15 @@
 import { Window } from "skia-canvas";
-import type {
-  FunctionValue,
-  RuntimeValue,
-  ObjectValue,
-} from "../runtime/values";
+import type { FunctionValue, RuntimeValue } from "../runtime/values";
 import { MK_NULL, MK_NUMBER, MK_NATIVE_FN, MK_OBJECT } from "../runtime/values";
 import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
 import { requireNumber, requireString } from "./RequireFunctions";
 
+class _WindowL {
+  private win: Window | null = null;
+  private ctx: any = null;
+  private updateCallback: FunctionValue | null = null;
+  private env: Environment | null = null;
   private keysDown: Set<string> = new Set();
   private mouseX: number = 0;
   private mouseY: number = 0;
@@ -28,7 +29,7 @@ import { requireNumber, requireString } from "./RequireFunctions";
 
     this.win.on("draw", (event) => {
       this.ctx = event.target.canvas.getContext("2d");
-      
+
       if (this.updateCallback && this.env) {
         this.executeCallback(this.updateCallback, this.env);
       }
@@ -40,8 +41,8 @@ import { requireNumber, requireString } from "./RequireFunctions";
       this.mouseX = e.x;
       this.mouseY = e.y;
     });
-    this.win.on("mousedown", () => this.mouseDown = true);
-    this.win.on("mouseup", () => this.mouseDown = false);
+    this.win.on("mousedown", () => (this.mouseDown = true));
+    this.win.on("mouseup", () => (this.mouseDown = false));
 
     console.log(`Window "${t}" created (${w}x${h})`);
     return MK_NULL();
@@ -171,10 +172,6 @@ import { requireNumber, requireString } from "./RequireFunctions";
    */
   private executeCallback(func: FunctionValue, env: Environment) {
     const scope = new Environment(func.declarationEnv);
-
-    // In Unity style, we might want to provide some global variables in the scope
-    // instead of arguments, or just keep it simple.
-
     let result: RuntimeValue = MK_NULL();
     try {
       for (const stmt of func.body) {
@@ -254,6 +251,22 @@ export function createWindowLib() {
   props.set(
     "close",
     MK_NATIVE_FN(() => instance.close()),
+  );
+  props.set(
+    "getKeyDown",
+    MK_NATIVE_FN((args) => instance.getKeyDown(args[0]?.value)),
+  );
+  props.set(
+    "getMouseX",
+    MK_NATIVE_FN(() => instance.getMouseX()),
+  );
+  props.set(
+    "getMouseY",
+    MK_NATIVE_FN(() => instance.getMouseY()),
+  );
+  props.set(
+    "getMouseButton",
+    MK_NATIVE_FN(() => instance.getMouseButton()),
   );
 
   return MK_OBJECT(props);

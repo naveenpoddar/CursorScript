@@ -1,9 +1,10 @@
 import { Window } from "skia-canvas";
 import type { FunctionValue, RuntimeValue } from "../runtime/values";
-import { MK_NULL, MK_NUMBER, MK_NATIVE_FN, MK_OBJECT } from "../runtime/values";
+import { MK_NULL } from "../runtime/values";
 import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
 import { requireNumber, requireString } from "./RequireFunctions";
+import ConvertTOMK_Object from "./BaseLibConverter";
 
 class _WindowL {
   private win: Window | null = null;
@@ -45,95 +46,73 @@ class _WindowL {
     this.win.on("mouseup", () => (this.mouseDown = false));
 
     console.log(`Window "${t}" created (${w}x${h})`);
-    return MK_NULL();
   }
 
   public getKeyDown(key: any) {
     const k = requireString(key);
-    return { type: "boolean", value: this.keysDown.has(k) } as any;
+    return this.keysDown.has(k);
   }
 
   public getMouseX() {
-    return MK_NUMBER(this.mouseX);
+    return this.mouseX;
   }
 
   public getMouseY() {
-    return MK_NUMBER(this.mouseY);
+    return this.mouseY;
   }
 
   public getMouseButton() {
-    return { type: "boolean", value: this.mouseDown } as any;
+    return this.mouseDown;
   }
 
   /**
    * Registers a callback function to be called every frame.
+   * Signature matches BaseLibConverter: (rawArg1, ..., rawArgN, fullArgs[], env)
    */
-  public onUpdate(args: RuntimeValue[], env: Environment) {
-    const fn = args[0] as FunctionValue;
-    if (fn.type !== "function") {
+  public onUpdate(fn: FunctionValue, _: RuntimeValue[], env: Environment) {
+    if (!fn || (fn as any).type !== "function") {
       throw "onUpdate expects a function callback.";
     }
     this.updateCallback = fn;
     this.env = env;
-    return MK_NULL();
   }
 
-  /**
-   * Clears the window with a specific color.
-   */
   public clear(color: any) {
     const c = requireString(color);
-    if (!this.ctx) return MK_NULL();
-
+    if (!this.ctx) return;
     this.ctx.fillStyle = c;
     this.ctx.fillRect(0, 0, this.win!.width, this.win!.height);
-    return MK_NULL();
   }
 
-  /**
-   * Sets the current drawing color.
-   */
   public setColor(color: any) {
     const c = requireString(color);
-    if (!this.ctx) return MK_NULL();
+    if (!this.ctx) return;
     this.ctx.fillStyle = c;
     this.ctx.strokeStyle = c;
-    return MK_NULL();
   }
 
-  /**
-   * Draws a filled rectangle.
-   */
   public drawRect(x: any, y: any, w: any, h: any) {
-    if (!this.ctx) return MK_NULL();
+    if (!this.ctx) return;
     this.ctx.fillRect(
       requireNumber(x),
       requireNumber(y),
       requireNumber(w),
       requireNumber(h),
     );
-    return MK_NULL();
   }
 
-  /**
-   * Draws a rectangle outline.
-   */
   public strokeRect(x: any, y: any, w: any, h: any) {
-    if (!this.ctx) return MK_NULL();
+    if (!this.ctx) return;
     this.ctx.strokeRect(
       requireNumber(x),
       requireNumber(y),
       requireNumber(w),
       requireNumber(h),
     );
-    return MK_NULL();
   }
 
-  /**
-   * Draws a filled circle.
-   */
   public drawCircle(x: any, y: any, r: any) {
-    if (!this.ctx) return MK_NULL();
+    if (!this.ctx) return;
     const nx = requireNumber(x);
     const ny = requireNumber(y);
     const nr = requireNumber(r);
@@ -141,133 +120,36 @@ class _WindowL {
     this.ctx.beginPath();
     this.ctx.arc(nx, ny, nr, 0, Math.PI * 2);
     this.ctx.fill();
-    return MK_NULL();
   }
 
-  /**
-   * Draws text.
-   */
   public drawText(text: any, x: any, y: any, size: any = 16) {
-    if (!this.ctx) return MK_NULL();
+    if (!this.ctx) return;
     const s = requireNumber(size);
     this.ctx.font = `${s}px sans-serif`;
     this.ctx.fillText(requireString(text), requireNumber(x), requireNumber(y));
-    return MK_NULL();
   }
 
-  /**
-   * Closes the window.
-   */
   public close() {
     if (this.win) {
       this.win.close();
       this.win = null;
       this.ctx = null;
     }
-    return MK_NULL();
   }
 
-  /**
-   * Helper to execute a CursorScript function from native code.
-   */
   private executeCallback(func: FunctionValue, env: Environment) {
     const scope = new Environment(func.declarationEnv);
-    let result: RuntimeValue = MK_NULL();
     try {
       for (const stmt of func.body) {
-        result = evaluate(stmt, scope);
+        evaluate(stmt, scope);
       }
     } catch (err) {
       console.error("Error in Window Update Callback:", err);
       this.close();
     }
-    return result;
   }
 }
 
-// We manually create the MK_OBJECT to handle the special onUpdate logic
-// and avoid the generic BaseLibConverter limitations with callbacks for now.
 export function createWindowLib() {
-  const instance = new _WindowL();
-  const props = new Map<string, RuntimeValue>();
-
-  props.set(
-    "create",
-    MK_NATIVE_FN((args) =>
-      instance.create(args[0]!.value, args[1]!.value, args[2]!.value),
-    ),
-  );
-  props.set(
-    "onUpdate",
-    MK_NATIVE_FN((args, env) => instance.onUpdate(args, env)),
-  );
-  props.set(
-    "clear",
-    MK_NATIVE_FN((args) => instance.clear(args[0]?.value)),
-  );
-  props.set(
-    "setColor",
-    MK_NATIVE_FN((args) => instance.setColor(args[0]?.value)),
-  );
-  props.set(
-    "drawRect",
-    MK_NATIVE_FN((args) =>
-      instance.drawRect(
-        args[0]?.value,
-        args[1]?.value,
-        args[2]?.value,
-        args[3]?.value,
-      ),
-    ),
-  );
-  props.set(
-    "strokeRect",
-    MK_NATIVE_FN((args) =>
-      instance.strokeRect(
-        args[0]?.value,
-        args[1]?.value,
-        args[2]?.value,
-        args[3]?.value,
-      ),
-    ),
-  );
-  props.set(
-    "drawCircle",
-    MK_NATIVE_FN((args) =>
-      instance.drawCircle(args[0]?.value, args[1]?.value, args[2]?.value),
-    ),
-  );
-  props.set(
-    "drawText",
-    MK_NATIVE_FN((args) =>
-      instance.drawText(
-        args[0]?.value,
-        args[1]?.value,
-        args[2]?.value,
-        args[3]?.value,
-      ),
-    ),
-  );
-  props.set(
-    "close",
-    MK_NATIVE_FN(() => instance.close()),
-  );
-  props.set(
-    "getKeyDown",
-    MK_NATIVE_FN((args) => instance.getKeyDown(args[0]?.value)),
-  );
-  props.set(
-    "getMouseX",
-    MK_NATIVE_FN(() => instance.getMouseX()),
-  );
-  props.set(
-    "getMouseY",
-    MK_NATIVE_FN(() => instance.getMouseY()),
-  );
-  props.set(
-    "getMouseButton",
-    MK_NATIVE_FN(() => instance.getMouseButton()),
-  );
-
-  return MK_OBJECT(props);
+  return ConvertTOMK_Object(new _WindowL());
 }

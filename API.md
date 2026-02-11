@@ -9,7 +9,11 @@ Welcome to the CursorScript API documentation. This document covers the built-in
 | `print(args...)`  | Prints values to the console.                             | `print("Hello", 42);`                |
 | `time()`          | Returns the current time in milliseconds.                 | `let start = time();`                |
 | `rand(min, max)`  | Returns a random integer between min and max (inclusive). | `let n = rand(1, 10);`               |
-| `len(str)`        | Returns the length of a string.                           | `let l = len("hello");`              |
+| `len(val)`        | Returns the length of a string or array.                  | `len("hello"); // 5`                 |
+| `push(arr, v)`    | Appends a value to the end of an array.                   | `push(myArr, 10);`                   |
+| `pop(arr)`        | Removes and returns the last element of an array.         | `let last = pop(myArr);`             |
+| `shift(arr)`      | Removes and returns the first element of an array.        | `let first = shift(myArr);`          |
+| `unshift(arr, v)` | Prepends a value to the start of an array.                | `unshift(myArr, 0);`                 |
 | `str(val)`        | Converts a value to its string representation.            | `let s = str(123);`                  |
 | `typeof(val)`     | Returns the type of a value as a string.                  | `let t = typeof(10); // "number"`    |
 | `concat(args...)` | Concatenates values into a single string with spaces.     | `concat("foo", "bar"); // "foo bar"` |
@@ -94,7 +98,13 @@ The `Window` library provides native windowing and 2D drawing capabilities using
 - `Window.drawRect(x, y, w, h)` - Draws a filled rectangle.
 - `Window.strokeRect(x, y, w, h)` - Draws a rectangle outline.
 - `Window.drawCircle(x, y, r)` - Draws a filled circle.
-- `Window.drawText(text, x, y, size)` - Draws text at the specified position.
+- Window.drawText(text, x, y, size) - Draws text at the specified position.
+
+### Input Handling
+
+- `Window.getKeyDown(key)` - Returns `true` if a specific key is held down (e.g. "ArrowUp", " ").
+- `Window.getMouseX()`, `Window.getMouseY()` - Returns current mouse coordinates.
+- `Window.getMouseButton()` - Returns `true` if mouse is clicked.
 
 ---
 
@@ -116,10 +126,19 @@ The `Window` library provides native windowing and 2D drawing capabilities using
 ### If Statements
 
 ```cursor
-// Combining conditions with AND/OR
 if (score > 10 && gameOver == false) {
     print("Keep playing!");
 }
 ```
 
-_Note: Semicolons are required on `let`/`const` declarations, but not after `if` blocks or expression statements._
+### While Loops
+
+```cursor
+let i = 0;
+while (i < 10) {
+    print(i)
+    i = i + 1
+}
+```
+
+_Note: Semicolons are required on `let`/`const` declarations, but not after `if` blocks, `while` loops, or expression statements._

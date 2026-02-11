@@ -507,6 +507,81 @@
       ]
     },
     {
+      "kind": "VarDeclaration",
+      "identifier": "a",
+      "constant": true,
+      "value": {
+        "kind": "ObjectLiteral",
+        "properties": [
+          {
+            "kind": "Property",
+            "key": "firstName",
+            "value": {
+              "kind": "StringLiteral",
+              "value": "John"
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "lastName",
+            "value": {
+              "kind": "StringLiteral",
+              "value": "Doe"
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "middleName",
+            "value": {
+              "kind": "StringLiteral",
+              "value": "Smith"
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "age",
+            "value": {
+              "kind": "NumericLiteral",
+              "value": 30
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "isMonster",
+            "value": {
+              "kind": "Identifier",
+              "symbol": "true"
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "address",
+            "value": {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "pincode",
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "value": 123456
+                  }
+                },
+                {
+                  "kind": "Property",
+                  "key": "countryCode",
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "value": 12
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "kind": "CallExpr",
       "caller": {
         "kind": "Identifier",
@@ -514,72 +589,60 @@
       },
       "args": [
         {
-          "kind": "ObjectLiteral",
-          "properties": [
+          "kind": "Identifier",
+          "symbol": "a"
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getFullName",
+      "parameters": [
+        "obj"
+      ],
+      "body": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "symbol": "concat"
+          },
+          "args": [
             {
-              "kind": "Property",
-              "key": "firstName",
-              "value": {
-                "kind": "StringLiteral",
-                "value": "John"
-              }
-            },
-            {
-              "kind": "Property",
-              "key": "lastName",
-              "value": {
-                "kind": "StringLiteral",
-                "value": "Doe"
-              }
-            },
-            {
-              "kind": "Property",
-              "key": "middleName",
-              "value": {
-                "kind": "StringLiteral",
-                "value": "Smith"
-              }
-            },
-            {
-              "kind": "Property",
-              "key": "age",
-              "value": {
-                "kind": "NumericLiteral",
-                "value": 30
-              }
-            },
-            {
-              "kind": "Property",
-              "key": "isMonster",
-              "value": {
+              "kind": "MemberExpr",
+              "object": {
                 "kind": "Identifier",
-                "symbol": "true"
-              }
+                "symbol": "obj"
+              },
+              "property": {
+                "kind": "Identifier",
+                "symbol": "firstName"
+              },
+              "computed": false
             },
             {
-              "kind": "Property",
-              "key": "address",
-              "value": {
-                "kind": "ObjectLiteral",
-                "properties": [
-                  {
-                    "kind": "Property",
-                    "key": "pincode",
-                    "value": {
-                      "kind": "NumericLiteral",
-                      "value": 123456
-                    }
-                  },
-                  {
-                    "kind": "Property",
-                    "key": "countryCode",
-                    "value": {
-                      "kind": "NumericLiteral",
-                      "value": 12
-                    }
-                  }
-                ]
-              }
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "symbol": "obj"
+              },
+              "property": {
+                "kind": "Identifier",
+                "symbol": "middleName"
+              },
+              "computed": false
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "symbol": "obj"
+              },
+              "property": {
+                "kind": "Identifier",
+                "symbol": "lastName"
+              },
+              "computed": false
             }
           ]
         }
@@ -596,20 +659,12 @@
           "kind": "CallExpr",
           "caller": {
             "kind": "Identifier",
-            "symbol": "concat"
+            "symbol": "getFullName"
           },
           "args": [
             {
-              "kind": "StringLiteral",
-              "value": "John"
-            },
-            {
-              "kind": "StringLiteral",
-              "value": "Doe"
-            },
-            {
-              "kind": "StringLiteral",
-              "value": "Smith"
+              "kind": "Identifier",
+              "symbol": "a"
             }
           ]
         }

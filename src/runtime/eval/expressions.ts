@@ -83,6 +83,9 @@ export function evaluateMemberExpr(
 ): RuntimeValue {
   const object = evaluate(member.object, env) as ObjectValue;
 
+  if (typeof object === "undefined")
+    throw `"${(member.object as Identifier).symbol}" is not defined.`;
+
   if (object.type !== "object") return MK_NULL();
 
   const property = member.computed

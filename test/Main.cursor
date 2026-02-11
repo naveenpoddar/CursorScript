@@ -58,7 +58,7 @@ print(typeof(otp))
 
 print(len("Hello World"))
 
-print({
+const a = {
     firstName: "John",
     lastName: "Doe",
     middleName: "Smith",
@@ -68,6 +68,12 @@ print({
         pincode: 123456,
         countryCode: 12
     }
-})
+};
 
-print(concat("John", "Doe", "Smith"))
+print(a)
+
+fn getFullName(obj){
+    concat(obj.firstName, obj.middleName, obj.lastName)
+}
+
+print(getFullName(a))

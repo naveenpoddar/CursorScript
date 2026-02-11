@@ -1,6 +1,6 @@
-// let x = 45 + ( a * b )
-// [ LetToken, IdentifierToken, OpenParenToken, NumberToken, CloseParenToken ]
-
+/**
+ * Represents the type of a token in the source code.
+ */
 export enum TokenType {
   // Literal Types
   Null,
@@ -13,16 +13,16 @@ export enum TokenType {
   Const,
   Fn,
 
-  // Operators
+  // Operators & Delimiters
   OpenParen, // (
   CloseParen, // )
-  BinaryOperator,
-  Equals,
-  Semicolon,
   OpenBrace, // {
   CloseBrace, // }
   OpenBracket, // [
   CloseBracket, // ]
+  BinaryOperator, // +, -, *, /, %
+  Equals, // =
+  Semicolon, // ;
   Colon, // :
   Comma, // ,
   Dot, // .
@@ -31,186 +31,279 @@ export enum TokenType {
   EOF, // End of File
 }
 
+/**
+ * Maps reserved keywords to their corresponding TokenType.
+ */
 const KEYWORDS: Record<string, TokenType> = {
   let: TokenType.Let,
   const: TokenType.Const,
   fn: TokenType.Fn,
 };
 
+/**
+ * Represents a single token found in the source code.
+ */
 export interface Token {
   value: string;
   type: TokenType;
   line: number;
 }
 
-function token(value: string = "", type: TokenType, line: number): Token {
-  return { value, type, line };
-}
+/**
+ * Lexer class responsible for converting source code into a stream of tokens.
+ */
+class Lexer {
+  private source: string;
+  private filename: string;
+  private tokens: Token[] = [];
+  private start: number = 0;
+  private current: number = 0;
+  private line: number = 1;
 
-function isskippable(src: string | undefined) {
-  if (src == null) return false;
-  return src === " " || src === "\t" || src === "\n" || src === "\r";
-}
+  constructor(source: string, filename: string) {
+    this.source = source;
+    this.filename = filename;
+  }
 
-function isalpha(src: string | undefined) {
-  if (src == null) return false;
-  return /^[a-zA-Z_$]$/.test(src);
-}
-
-// Add this helper
-function isAlphanumeric(src: string | undefined) {
-  return isalpha(src) || isint(src) || src === "_";
-}
-
-function isint(src: string | undefined) {
-  if (src == null) return false;
-  return src >= "0" && src <= "9";
-}
-
-export function tokenise(sourceCode: string, filename: string): Token[] {
-  const tokens: Token[] = [];
-  const src = sourceCode.split("");
-
-  let isReadingComment = false;
-
-  let isReadingString = false;
-  let accuStr = "";
-
-  let line = 1;
-
-  while (src.length > 0) {
-    const char = src[0];
-    if (char == null) {
-      console.error("Unexpected end of source code", filename);
-      break;
+  /**
+   * Main entry point for tokenization.
+   */
+  public tokenize(): Token[] {
+    while (!this.isAtEnd()) {
+      this.start = this.current;
+      this.scanToken();
     }
 
-    if (char !== '"' && isReadingString) {
-      accuStr += src.shift();
-      continue;
-    }
+    this.tokens.push({
+      type: TokenType.EOF,
+      value: "EndOfFile",
+      line: this.line,
+    });
 
-    if (src[0] === "/" && src[1] === "/") {
-      isReadingComment = true;
-      src.shift();
-      src.shift();
-      continue;
-    }
+    return this.tokens;
+  }
 
-    if (isReadingComment) {
-      const char = src.shift();
-      if (char === "\n") {
-        isReadingComment = false;
-      }
-      continue;
-    }
+  private isAtEnd(): boolean {
+    return this.current >= this.source.length;
+  }
 
-    if (char === "(") {
-      tokens.push(token(src.shift(), TokenType.OpenParen, line));
-    } else if (char === ")") {
-      tokens.push(token(src.shift(), TokenType.CloseParen, line));
-    } else if (char === "{") {
-      tokens.push(token(src.shift(), TokenType.OpenBrace, line));
-    } else if (char === "}") {
-      tokens.push(token(src.shift(), TokenType.CloseBrace, line));
-    } else if (char === "[") {
-      tokens.push(token(src.shift(), TokenType.OpenBracket, line));
-    } else if (char === "]") {
-      tokens.push(token(src.shift(), TokenType.CloseBracket, line));
-    } else if (char === "=") {
-      tokens.push(token(src.shift(), TokenType.Equals, line));
-    } else if (char === "+" || char === "*" || char === "/" || char === "%") {
-      tokens.push(token(src.shift(), TokenType.BinaryOperator, line));
-    }
-    // Handle ' - ' seperately
-    else if (char === "-") {
-      const nextChar = src[1];
-      const lastToken = tokens[tokens.length - 1];
+  private advance(): string {
+    return this.source.charAt(this.current++);
+  }
 
-      const isNegativeSign =
-        isint(nextChar) &&
-        (!lastToken ||
-          (lastToken.type !== TokenType.Identifier &&
-            lastToken.type !== TokenType.Number &&
-            lastToken.type !== TokenType.CloseParen));
+  private peek(): string {
+    if (this.isAtEnd()) return "\0";
+    return this.source.charAt(this.current);
+  }
 
-      if (isNegativeSign) {
-        let num = src.shift()!; // Consume '-'
-        while (src.length > 0 && (isint(src[0]) || src[0] === ".")) {
-          num += src.shift()!;
-        }
-        tokens.push(token(num, TokenType.Number, line));
-      } else {
-        // Treat as standard subtraction operator
-        tokens.push(token(src.shift(), TokenType.BinaryOperator, line));
-      }
-    } else if (char === ";") {
-      tokens.push(token(src.shift(), TokenType.Semicolon, line));
-    } else if (char === ":") {
-      tokens.push(token(src.shift(), TokenType.Colon, line));
-    } else if (char === ",") {
-      tokens.push(token(src.shift(), TokenType.Comma, line));
-    } else if (char === ".") {
-      tokens.push(token(src.shift(), TokenType.Dot, line));
-    } else if (char === '"') {
-      src.shift();
+  private peekNext(): string {
+    if (this.current + 1 >= this.source.length) return "\0";
+    return this.source.charAt(this.current + 1);
+  }
 
-      if (isReadingString) {
-        tokens.push(token(accuStr, TokenType.String, line));
-        accuStr = "";
-      }
+  private match(expected: string): boolean {
+    if (this.isAtEnd()) return false;
+    if (this.source.charAt(this.current) !== expected) return false;
 
-      isReadingString = !isReadingString;
-    } else {
-      // Handle Multi Character Token
+    this.current++;
+    return true;
+  }
 
-      if (isint(char) || (char === "-" && isint(src[1]))) {
-        let num = src.shift()!; // Consume first digit or '-'
+  private addToken(type: TokenType, value?: string): void {
+    const text =
+      value !== undefined
+        ? value
+        : this.source.substring(this.start, this.current);
+    this.tokens.push({ type, value: text, line: this.line });
+  }
 
-        let foundDecimal = false;
-        while (src.length > 0 && (isint(src[0]) || src[0] === ".")) {
-          if (src[0] === ".") {
-            if (foundDecimal) break; // Don't allow 4.5.5
-            foundDecimal = true;
-          }
-          num += src.shift()!;
-        }
+  private scanToken(): void {
+    const char = this.advance();
 
-        tokens.push(token(num, TokenType.Number, line));
-      } else if (isalpha(char) || isAlphanumeric(char)) {
-        let identifier = ""; // foo or let (user-defined OR keywords)
+    switch (char) {
+      // Single-character tokens
+      case "(":
+        this.addToken(TokenType.OpenParen);
+        break;
+      case ")":
+        this.addToken(TokenType.CloseParen);
+        break;
+      case "{":
+        this.addToken(TokenType.OpenBrace);
+        break;
+      case "}":
+        this.addToken(TokenType.CloseBrace);
+        break;
+      case "[":
+        this.addToken(TokenType.OpenBracket);
+        break;
+      case "]":
+        this.addToken(TokenType.CloseBracket);
+        break;
+      case ";":
+        this.addToken(TokenType.Semicolon);
+        break;
+      case ":":
+        this.addToken(TokenType.Colon);
+        break;
+      case ",":
+        this.addToken(TokenType.Comma);
+        break;
+      case ".":
+        this.addToken(TokenType.Dot);
+        break;
+      case "=":
+        this.addToken(TokenType.Equals);
+        break;
 
-        while (src.length > 0 && isAlphanumeric(src[0])) {
-          identifier += src.shift()!;
-        }
-
-        // Check for reserved keywords
-        const reserved = KEYWORDS[identifier];
-
-        if (typeof reserved === "number") {
-          tokens.push(token(identifier, reserved, line));
+      // Operators
+      case "+":
+      case "*":
+      case "/":
+        if (char === "/" && this.peek() === "/") {
+          // Single-line comment
+          while (this.peek() !== "\n" && !this.isAtEnd()) this.advance();
         } else {
-          tokens.push(token(identifier, TokenType.Identifier, line));
+          this.addToken(TokenType.BinaryOperator);
         }
-      } else if (isskippable(char)) {
-        line += char === "\n" ? 1 : 0;
-        src.shift(); // Skip whitespace
-      } else {
-        // improve error printing
-        console.error(
-          `Unrecognised character found: ${char} at line no ${filename}:${line}`,
-        );
-        process.exit(1);
-      }
+        break;
+      case "%":
+        this.addToken(TokenType.BinaryOperator);
+        break;
+
+      case "-":
+        this.handleHyphen();
+        break;
+
+      // Whitespace and Newlines
+      case " ":
+      case "\r":
+      case "\t":
+        break;
+      case "\n":
+        this.line++;
+        break;
+
+      // Literals
+      case '"':
+        this.handleString();
+        break;
+
+      default:
+        if (this.isDigit(char)) {
+          this.handleNumber();
+        } else if (this.isAlpha(char)) {
+          this.handleIdentifier();
+        } else {
+          console.error(
+            `Unrecognised character '${char}' at ${this.filename}:${this.line}`,
+          );
+          process.exit(1);
+        }
+        break;
     }
   }
 
-  tokens.push({ type: TokenType.EOF, value: "EndOfFile", line });
-  return tokens;
+  /**
+   * Handles the subtraction operator or a negative number.
+   */
+  private handleHyphen(): void {
+    const lastToken = this.tokens[this.tokens.length - 1];
+    const isNegativeSign =
+      this.isDigit(this.peek()) &&
+      (!lastToken ||
+        (lastToken.type !== TokenType.Identifier &&
+          lastToken.type !== TokenType.Number &&
+          lastToken.type !== TokenType.CloseParen));
+
+    if (isNegativeSign) {
+      this.handleNumber();
+    } else {
+      this.addToken(TokenType.BinaryOperator);
+    }
+  }
+
+  /**
+   * Consumes a string literal.
+   */
+  private handleString(): void {
+    let value = "";
+    while (this.peek() !== '"' && !this.isAtEnd()) {
+      if (this.peek() === "\n") this.line++;
+      value += this.advance();
+    }
+
+    if (this.isAtEnd()) {
+      console.error(`Unterminated string at ${this.filename}:${this.line}`);
+      process.exit(1);
+    }
+
+    // The closing ".
+    this.advance();
+    this.addToken(TokenType.String, value);
+  }
+
+  /**
+   * Consumes a numeric literal (integer or float).
+   */
+  private handleNumber(): void {
+    // Current character is already 'advance'd if it was '-' or first digit
+    // But wait, scanToken already advanced. If it's handleNumber called from default case,
+    // we need to collect the rest.
+
+    // Actually, let's reset 'current' slightly or just build from what we have.
+    // In scanToken, we already advanced past the first char.
+
+    while (this.isDigit(this.peek())) this.advance();
+
+    // Look for a fractional part.
+    if (this.peek() === "." && this.isDigit(this.peekNext())) {
+      // Consume the "."
+      this.advance();
+
+      while (this.isDigit(this.peek())) this.advance();
+    }
+
+    this.addToken(TokenType.Number);
+  }
+
+  /**
+   * Consumes an identifier or a reserved keyword.
+   */
+  private handleIdentifier(): void {
+    while (this.isAlphanumeric(this.peek())) this.advance();
+
+    const text = this.source.substring(this.start, this.current);
+    const type = KEYWORDS[text] ?? TokenType.Identifier;
+    this.addToken(type);
+  }
+
+  private isDigit(char: string): boolean {
+    const c = char.charCodeAt(0);
+    return c >= 48 && c <= 57; // 0-9
+  }
+
+  private isAlpha(char: string): boolean {
+    return (
+      (char >= "a" && char <= "z") ||
+      (char >= "A" && char <= "Z") ||
+      char === "_" ||
+      char === "$"
+    );
+  }
+
+  private isAlphanumeric(char: string): boolean {
+    return this.isAlpha(char) || this.isDigit(char);
+  }
 }
 
-// const source = await Bun.file("test/Main.Cursor").text();
-
-// for (const token of tokenise(source)) {
-//   console.log(token);
-// }
+/**
+ * Tokenizes the given source code into an array of Tokens.
+ *
+ * @param sourceCode The raw source code to tokenize.
+ * @param filename Only used for error reporting.
+ * @returns An array of Token objects.
+ */
+export function tokenise(sourceCode: string, filename: string): Token[] {
+  return new Lexer(sourceCode, filename).tokenize();
+}

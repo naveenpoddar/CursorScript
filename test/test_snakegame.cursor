@@ -40,7 +40,11 @@ fn update() {
         Window.setColor("#2ed573")
         Window.drawRect(btnX, btnY, btnW, btnH)
         Window.setColor("black")
-        Window.drawText("RESTART", btnX + 50, btnY + 35, 24)
+        
+        let txt = "RESTART";
+        let fontSize = 24;
+        let tw = Window.measureText(txt, fontSize);
+        Window.drawText(txt, btnX + (btnW - tw) / 2, btnY + (btnH - fontSize) / 2 + 5, fontSize)
 
         // Mouse Check for Restart
         if (Window.getMouseButton()) {

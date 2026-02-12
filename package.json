@@ -12,12 +12,5 @@
     "cursorx": "bun run src/main.ts",
     "build": "bun run build.ts"
   },
-  "type": "module",
-  "dependencies": {
-    "skia-canvas": "^3.0.8"
-  },
-  "trustedDependencies": [
-    "skia-canvas",
-    "raylib"
-  ]
+  "type": "module"
 }

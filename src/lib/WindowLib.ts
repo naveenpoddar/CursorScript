@@ -1,151 +1,234 @@
-import { Window } from "skia-canvas";
+import { dlopen, FFIType, suffix } from "bun:ffi";
 import type { FunctionValue, RuntimeValue } from "../runtime/values";
-import { MK_NULL } from "../runtime/values";
 import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
 import { requireNumber, requireString } from "./RequireFunctions";
 import ConvertTOMK_Object from "./BaseLibConverter";
 
+// 1. Dynamic Path Loading (Detects .dll, .so, or .dylib automatically)
+const libPath = `lib/libraylib.${suffix}`;
+
+const lib = dlopen(libPath, {
+  InitWindow: {
+    args: [FFIType.i32, FFIType.i32, FFIType.cstring],
+    returns: FFIType.void,
+  },
+  WindowShouldClose: { args: [], returns: FFIType.bool },
+  CloseWindow: { args: [], returns: FFIType.void },
+  BeginDrawing: { args: [], returns: FFIType.void },
+  EndDrawing: { args: [], returns: FFIType.void },
+  SetTargetFPS: { args: [FFIType.i32], returns: FFIType.void },
+  ClearBackground: { args: [FFIType.u32], returns: FFIType.void },
+  DrawRectangle: {
+    args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
+    returns: FFIType.void,
+  },
+  DrawCircle: {
+    args: [FFIType.i32, FFIType.i32, FFIType.f32, FFIType.u32],
+    returns: FFIType.void,
+  },
+  DrawText: {
+    args: [FFIType.cstring, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
+    returns: FFIType.void,
+  },
+  GetMouseX: { args: [], returns: FFIType.i32 },
+  GetMouseY: { args: [], returns: FFIType.i32 },
+  IsKeyDown: { args: [FFIType.i32], returns: FFIType.bool },
+  IsMouseButtonPressed: { args: [FFIType.i32], returns: FFIType.bool },
+  IsMouseButtonDown: { args: [FFIType.i32], returns: FFIType.bool },
+  MeasureText: { args: [FFIType.cstring, FFIType.i32], returns: FFIType.i32 },
+});
+
+// Color utility (Raylib uses RGBA as a single u32)
+const COLORS = {
+  black: 0xff000000,
+  white: 0xffffffff,
+  red: 0xff0000ff,
+  green: 0xff00ff00,
+  blue: 0xffff0000,
+};
+const KEYS: Record<string, number> = {
+  ArrowUp: 265,
+  ArrowDown: 264,
+  ArrowLeft: 263,
+  ArrowRight: 262,
+  Space: 32,
+  Enter: 257,
+  Escape: 256,
+};
+const MOUSE: Record<string, number> = {
+  left: 0,
+  right: 1,
+  middle: 2,
+};
+
 class _WindowL {
-  private win: Window | null = null;
-  private ctx: any = null;
   private updateCallback: FunctionValue | null = null;
   private env: Environment | null = null;
-  private keysDown: Set<string> = new Set();
-  private mouseX: number = 0;
-  private mouseY: number = 0;
-  private mouseDown: boolean = false;
+  private activeColor: number = COLORS.white;
 
   public create(width: any, height: any, title: any) {
     const w = requireNumber(width);
     const h = requireNumber(height);
     const t = requireString(title);
 
-    if (this.win) {
-      this.win.close();
-    }
+    // C-strings in FFI require a null terminator
+    lib.symbols.InitWindow(w, h, Buffer.from(t + "\0"));
+    lib.symbols.SetTargetFPS(60);
 
-    this.win = new Window(w, h);
-    this.win.title = t;
+    // Start the Game Loop
+    this.gameLoop();
+  }
 
-    this.win.on("draw", (event) => {
-      this.ctx = event.target.canvas.getContext("2d");
-
-      if (this.updateCallback && this.env) {
-        this.executeCallback(this.updateCallback, this.env);
+  private gameLoop() {
+    const tick = () => {
+      if (lib.symbols.WindowShouldClose()) {
+        lib.symbols.CloseWindow();
+        process.exit(0);
       }
-    });
 
-    this.win.on("keydown", (e) => this.keysDown.add(e.key));
-    this.win.on("keyup", (e) => this.keysDown.delete(e.key));
-    this.win.on("mousemove", (e) => {
-      this.mouseX = e.x;
-      this.mouseY = e.y;
-    });
-    this.win.on("mousedown", () => (this.mouseDown = true));
-    this.win.on("mouseup", () => (this.mouseDown = false));
+      lib.symbols.BeginDrawing();
+      try {
+        if (this.updateCallback && this.env) {
+          this.executeCallback(this.updateCallback, this.env);
+        }
+      } catch (e) {
+        console.error("Runtime Error in update callback:", e);
+        // Note: We don't exit here so the window stays open for debugging
+      }
+      lib.symbols.EndDrawing();
 
-    console.log(`Window "${t}" created (${w}x${h})`);
+      // Uses Bun's high-efficiency tick
+      setImmediate(tick);
+    };
+    tick();
   }
 
-  public getKeyDown(key: any) {
-    const k = requireString(key);
-    return this.keysDown.has(k);
-  }
-
-  public getMouseX() {
-    return this.mouseX;
-  }
-
-  public getMouseY() {
-    return this.mouseY;
-  }
-
-  public getMouseButton() {
-    return this.mouseDown;
-  }
-
-  /**
-   * Registers a callback function to be called every frame.
-   * Signature matches BaseLibConverter: (rawArg1, ..., rawArgN, fullArgs[], env)
-   */
   public onUpdate(fn: FunctionValue, _: RuntimeValue[], env: Environment) {
-    if (!fn || (fn as any).type !== "function") {
-      throw "onUpdate expects a function callback.";
-    }
     this.updateCallback = fn;
     this.env = env;
   }
 
+  private parseColor(color: any): number {
+    if (typeof color === "number") return color >>> 0;
+
+    let c = "";
+    if (typeof color === "string") {
+      c = color.trim();
+    } else if (color && typeof (color as any).value === "string") {
+      c = (color as any).value.trim();
+    } else if (Array.isArray(color) && color.length > 0) {
+      const firstArg = color[0];
+      if (typeof firstArg === "string") c = firstArg.trim();
+      else if (firstArg && typeof (firstArg as any).value === "string")
+        c = (firstArg as any).value.trim();
+    }
+
+    if (!c) return COLORS.black;
+
+    if (COLORS[c.toLowerCase()]) return COLORS[c.toLowerCase()];
+
+    if (c.startsWith("#")) {
+      const hex = c.substring(1);
+      if (hex.length === 6) {
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return (r | (g << 8) | (b << 16) | (0xff << 24)) >>> 0;
+      } else if (hex.length === 3) {
+        const r = parseInt(hex[0] + hex[0], 16);
+        const g = parseInt(hex[1] + hex[1], 16);
+        const b = parseInt(hex[2] + hex[2], 16);
+        return (r | (g << 8) | (b << 16) | (0xff << 24)) >>> 0;
+      }
+    }
+
+    return COLORS.black;
+  }
+
   public clear(color: any) {
-    const c = requireString(color);
-    if (!this.ctx) return;
-    this.ctx.fillStyle = c;
-    this.ctx.fillRect(0, 0, this.win!.width, this.win!.height);
+    lib.symbols.ClearBackground(this.parseColor(color));
   }
 
   public setColor(color: any) {
-    const c = requireString(color);
-    if (!this.ctx) return;
-    this.ctx.fillStyle = c;
-    this.ctx.strokeStyle = c;
+    this.activeColor = this.parseColor(color);
   }
 
   public drawRect(x: any, y: any, w: any, h: any) {
-    if (!this.ctx) return;
-    this.ctx.fillRect(
+    lib.symbols.DrawRectangle(
       requireNumber(x),
       requireNumber(y),
       requireNumber(w),
       requireNumber(h),
-    );
-  }
-
-  public strokeRect(x: any, y: any, w: any, h: any) {
-    if (!this.ctx) return;
-    this.ctx.strokeRect(
-      requireNumber(x),
-      requireNumber(y),
-      requireNumber(w),
-      requireNumber(h),
+      this.activeColor,
     );
   }
 
   public drawCircle(x: any, y: any, r: any) {
-    if (!this.ctx) return;
-    const nx = requireNumber(x);
-    const ny = requireNumber(y);
-    const nr = requireNumber(r);
-
-    this.ctx.beginPath();
-    this.ctx.arc(nx, ny, nr, 0, Math.PI * 2);
-    this.ctx.fill();
+    lib.symbols.DrawCircle(
+      requireNumber(x),
+      requireNumber(y),
+      requireNumber(r),
+      this.activeColor,
+    );
   }
 
-  public drawText(text: any, x: any, y: any, size: any = 16) {
-    if (!this.ctx) return;
-    const s = requireNumber(size);
-    this.ctx.font = `${s}px sans-serif`;
-    this.ctx.fillText(requireString(text), requireNumber(x), requireNumber(y));
+  public drawText(text: any, x: any, y: any, size: any = 20) {
+    lib.symbols.DrawText(
+      Buffer.from(requireString(text) + "\0"),
+      requireNumber(x),
+      requireNumber(y),
+      requireNumber(size),
+      this.activeColor,
+    );
   }
 
-  public close() {
-    if (this.win) {
-      this.win.close();
-      this.win = null;
-      this.ctx = null;
+  public getMouseX() {
+    return lib.symbols.GetMouseX();
+  }
+  public getMouseY() {
+    return lib.symbols.GetMouseY();
+  }
+  public getKeyDown(key: any) {
+    let k = "";
+    if (typeof key === "string") k = key;
+    else if (key && (key as any).type === "string") k = (key as any).value;
+    else if (Array.isArray(key) && key.length > 0) {
+      const firstArg = key[0];
+      if (typeof firstArg === "string") k = firstArg;
+      else if (firstArg && (firstArg as any).type === "string")
+        k = (firstArg as any).value;
     }
+
+    return lib.symbols.IsKeyDown(KEYS[k] || 0);
+  }
+
+  public getMouseButton(button: any) {
+    let btnName = "left";
+    if (typeof button === "string") btnName = button;
+    else if (button && (button as any).type === "string")
+      btnName = (button as any).value;
+    else if (Array.isArray(button) && button.length > 0) {
+      const firstArg = button[0];
+      if (typeof firstArg === "string") btnName = firstArg;
+      else if (firstArg && (firstArg as any).type === "string")
+        btnName = (firstArg as any).value;
+    }
+
+    return lib.symbols.IsMouseButtonPressed(MOUSE[btnName] || 0);
+  }
+
+  public measureText(text: any, size: any) {
+    return lib.symbols.MeasureText(
+      Buffer.from(requireString(text) + "\0"),
+      requireNumber(size),
+    );
   }
 
   private executeCallback(func: FunctionValue, env: Environment) {
     const scope = new Environment(func.declarationEnv);
-    try {
-      for (const stmt of func.body) {
-        evaluate(stmt, scope);
-      }
-    } catch (err) {
-      console.error("Error in Window Update Callback:", err);
-      this.close();
+    for (const stmt of func.body) {
+      evaluate(stmt, scope);
     }
   }
 }

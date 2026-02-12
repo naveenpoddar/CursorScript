@@ -1,0 +1,260 @@
+Window.create(500, 700, "Derpy Dragon: Brain Freeze Dash")
+
+// --- Configuration ---
+let gravity = 0.5
+let jumpStrength = -8
+let pipeSpeed = 3
+let pipeWidth = 80
+let pipeGap = 180
+
+// --- Aesthetics ---
+let colorSky = "#0F0C29"
+let colorDragon = "#00FFCC"
+let colorEye = "#FFFFFF"
+let colorPupil = "#000000"
+let colorPipe = "#F72585"
+let colorPipeGlow = "#7209B7"
+let colorWhite = "#FFFFFF"
+let colorParticle = "#4CC9F0"
+
+// --- Game State ---
+let dragon = { y: 350, vy: 0, size: 25, angle: 0 }
+let pipes = []
+let particles = []
+let score = 0
+let gameOver = false
+let gameStarted = false
+let lastTime = time()
+
+fn spawnPipe() {
+    let minH = 50
+    let maxH = 400
+    let h1 = Math.randomInt(minH, maxH)
+    let p = {
+        x: 550,
+        topH: h1,
+        bottomY: h1 + pipeGap,
+        passed: false
+    }
+    push(pipes, p)
+    p
+}
+
+fn spawnParticles(x, y, color, count) {
+    let i = 0
+    while (i < count) {
+        let angle = Math.randomInt(0, 360) * Math.PI / 180
+        let speed = Math.randomInt(2, 6)
+        let p = {
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1.0,
+            color: color,
+            size: Math.randomInt(2, 5)
+        }
+        push(particles, p)
+        i = i + 1
+    }
+    i
+}
+
+fn resetGame() {
+    dragon.y = 350
+    dragon.vy = 0
+    dragon.angle = 0
+    pipes = []
+    particles = []
+    score = 0
+    gameOver = false
+    gameStarted = false
+    spawnPipe()
+    false
+}
+
+fn updateLogic() {
+    let t = time()
+    
+    // Input
+    let flap = Window.getKeyDown("Space") || Window.getMouseButton()
+    if (flap) {
+        if (!gameOver) {
+            dragon.vy = jumpStrength
+            gameStarted = true
+            spawnParticles(100, dragon.y, colorDragon, 5)
+        }
+    }
+
+    if (gameStarted) {
+        if (!gameOver) {
+            // Dragon Physics
+            dragon.vy = dragon.vy + gravity
+            dragon.y = dragon.y + dragon.vy
+            dragon.angle = dragon.vy * 2
+            
+            // Bounds
+            let tooLow = dragon.y > 670
+            if (tooLow) { gameOver = true; spawnParticles(100, dragon.y, colorDragon, 20) }
+            let tooHigh = dragon.y < 0
+            if (tooHigh) { dragon.y = 0; dragon.vy = 0 }
+
+            // Pipes
+            let i = 0
+            while (i < len(pipes)) {
+                let p = pipes[i]
+                p.x = p.x - pipeSpeed
+                
+                // Collision
+                let xHit = (100 + dragon.size > p.x) && (100 - dragon.size < p.x + pipeWidth)
+                let topHit = dragon.y - dragon.size < p.topH
+                let botHit = dragon.y + dragon.size > p.bottomY
+                
+                if (xHit) {
+                    if (topHit) { gameOver = true; spawnParticles(100, dragon.y, colorDragon, 20) }
+                    if (botHit) { gameOver = true; spawnParticles(100, dragon.y, colorDragon, 20) }
+                }
+
+                // Scoring
+                let pass = (p.x + pipeWidth < 80) && (!p.passed)
+                if (pass) {
+                    p.passed = true
+                    score = score + 1
+                    spawnParticles(100, 50, colorWhite, 5)
+                }
+
+                // Remove offscreen
+                if (p.x < -100) { shift(pipes) }
+                
+                if (p.x >= -100) { i = i + 1 }
+            }
+
+            // Spawn new pipes
+            let lastP = pipes[len(pipes) - 1]
+            if (lastP.x < 300) { spawnPipe() }
+        }
+    }
+
+    // Particles
+    let pi = 0
+    while (pi < len(particles)) {
+        let p = particles[pi]
+        p.x = p.x + p.vx
+        p.y = p.y + p.vy
+        p.life = p.life - 0.02
+        if (p.life <= 0) { shift(particles) }
+        if (p.life > 0) { pi = pi + 1 }
+    }
+
+    if (gameOver) {
+        if (Window.getKeyDown("R")) { resetGame() }
+    }
+    t
+}
+
+fn drawFrame() {
+    let t = time()
+    Window.clear(colorSky)
+
+    // Background stars/glow
+    Window.setColor("rgba(255, 255, 255, 0.1)")
+    let s = 0
+    while (s < 20) {
+        let sx = (s * 137) % 500
+        let sy = (s * 251 + t / 50) % 700
+        Window.drawCircle(sx, sy, 2)
+        s = s + 1
+    }
+
+    // Pipes (Neon Obstacles)
+    let i = 0
+    while (i < len(pipes)) {
+        let p = pipes[i]
+        
+        // Top Pipe Glow
+        Window.setColor(colorPipeGlow)
+        Window.drawRect(p.x - 4, -10, pipeWidth + 8, p.topH + 14)
+        // Top Pipe
+        Window.setColor(colorPipe)
+        Window.drawRect(p.x, -10, pipeWidth, p.topH + 10)
+        
+        // Bottom Pipe Glow
+        Window.setColor(colorPipeGlow)
+        Window.drawRect(p.x - 4, p.bottomY - 4, pipeWidth + 8, 710 - p.bottomY + 8)
+        // Bottom Pipe
+        Window.setColor(colorPipe)
+        Window.drawRect(p.x, p.bottomY, pipeWidth, 700 - p.bottomY + 10)
+        
+        i = i + 1
+    }
+
+    // Particles
+    let pi = 0
+    while (pi < len(particles)) {
+        let p = particles[pi]
+        Window.setColor(p.color)
+        Window.drawCircle(p.x, p.y, p.size * p.life)
+        pi = pi + 1
+    }
+
+    // Derpy Dragon
+    let dx = 100
+    let dy = dragon.y
+    
+    // Body (Derpy Blob)
+    Window.setColor(colorDragon)
+    Window.drawCircle(dx, dy, dragon.size)
+    // Little Wing
+    let wingBeat = Math.sin(t / 50) * 15
+    Window.setColor(colorWhite)
+    Window.drawRect(dx - 20, dy - 5 + wingBeat, 15, 5)
+    
+    // DERPY EYES
+    let blink = Math.sin(t / 1000)
+    let eyeSize = 12
+    if (blink > 0.95) { eyeSize = 2 }
+    
+    Window.setColor(colorEye)
+    // Left Eye
+    Window.drawCircle(dx + 10, dy - 10, 14) 
+    // Right Eye (Misaligned for derpiness)
+    Window.drawCircle(dx + 5, dy - 15, 12) 
+
+    Window.setColor(colorPupil)
+    // Pupils shaking randomly
+    let shakeX = Math.randomInt(-2, 2)
+    let shakeY = Math.randomInt(-2, 2)
+    Window.drawCircle(dx + 15 + shakeX, dy - 12 + shakeY, 4)
+    Window.drawCircle(dx + 8 + shakeX, dy - 17 + shakeY, 3)
+
+    // UI
+    Window.setColor(colorWhite)
+    Window.drawText("BRAIN FREEZE: " + str(score), 20, 30, 24)
+
+    if (!gameStarted) {
+        Window.setColor("rgba(0,0,0,0.5)")
+        Window.drawRect(0, 0, 500, 700)
+        Window.setColor(colorDragon)
+        Window.drawText("TAP TO FLAP", 140, 320, 30)
+        Window.setColor(colorWhite)
+        Window.drawText("Help the derp avoid the neon pops!", 100, 360, 18)
+    }
+
+    if (gameOver) {
+        Window.setColor("rgba(255, 0, 85, 0.4)")
+        Window.drawRect(0, 0, 500, 700)
+        Window.setColor(colorWhite)
+        Window.drawText("OOPSIE!", 170, 300, 50)
+        Window.drawText("SCORE: " + str(score), 190, 360, 24)
+        Window.drawText("PRESS 'R' TO RE-DERP", 130, 420, 20)
+    }
+}
+
+fn update() {
+    updateLogic()
+    drawFrame()
+    time()
+}
+
+resetGame()
+Window.onUpdate(update)

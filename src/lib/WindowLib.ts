@@ -226,6 +226,17 @@ class _WindowL {
       }
     }
 
+    if (c.startsWith("rgba(")) {
+      const parts = c.substring(5, c.length - 1).split(",");
+      if (parts.length === 4) {
+        const r = parseInt(parts[0]!.trim());
+        const g = parseInt(parts[1]!.trim());
+        const b = parseInt(parts[2]!.trim());
+        const a = Math.floor(parseFloat(parts[3]!.trim()) * 255);
+        return (r | (g << 8) | (b << 16) | (a << 24)) >>> 0;
+      }
+    }
+
     return COLORS.black;
   }
 

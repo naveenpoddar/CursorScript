@@ -25,7 +25,7 @@ jobs:
         run: bun install
 
       - name: Install Build Essentials
-        run: sudo apt-get update && sudo apt-get install -y build-essential
+        run: sudo apt-get update && sudo apt-get install -y build-essential zip
 
       - name: Run Build Script
         run: bun run build # This runs your scripts/build.ts
@@ -33,7 +33,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/* # Uploads everything in your dist folder
+          files: dist/*.zip
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           draft: false

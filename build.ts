@@ -10,11 +10,11 @@ const version = pkg.version;
 
 // 2. Define targets and their corresponding native libs
 const targets = [
-  { id: "bun-linux-x64", lib: "libraylib.so" },
-  { id: "bun-linux-arm64", lib: "libraylib.so" },
-  { id: "bun-darwin-x64", lib: "libraylib.dylib" },
-  { id: "bun-darwin-arm64", lib: "libraylib.dylib" },
-  { id: "bun-windows-x64-baseline", lib: "libraylib.dll" },
+  { id: "bun-linux-x64" },
+  { id: "bun-linux-arm64" },
+  { id: "bun-darwin-x64" },
+  { id: "bun-darwin-arm64" },
+  { id: "bun-windows-x64-baseline" },
 ];
 
 // 3. Clean up old builds
@@ -27,6 +27,7 @@ for (const target of targets) {
   const extension = isWindows ? ".exe" : "";
   const baseName = `${appName}-${target.id.replace("bun-", "")}`;
   const binName = `${baseName}${extension}`;
+
   const targetFolder = `${outDir}/${baseName}`;
   const binPath = `${targetFolder}/${binName}`;
 
@@ -44,21 +45,26 @@ for (const target of targets) {
 
     // Copy the specific native library for this OS into the folder
     // Note: This assumes your lib files are named exactly as discussed in the root /lib folder
-    const libSource = `./lib/${target.lib}`;
+    const libSource = `./lib`;
     if (existsSync(libSource)) {
-      await $`cp ${libSource} ${targetFolder}/`;
+      // This creates the 'lib' folder inside the target folder and copies everything
+      await $`cp -r ${libSource} ${targetFolder}/`;
     } else {
-      console.warn(`⚠️  Warning: ${libSource} not found, skipping lib copy.`);
+      console.warn(`⚠️  Warning: Root /lib folder not found, skipping copy.`);
     }
 
-    console.log("✅ Done");
+    console.log("Zipping...");
+
+    await $`cd ${outDir} && zip -r -9 ${baseName}.zip ${baseName}`.quiet();
+
+    // Delete the original folder
+    await $`rm -rf ${targetFolder}`;
+
+    console.log("✅ Zipped");
   } catch (error) {
     console.log("❌ Failed");
     console.error(error);
   }
 }
 
-console.log(`\n✨ All builds complete! Check the ${outDir} folder.`);
-console.log(
-  `👉 Note: Distribute the FOLDERS, as the executable needs the library file next to it.`,
-);
+console.log(`\n✨ All builds compressed! Check the ${outDir} folder.`);

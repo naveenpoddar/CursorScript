@@ -115,6 +115,10 @@ export function evaluateBinaryExpr(
       return { type: "boolean", value: l.value < r.value } as any;
     if (binop.operator === ">")
       return { type: "boolean", value: l.value > r.value } as any;
+    if (binop.operator === "<=")
+      return { type: "boolean", value: l.value <= r.value } as any;
+    if (binop.operator === ">=")
+      return { type: "boolean", value: l.value >= r.value } as any;
 
     return eval_numeric_binary_expr(binop.operator, l, r);
   }

@@ -32,6 +32,8 @@ export enum TokenType {
   Quote, // "
   LessThan, // <
   GreaterThan, // >
+  LessThanEquals, // <=
+  GreaterThanEquals, // >=
   EqualsEquals, // ==
   NotEquals, // !=
   AmpersandAmpersand, // &&
@@ -181,10 +183,18 @@ class Lexer {
         }
         break;
       case "<":
-        this.addToken(TokenType.LessThan);
+        if (this.match("=")) {
+          this.addToken(TokenType.LessThanEquals);
+        } else {
+          this.addToken(TokenType.LessThan);
+        }
         break;
       case ">":
-        this.addToken(TokenType.GreaterThan);
+        if (this.match("=")) {
+          this.addToken(TokenType.GreaterThanEquals);
+        } else {
+          this.addToken(TokenType.GreaterThan);
+        }
         break;
       case "!":
         if (this.match("=")) {

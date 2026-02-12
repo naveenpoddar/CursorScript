@@ -1,0 +1,548 @@
+Window.create(600, 600, "Neon Improved Snake Game")
+
+// --- Configuration ---
+let cellSize = 25
+let cols = 24
+let rows = 24
+let moveDelay = 45
+
+// --- Colors ---
+let colorBg = "#050510"
+let colorGrid = "#1a3040"
+let colorFood = "#FF0055"
+let colorHead = "#00FFCC"
+let colorTail = "#8800FF"
+let colorWhite = "#FFFFFF"
+
+// --- Game State ---
+let snake = []
+let oldSnake = []
+let food = { x: 0, y: 0 }
+let particles = []
+let direction = "RIGHT"
+let nextDirection = "RIGHT"
+let lastUpdateTime = time()
+let score = 0
+
+// AI State
+let isAutoMode = true
+let lastTouchTime = time()
+let autoModeDelay = 3000
+
+fn spawnFood() {
+    let found = false
+    while (found == false) {
+        let rx = Math.randomInt(0, cols - 1)
+        let ry = Math.randomInt(0, rows - 1)
+        
+        let inSnake = false
+        let i = 0
+        let sLen = len(snake)
+        while (i < sLen) {
+            let seg = snake[i]
+            if (seg.x == rx && seg.y == ry) { inSnake = true }
+            i = i + 1
+        }
+        
+        if (inSnake == false) {
+            food.x = rx
+            food.y = ry
+            found = true
+        }
+    }
+    found
+}
+
+fn resetGame() {
+    snake = []
+    oldSnake = []
+    let startX = Math.floor(cols / 2)
+    let startY = Math.floor(rows / 2)
+    
+    push(snake, {x: startX, y: startY})
+    push(snake, {x: startX - 1, y: startY})
+    push(snake, {x: startX - 2, y: startY})
+    
+    let i = 0
+    while (i < len(snake)) {
+        let s = snake[i]
+        push(oldSnake, {x: s.x, y: s.y})
+        i = i + 1
+    }
+    
+    direction = "RIGHT"
+    nextDirection = "RIGHT"
+    score = 0
+    spawnFood()
+    particles = []
+    score
+}
+
+fn spawnParticles(x, y, color) {
+    let pCount = 0
+    while (pCount < 12) {
+        let angle = Math.randomInt(0, 360) * Math.PI / 180
+        let speed = Math.randomInt(2, 10)
+        let p = {
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1.0,
+            color: color,
+            size: Math.randomInt(3, 8)
+        }
+        push(particles, p)
+        pCount = pCount + 1
+    }
+    pCount
+}
+
+fn getNextPoint(p, dir) {
+    let res = p
+    if (dir == "UP") { res = {x: p.x, y: p.y - 1} }
+    if (dir == "DOWN") { res = {x: p.x, y: p.y + 1} }
+    if (dir == "LEFT") { res = {x: p.x - 1, y: p.y} }
+    if (dir == "RIGHT") { res = {x: p.x + 1, y: p.y} }
+    res
+}
+
+fn isOpposite(d1, d2) {
+    let res = false
+    if (d1 == "UP" && d2 == "DOWN") { res = true }
+    if (d1 == "DOWN" && d2 == "UP") { res = true }
+    if (d1 == "LEFT" && d2 == "RIGHT") { res = true }
+    if (d1 == "RIGHT" && d2 == "LEFT") { res = true }
+    res
+}
+
+fn isValid(p, body) {
+    let res = true
+    if (p.x < 0 || p.x >= cols || p.y < 0 || p.y >= rows) {
+        res = false
+    }
+    
+    if (res == true) {
+        let i = 0
+        let bLen = len(body)
+        while (i < bLen) {
+            let seg = body[i]
+            if (seg.x == p.x && seg.y == p.y) { res = false }
+            i = i + 1
+        }
+    }
+    res
+}
+
+// Special version that allows moving into the current tail position
+fn isValidButAllowTail(p, body) {
+    let res = true
+    if (p.x < 0 || p.x >= cols || p.y < 0 || p.y >= rows) {
+        res = false
+    }
+    
+    if (res == true) {
+        let i = 0
+        // Check all but the tail
+        let bLenMinusOne = len(body) - 1
+        while (i < bLenMinusOne) {
+            let seg = body[i]
+            if (seg.x == p.x && seg.y == p.y) { res = false }
+            i = i + 1
+        }
+    }
+    res
+}
+
+fn hasPath(start, target, obstacles) {
+    let found = false
+    if (start.x == target.x && start.y == target.y) { found = true }
+    
+    if (found == false) {
+        let queue = [start]
+        let visited = {}
+        visited[str(start.x) + "," + str(start.y)] = true
+        let headIdx = 0
+        while (headIdx < len(queue)) {
+            let current = queue[headIdx]
+            headIdx = headIdx + 1
+            let dirs = ["UP", "DOWN", "LEFT", "RIGHT"]
+            let d = 0
+            while (d < 4) {
+                let next = getNextPoint(current, dirs[d])
+                let key = str(next.x) + "," + str(next.y)
+                if (next.x >= 0 && next.x < cols && next.y >= 0 && next.y < rows) {
+                    if (visited[key] == null) {
+                        let isObs = false
+                        let o = 0
+                        while (o < len(obstacles)) {
+                            let obs = obstacles[o]
+                            if (obs.x == next.x && obs.y == next.y) { isObs = true }
+                            o = o + 1
+                        }
+                        if (isObs == false || (next.x == target.x && next.y == target.y)) {
+                            if (next.x == target.x && next.y == target.y) { 
+                                found = true
+                                headIdx = 10000 
+                            }
+                            if (found == false) {
+                                visited[key] = true
+                                push(queue, next)
+                            }
+                        }
+                    }
+                }
+                d = d + 1
+            }
+            if (len(queue) > 800) { headIdx = 10000 }
+        }
+    }
+    found
+}
+
+fn findPathBFS(start, target, body) {
+    let pathRes = null
+    let queue = [start]
+    let cameFrom = {}
+    let visited = {}
+    let startKey = str(start.x) + "," + str(start.y)
+    visited[startKey] = true
+    let headIdx = 0
+    while (headIdx < len(queue)) {
+        let current = queue[headIdx]
+        headIdx = headIdx + 1
+        if (current.x == target.x && current.y == target.y) {
+            let path = []
+            let curr = current
+            while (curr.x != start.x || curr.y != start.y) {
+                push(path, curr)
+                curr = cameFrom[str(curr.x) + "," + str(curr.y)]
+            }
+            pathRes = path
+            headIdx = 10000
+        }
+        
+        if (headIdx < 10000) {
+            let dirs = ["UP", "DOWN", "LEFT", "RIGHT"]
+            let d = 0
+            while (d < 4) {
+                let next = getNextPoint(current, dirs[d])
+                let key = str(next.x) + "," + str(next.y)
+                if (next.x >= 0 && next.x < cols && next.y >= 0 && next.y < rows) {
+                    if (visited[key] == null) {
+                        let isObs = false
+                        let o = 0
+                        while (o < len(body)) {
+                            let obs = body[o]
+                            if (obs.x == next.x && obs.y == next.y && (next.x != target.x || next.y != target.y)) { isObs = true }
+                            o = o + 1
+                        }
+                        if (isObs == false) {
+                            visited[key] = true
+                            cameFrom[key] = current
+                            push(queue, next)
+                        }
+                    }
+                }
+                d = d + 1
+            }
+        }
+        if (len(queue) > 800) { headIdx = 10000 }
+    }
+    pathRes
+}
+
+fn getFloodFillCount(start, body) {
+    let queue = [start]
+    let visited = {}
+    visited[str(start.x) + "," + str(start.y)] = true
+    let count = 0
+    let headIdx = 0
+    while (headIdx < len(queue)) {
+        let current = queue[headIdx]
+        headIdx = headIdx + 1
+        count = count + 1
+        if (count > 600) { headIdx = 10000 }
+        
+        if (headIdx < 10000) {
+            let dirs = ["UP", "DOWN", "LEFT", "RIGHT"]
+            let d = 0
+            while (d < 4) {
+                let next = getNextPoint(current, dirs[d])
+                let key = str(next.x) + "," + str(next.y)
+                if (next.x >= 0 && next.x < cols && next.y >= 0 && next.y < rows) {
+                    if (visited[key] == null) {
+                        let isObs = false
+                        let o = 0
+                        while (o < len(body)) {
+                            let obs = body[o]
+                            if (obs.x == next.x && obs.y == next.y) { isObs = true }
+                            o = o + 1
+                        }
+                        if (isObs == false) {
+                            visited[key] = true
+                            push(queue, next)
+                        }
+                    }
+                }
+                d = d + 1
+            }
+        }
+    }
+    count
+}
+
+fn updateAI() {
+    let head = snake[0]
+    let dirs = ["UP", "DOWN", "LEFT", "RIGHT"]
+    let validMoves = []
+    let d = 0
+    while (d < 4) {
+        let dir = dirs[d]
+        if (isOpposite(dir, direction) == false) {
+            let nextP = getNextPoint(head, dir)
+            if (isValidButAllowTail(nextP, snake)) { push(validMoves, dir) }
+        }
+        d = d + 1
+    }
+    
+    if (len(validMoves) > 0) {
+        let safeMoves = []
+        let s = 0
+        while (s < len(validMoves)) {
+            let moveDir = validMoves[s]
+            let nextHead = getNextPoint(head, moveDir)
+            let obstacles = []
+            let i = 0
+            while (i < len(snake)) {
+                push(obstacles, snake[i])
+                i = i + 1
+            }
+            pop(obstacles)
+            push(obstacles, nextHead)
+            let tail = snake[len(snake) - 1]
+            if (hasPath(nextHead, tail, obstacles)) { push(safeMoves, moveDir) }
+            s = s + 1
+        }
+        
+        let chosenDir = null
+        let path = findPathBFS(head, food, snake)
+        if (path != null) {
+            let nextStep = path[len(path) - 1]
+            let moveDir = null
+            if (nextStep.x > head.x) { moveDir = "RIGHT" }
+            if (nextStep.x < head.x) { moveDir = "LEFT" }
+            if (nextStep.y > head.y) { moveDir = "DOWN" }
+            if (nextStep.y < head.y) { moveDir = "UP" }
+            
+            let k = 0
+            while (k < len(safeMoves)) {
+                if (safeMoves[k] == moveDir) { chosenDir = moveDir }
+                k = k + 1
+            }
+        }
+        
+        if (chosenDir == null && len(safeMoves) > 0) {
+            // Stall logic: move furthest from food while remaining safe
+            let maxDist = -1
+            let k = 0
+            while (k < len(safeMoves)) {
+                let dir = safeMoves[k]
+                let p = getNextPoint(head, dir)
+                let dist = Math.abs(p.x - food.x) + Math.abs(p.y - food.y)
+                if (dist > maxDist) {
+                    maxDist = dist
+                    chosenDir = dir
+                }
+                k = k + 1
+            }
+        }
+        
+        if (chosenDir == null) {
+            // Desperate: choose largest empty space
+            let maxSpace = -1
+            let k = 0
+            while (k < len(validMoves)) {
+                let dir = validMoves[k]
+                let p = getNextPoint(head, dir)
+                let space = getFloodFillCount(p, snake)
+                if (space > maxSpace) {
+                    maxSpace = space
+                    chosenDir = dir
+                }
+                k = k + 1
+            }
+        }
+        
+        if (chosenDir != null) { nextDirection = chosenDir }
+    }
+    nextDirection
+}
+
+fn moveSnake() {
+    if (isAutoMode) { updateAI() }
+    direction = nextDirection
+    let head = snake[0]
+    let newHead = getNextPoint(head, direction)
+    let validMove = isValid(newHead, snake)
+    
+    if (validMove == false) {
+        resetGame()
+    }
+    
+    if (validMove == true) {
+        oldSnake = []
+        let i = 0
+        while (i < len(snake)) {
+            let s = snake[i]
+            push(oldSnake, {x: s.x, y: s.y})
+            i = i + 1
+        }
+        unshift(snake, newHead)
+        
+        let ateFood = false
+        if (newHead.x == food.x && newHead.y == food.y) {
+            ateFood = true
+            score = score + 1
+            spawnParticles(newHead.x * cellSize + cellSize / 2, newHead.y * cellSize + cellSize / 2, colorFood)
+            spawnFood()
+        }
+        
+        if (ateFood == false) {
+            pop(snake)
+        }
+    }
+    score
+}
+
+fn update() {
+    let currentTime = time()
+    
+    // User Input
+    if (Window.getKeyDown("ArrowUp")) {
+        if (direction != "DOWN") { 
+            nextDirection = "UP"
+            isAutoMode = false
+            lastTouchTime = currentTime
+        }
+    }
+    if (Window.getKeyDown("ArrowDown")) {
+        if (direction != "UP") { 
+            nextDirection = "DOWN"
+            isAutoMode = false
+            lastTouchTime = currentTime
+        }
+    }
+    if (Window.getKeyDown("ArrowLeft")) {
+        if (direction != "RIGHT") { 
+            nextDirection = "LEFT"
+            isAutoMode = false
+            lastTouchTime = currentTime
+        }
+    }
+    if (Window.getKeyDown("ArrowRight")) {
+        if (direction != "LEFT") { 
+            nextDirection = "RIGHT"
+            isAutoMode = false
+            lastTouchTime = currentTime
+        }
+    }
+    
+    if (currentTime - lastTouchTime > autoModeDelay) { isAutoMode = true }
+    
+    // Particles
+    let pIdx = 0
+    while (pIdx < len(particles)) {
+        let p = particles[pIdx]
+        p.x = p.x + p.vx
+        p.y = p.y + p.vy
+        p.life = p.life - 0.04
+        if (p.life <= 0) { shift(particles) }
+        if (p.life > 0) { pIdx = pIdx + 1 }
+    }
+    
+    // Logic
+    if (currentTime - lastUpdateTime > moveDelay) {
+        moveSnake()
+        lastUpdateTime = currentTime
+    }
+    
+    // Render
+    Window.clear(colorBg)
+    
+    // Grid
+    Window.setColor(colorGrid)
+    let g = 0
+    while (g <= cols) {
+        Window.drawRect(g * cellSize, 0, 1, 600)
+        g = g + 1
+    }
+    g = 0
+    while (g <= rows) {
+        Window.drawRect(0, g * cellSize, 600, 1)
+        g = g + 1
+    }
+    
+    // Food
+    let pulse = Math.sin(currentTime / 200) * 4
+    Window.setColor(colorFood)
+    let fx = food.x * cellSize + cellSize/2
+    let fy = food.y * cellSize + cellSize/2
+    let fSize = (cellSize/3) + pulse
+    Window.drawRect(fx - fSize, fy - fSize, fSize*2, fSize*2)
+    Window.setColor(colorWhite)
+    Window.drawRect(fx - fSize/2, fy - fSize/2, fSize, fSize)
+    
+    // Particles
+    let j = 0
+    while (j < len(particles)) {
+        let p = particles[j]
+        Window.setColor(p.color)
+        Window.drawCircle(p.x, p.y, p.size * p.life)
+        j = j + 1
+    }
+    
+    // Interpolated Snake
+    let t = (currentTime - lastUpdateTime) / moveDelay
+    if (t > 1.0) { t = 1.0 }
+    
+    let k = 0
+    let sLen = len(snake)
+    while (k < sLen) {
+        let startP = snake[k]
+        if (k < len(oldSnake)) { startP = oldSnake[k] }
+        let endP = snake[k]
+        
+        let interpX = startP.x + (endP.x - startP.x) * t
+        let interpY = startP.y + (endP.y - startP.y) * t
+        
+        let sx = interpX * cellSize + 2
+        let sy = interpY * cellSize + 2
+        let size = cellSize - 4
+        
+        if (k == 0) {
+            Window.setColor(colorHead)
+            Window.drawRect(sx, sy, size, size)
+            Window.setColor(colorWhite)
+            Window.drawCircle(sx + size/2, sy + size/2, size/4)
+        }
+        if (k != 0) {
+            Window.setColor(colorTail)
+            Window.drawRect(sx, sy, size, size)
+        }
+        k = k + 1
+    }
+    
+    // Score & Mode
+    Window.setColor(colorWhite)
+    Window.drawText("SCORE: " + str(score), 15, 25, 20)
+    if (isAutoMode) {
+        Window.setColor(colorHead)
+        Window.drawText("AI MODE ACTIVE", 440, 25, 16)
+    }
+    
+    currentTime
+}
+
+resetGame()
+Window.onUpdate(update)

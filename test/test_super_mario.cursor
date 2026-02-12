@@ -1,0 +1,281 @@
+Window.create(800, 480, "CursorScript: Super Mario (Mini)")
+
+let tileSize = 32;
+let worldWidth = 2000;
+
+let player = { x: 100, y: 300, w: 28, h: 28, vx: 0, vy: 0, onGround: false, alive: true };
+let gravity = 0.9;
+let walkSpeed = 3.2;
+let jumpStrength = -14;
+
+let cameraX = 0;
+let score = 0;
+let lives = 3;
+let level = 1;
+let gameOver = false;
+
+let platforms = [];
+let coins = [];
+let enemies = [];
+
+fn rectOverlap(a, b) {
+    if (a.x + a.w <= b.x) { return false }
+    if (a.x >= b.x + b.w) { return false }
+    if (a.y + a.h <= b.y) { return false }
+    if (a.y >= b.y + b.h) { return false }
+    return true
+}
+
+fn spawnLevel() {
+    platforms = [
+        { x: -100, y: 420, w: worldWidth + 200, h: 80 },
+        { x: 300, y: 360, w: 160, h: 20 },
+        { x: 520, y: 300, w: 120, h: 20 },
+        { x: 700, y: 240, w: 200, h: 20 },
+        { x: 980, y: 320, w: 120, h: 20 },
+        { x: 1200, y: 380, w: 300, h: 20 },
+        { x: 1600, y: 330, w: 200, h: 20 }
+    ]
+
+    coins = [
+        { x: 340, y: 320, w: 12, h: 12, collected: false },
+        { x: 560, y: 260, w: 12, h: 12, collected: false },
+        { x: 740, y: 200, w: 12, h: 12, collected: false },
+        { x: 1010, y: 280, w: 12, h: 12, collected: false },
+        { x: 1260, y: 340, w: 12, h: 12, collected: false },
+        { x: 1620, y: 290, w: 12, h: 12, collected: false }
+    ]
+
+    enemies = [
+        { x: 440, y: 332, w: 24, h: 24, dir: 1, speed: 1.2 },
+        { x: 1300, y: 352, w: 24, h: 24, dir: -1, speed: 1 }
+    ]
+}
+
+fn resetGame() {
+    player.x = 100
+    player.y = 300
+    player.vx = 0
+    player.vy = 0
+    player.onGround = false
+    player.alive = true
+    cameraX = 0
+    score = 0
+    lives = 3
+    level = 1
+    gameOver = false
+    spawnLevel()
+}
+
+fn handleInput() {
+    let left = Window.getKeyDown("ArrowLeft") || Window.getKeyDown("A");
+    let right = Window.getKeyDown("ArrowRight") || Window.getKeyDown("D");
+    let jump = Window.getKeyDown("ArrowUp") || Window.getKeyDown("W") || Window.getKeyDown(" ");
+
+    if (left && !right) {
+        player.vx = player.vx - 0.6
+        if (player.vx < -walkSpeed) { player.vx = -walkSpeed }
+    }
+    if (right && !left) {
+        player.vx = player.vx + 0.6
+        if (player.vx > walkSpeed) { player.vx = walkSpeed }
+    }
+    if (!left && !right) {
+        player.vx = player.vx * 0.85
+    }
+
+    if (jump && player.onGround) {
+        player.vy = jumpStrength
+        player.onGround = false
+    }
+}
+
+fn physicsStep() {
+    // Horizontal
+    player.x = player.x + player.vx
+
+    // Check horizontal collisions with platforms
+    let i = 0;
+    while (i < len(platforms)) {
+        let p = platforms[i];
+        let playerBox = { x: player.x, y: player.y, w: player.w, h: player.h };
+        if (rectOverlap(playerBox, p)) {
+            if (player.vx > 0) {
+                player.x = p.x - player.w
+                player.vx = 0
+            }
+            if (player.vx < 0) {
+                player.x = p.x + p.w
+                player.vx = 0
+            }
+        }
+        i = i + 1
+    }
+
+    // Vertical
+    player.vy = player.vy + gravity
+    player.y = player.y + player.vy
+
+    player.onGround = false
+    i = 0;
+    while (i < len(platforms)) {
+        let p = platforms[i];
+        let playerBox = { x: player.x, y: player.y, w: player.w, h: player.h };
+        if (rectOverlap(playerBox, p)) {
+            if (player.vy > 0) { // falling -> land on top
+                player.y = p.y - player.h
+                player.vy = 0
+                player.onGround = true
+            } else if (player.vy < 0) { // hitting head
+                player.y = p.y + p.h
+                player.vy = 0
+            }
+        }
+        i = i + 1
+    }
+
+    // Camera follow
+    cameraX = player.x - 200
+    if (cameraX < 0) { cameraX = 0 }
+    if (cameraX > worldWidth - 800) { cameraX = worldWidth - 800 }
+}
+
+fn updateEntities() {
+    // Coins
+    let ci = 0;
+    while (ci < len(coins)) {
+        let c = coins[ci];
+        if (!c.collected) {
+            if (rectOverlap(player, c)) {
+                c.collected = true
+                score = score + 1
+            }
+        }
+        ci = ci + 1
+    }
+
+    // Enemies
+    let ei = 0;
+    while (ei < len(enemies)) {
+        let e = enemies[ei];
+        e.x = e.x + e.dir * e.speed
+        // simple patrol bounds
+        if (e.x < 200) { e.dir = 1 }
+        if (e.x > worldWidth - 200) { e.dir = -1 }
+
+        if (rectOverlap(player, e)) {
+            if (player.vy > 2) { // stomp
+                e.x = -9999 // offscreen
+                player.vy = jumpStrength * 0.5
+                score = score + 2
+            } else {
+                // lose life
+                player.alive = false
+            }
+        }
+
+        ei = ei + 1
+    }
+
+    // Fall out of world
+    if (player.y > 1000) { player.alive = false }
+}
+
+fn draw() {
+    Window.clear("#7ec0ee") // sky
+
+    // parallax ground
+    Window.setColor("#8B5A2B")
+    Window.drawRect(-cameraX, 420, worldWidth, 80)
+
+    // Platforms
+    let i = 0;
+    while (i < len(platforms)) {
+        let p = platforms[i];
+        Window.setColor("#654321")
+        Window.drawRect(p.x - cameraX, p.y, p.w, p.h)
+        i = i + 1
+    }
+
+    // Coins
+    i = 0;
+    while (i < len(coins)) {
+        let c = coins[i];
+        if (!c.collected) {
+            Window.setColor("#ffd700")
+            Window.drawRect(c.x - cameraX, c.y, c.w, c.h)
+        }
+        i = i + 1
+    }
+
+    // Enemies
+    i = 0;
+    while (i < len(enemies)) {
+        let e = enemies[i];
+        if (e.x > -500) {
+            Window.setColor("#ff6b6b")
+            Window.drawRect(e.x - cameraX, e.y, e.w, e.h)
+        }
+        i = i + 1
+    }
+
+    // Player
+    if (player.alive) {
+        Window.setColor("#2f3542")
+        Window.drawRect(player.x - cameraX, player.y, player.w, player.h)
+    }
+
+    // UI
+    Window.setColor("white")
+    Window.drawText("Score: " + str(score), 16, 24, 18)
+    Window.drawText("Lives: " + str(lives), 140, 24, 18)
+    Window.drawText("Level: " + str(level), 240, 24, 18)
+
+    if (!player.alive) {
+        Window.setColor("rgba(0,0,0,0.6)")
+        Window.drawRect(0, 0, 800, 480)
+        Window.setColor("white")
+        Window.drawText("YOU DIED", 320, 180, 36)
+        Window.drawText("Click to restart", 300, 230, 20)
+    }
+}
+
+fn update() {
+    if (gameOver) {
+        // show simple game over screen
+        Window.clear("black")
+        Window.setColor("white")
+        Window.drawText("GAME OVER", 260, 200, 48)
+        Window.drawText("Final Score: " + str(score), 300, 260, 20)
+        
+    }
+
+    if (player.alive) {
+        handleInput()
+        physicsStep()
+        updateEntities()
+    } else {
+        // lose life and wait for click
+        if (lives > 0) {
+            lives = lives - 1
+            player.alive = true
+            player.x = 100
+            player.y = 200
+            player.vx = 0
+            player.vy = 0
+        } else {
+            gameOver = true
+        }
+    }
+
+    // Restart on mouse click when dead (no lives)
+    if (gameOver) {
+        if (Window.getMouseButton()) { resetGame() }
+    }
+
+    draw()
+}
+
+spawnLevel()
+resetGame()
+Window.onUpdate(update)

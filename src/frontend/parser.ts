@@ -81,7 +81,11 @@ export default class Parser {
         return this.parse_while_stmt();
 
       default:
-        return this.parse_expr();
+        const expr = this.parse_expr();
+        if (this.at().type === TokenType.Semicolon) {
+          this.eat();
+        }
+        return expr;
     }
   }
 
@@ -209,7 +213,9 @@ export default class Parser {
     this.expect(TokenType.Equals, "Expected '=' after variable declaration");
     const value = this.parse_expr();
 
-    this.expect(TokenType.Semicolon, "Expected ';' after variable declaration");
+    if (this.at().type === TokenType.Semicolon) {
+      this.eat();
+    }
 
     return {
       kind: "VarDeclaration",
@@ -232,6 +238,10 @@ export default class Parser {
       this.eat();
 
       const value = this.parse_assignment_expr();
+
+      if (this.at().type === TokenType.Semicolon) {
+        this.eat();
+      }
 
       return {
         kind: "AssignmentExpr",
@@ -339,6 +349,8 @@ export default class Parser {
     while (
       this.at().type === TokenType.LessThan ||
       this.at().type === TokenType.GreaterThan ||
+      this.at().type === TokenType.LessThanEquals ||
+      this.at().type === TokenType.GreaterThanEquals ||
       this.at().type === TokenType.EqualsEquals ||
       this.at().type === TokenType.NotEquals
     ) {

@@ -26,10 +26,9 @@ for (const target of targets) {
   const isWindows = target.id.includes("windows");
   const extension = isWindows ? ".exe" : "";
   const baseName = `${appName}-${target.id.replace("bun-", "")}`;
-  const binName = `${baseName}${extension}`;
 
   const targetFolder = `${outDir}/${baseName}`;
-  const binPath = `${targetFolder}/${binName}`;
+  const binPath = `${targetFolder}/cursorx${extension}`;
 
   process.stdout.write(`📦 Target: ${target.id.padEnd(25)} ... `);
 

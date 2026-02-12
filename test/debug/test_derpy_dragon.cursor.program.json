@@ -1,0 +1,5941 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 1,
+          "column": 1,
+          "symbol": "Window"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 1,
+          "column": 8,
+          "symbol": "create"
+        },
+        "computed": false,
+        "line": 1,
+        "column": 14
+      },
+      "args": [
+        {
+          "kind": "NumericLiteral",
+          "line": 1,
+          "column": 15,
+          "value": 500
+        },
+        {
+          "kind": "NumericLiteral",
+          "line": 1,
+          "column": 20,
+          "value": 700
+        },
+        {
+          "kind": "StringLiteral",
+          "line": 1,
+          "column": 25,
+          "value": "Derpy Dragon: Brain Freeze Dash"
+        }
+      ],
+      "line": 4,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "gravity",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 4,
+        "column": 15,
+        "value": 0.5
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "jumpStrength",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 5,
+        "column": 20,
+        "value": -8
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "pipeSpeed",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 6,
+        "column": 17,
+        "value": 3
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "pipeWidth",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 7,
+        "column": 17,
+        "value": 80
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "pipeGap",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 8,
+        "column": 15,
+        "value": 180
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorSky",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 11,
+        "column": 16,
+        "value": "#0F0C29"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorDragon",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 12,
+        "column": 19,
+        "value": "#00FFCC"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorEye",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 13,
+        "column": 16,
+        "value": "#FFFFFF"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorPupil",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 14,
+        "column": 18,
+        "value": "#000000"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorPipe",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 15,
+        "column": 17,
+        "value": "#F72585"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorPipeGlow",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 16,
+        "column": 21,
+        "value": "#7209B7"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorWhite",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 17,
+        "column": 18,
+        "value": "#FFFFFF"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "colorParticle",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 18,
+        "column": 21,
+        "value": "#4CC9F0"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "dragon",
+      "constant": false,
+      "value": {
+        "kind": "ObjectLiteral",
+        "properties": [
+          {
+            "kind": "Property",
+            "key": "y",
+            "value": {
+              "kind": "NumericLiteral",
+              "line": 21,
+              "column": 19,
+              "value": 350
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "vy",
+            "value": {
+              "kind": "NumericLiteral",
+              "line": 21,
+              "column": 28,
+              "value": 0
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "size",
+            "value": {
+              "kind": "NumericLiteral",
+              "line": 21,
+              "column": 37,
+              "value": 25
+            }
+          },
+          {
+            "kind": "Property",
+            "key": "angle",
+            "value": {
+              "kind": "NumericLiteral",
+              "line": 21,
+              "column": 48,
+              "value": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "pipes",
+      "constant": false,
+      "value": {
+        "kind": "ArrayLiteral",
+        "elements": []
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "particles",
+      "constant": false,
+      "value": {
+        "kind": "ArrayLiteral",
+        "elements": []
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "score",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 24,
+        "column": 13,
+        "value": 0
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "gameOver",
+      "constant": false,
+      "value": {
+        "kind": "Identifier",
+        "line": 25,
+        "column": 16,
+        "symbol": "false"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "gameStarted",
+      "constant": false,
+      "value": {
+        "kind": "Identifier",
+        "line": 26,
+        "column": 19,
+        "symbol": "false"
+      }
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "lastTime",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "Identifier",
+          "line": 27,
+          "column": 16,
+          "symbol": "time"
+        },
+        "args": [],
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "spawnPipe",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "minH",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 30,
+            "column": 16,
+            "value": 50
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "maxH",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 31,
+            "column": 16,
+            "value": 400
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "h1",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 32,
+                "column": 14,
+                "symbol": "Math"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 32,
+                "column": 19,
+                "symbol": "randomInt"
+              },
+              "computed": false,
+              "line": 32,
+              "column": 28
+            },
+            "args": [
+              {
+                "kind": "Identifier",
+                "line": 32,
+                "column": 29,
+                "symbol": "minH"
+              },
+              {
+                "kind": "Identifier",
+                "line": 32,
+                "column": 35,
+                "symbol": "maxH"
+              }
+            ],
+            "line": 33,
+            "column": 5
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "p",
+          "constant": false,
+          "value": {
+            "kind": "ObjectLiteral",
+            "properties": [
+              {
+                "kind": "Property",
+                "key": "x",
+                "value": {
+                  "kind": "NumericLiteral",
+                  "line": 34,
+                  "column": 12,
+                  "value": 550
+                }
+              },
+              {
+                "kind": "Property",
+                "key": "topH",
+                "value": {
+                  "kind": "Identifier",
+                  "line": 35,
+                  "column": 15,
+                  "symbol": "h1"
+                }
+              },
+              {
+                "kind": "Property",
+                "key": "bottomY",
+                "value": {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 36,
+                    "column": 18,
+                    "symbol": "h1"
+                  },
+                  "right": {
+                    "kind": "Identifier",
+                    "line": 36,
+                    "column": 23,
+                    "symbol": "pipeGap"
+                  },
+                  "line": 36,
+                  "column": 30
+                }
+              },
+              {
+                "kind": "Property",
+                "key": "passed",
+                "value": {
+                  "kind": "Identifier",
+                  "line": 37,
+                  "column": 17,
+                  "symbol": "false"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 39,
+            "column": 5,
+            "symbol": "push"
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 39,
+              "column": 10,
+              "symbol": "pipes"
+            },
+            {
+              "kind": "Identifier",
+              "line": 39,
+              "column": 17,
+              "symbol": "p"
+            }
+          ],
+          "line": 40,
+          "column": 5
+        },
+        {
+          "kind": "Identifier",
+          "line": 40,
+          "column": 5,
+          "symbol": "p"
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "spawnParticles",
+      "parameters": [
+        "x",
+        "y",
+        "color",
+        "count"
+      ],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "i",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 44,
+            "column": 13,
+            "value": 0
+          }
+        },
+        {
+          "kind": "WhileStmt",
+          "condition": {
+            "kind": "BinaryExpr",
+            "operator": "<",
+            "left": {
+              "kind": "Identifier",
+              "line": 45,
+              "column": 12,
+              "symbol": "i"
+            },
+            "right": {
+              "kind": "Identifier",
+              "line": 45,
+              "column": 16,
+              "symbol": "count"
+            },
+            "line": 45,
+            "column": 21
+          },
+          "body": [
+            {
+              "kind": "VarDeclaration",
+              "identifier": "angle",
+              "constant": false,
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "/",
+                "left": {
+                  "kind": "BinaryExpr",
+                  "operator": "*",
+                  "left": {
+                    "kind": "CallExpr",
+                    "caller": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 46,
+                        "column": 21,
+                        "symbol": "Math"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 46,
+                        "column": 26,
+                        "symbol": "randomInt"
+                      },
+                      "computed": false,
+                      "line": 46,
+                      "column": 35
+                    },
+                    "args": [
+                      {
+                        "kind": "NumericLiteral",
+                        "line": 46,
+                        "column": 36,
+                        "value": 0
+                      },
+                      {
+                        "kind": "NumericLiteral",
+                        "line": 46,
+                        "column": 39,
+                        "value": 360
+                      }
+                    ],
+                    "line": 46,
+                    "column": 44
+                  },
+                  "right": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 46,
+                      "column": 46,
+                      "symbol": "Math"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 46,
+                      "column": 51,
+                      "symbol": "PI"
+                    },
+                    "computed": false,
+                    "line": 46,
+                    "column": 54
+                  },
+                  "line": 46,
+                  "column": 54
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 46,
+                  "column": 56,
+                  "value": 180
+                },
+                "line": 47,
+                "column": 9
+              }
+            },
+            {
+              "kind": "VarDeclaration",
+              "identifier": "speed",
+              "constant": false,
+              "value": {
+                "kind": "CallExpr",
+                "caller": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 47,
+                    "column": 21,
+                    "symbol": "Math"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 47,
+                    "column": 26,
+                    "symbol": "randomInt"
+                  },
+                  "computed": false,
+                  "line": 47,
+                  "column": 35
+                },
+                "args": [
+                  {
+                    "kind": "NumericLiteral",
+                    "line": 47,
+                    "column": 36,
+                    "value": 2
+                  },
+                  {
+                    "kind": "NumericLiteral",
+                    "line": 47,
+                    "column": 39,
+                    "value": 6
+                  }
+                ],
+                "line": 48,
+                "column": 9
+              }
+            },
+            {
+              "kind": "VarDeclaration",
+              "identifier": "p",
+              "constant": false,
+              "value": {
+                "kind": "ObjectLiteral",
+                "properties": [
+                  {
+                    "kind": "Property",
+                    "key": "x",
+                    "value": {
+                      "kind": "Identifier",
+                      "line": 49,
+                      "column": 16,
+                      "symbol": "x"
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "y",
+                    "value": {
+                      "kind": "Identifier",
+                      "line": 50,
+                      "column": 16,
+                      "symbol": "y"
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "vx",
+                    "value": {
+                      "kind": "BinaryExpr",
+                      "operator": "*",
+                      "left": {
+                        "kind": "CallExpr",
+                        "caller": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 51,
+                            "column": 17,
+                            "symbol": "Math"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 51,
+                            "column": 22,
+                            "symbol": "cos"
+                          },
+                          "computed": false,
+                          "line": 51,
+                          "column": 25
+                        },
+                        "args": [
+                          {
+                            "kind": "Identifier",
+                            "line": 51,
+                            "column": 26,
+                            "symbol": "angle"
+                          }
+                        ],
+                        "line": 51,
+                        "column": 33
+                      },
+                      "right": {
+                        "kind": "Identifier",
+                        "line": 51,
+                        "column": 35,
+                        "symbol": "speed"
+                      },
+                      "line": 51,
+                      "column": 40
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "vy",
+                    "value": {
+                      "kind": "BinaryExpr",
+                      "operator": "*",
+                      "left": {
+                        "kind": "CallExpr",
+                        "caller": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 52,
+                            "column": 17,
+                            "symbol": "Math"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 52,
+                            "column": 22,
+                            "symbol": "sin"
+                          },
+                          "computed": false,
+                          "line": 52,
+                          "column": 25
+                        },
+                        "args": [
+                          {
+                            "kind": "Identifier",
+                            "line": 52,
+                            "column": 26,
+                            "symbol": "angle"
+                          }
+                        ],
+                        "line": 52,
+                        "column": 33
+                      },
+                      "right": {
+                        "kind": "Identifier",
+                        "line": 52,
+                        "column": 35,
+                        "symbol": "speed"
+                      },
+                      "line": 52,
+                      "column": 40
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "life",
+                    "value": {
+                      "kind": "NumericLiteral",
+                      "line": 53,
+                      "column": 19,
+                      "value": 1
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "color",
+                    "value": {
+                      "kind": "Identifier",
+                      "line": 54,
+                      "column": 20,
+                      "symbol": "color"
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "size",
+                    "value": {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 55,
+                          "column": 19,
+                          "symbol": "Math"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 55,
+                          "column": 24,
+                          "symbol": "randomInt"
+                        },
+                        "computed": false,
+                        "line": 55,
+                        "column": 33
+                      },
+                      "args": [
+                        {
+                          "kind": "NumericLiteral",
+                          "line": 55,
+                          "column": 34,
+                          "value": 2
+                        },
+                        {
+                          "kind": "NumericLiteral",
+                          "line": 55,
+                          "column": 37,
+                          "value": 5
+                        }
+                      ],
+                      "line": 56,
+                      "column": 9
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 57,
+                "column": 9,
+                "symbol": "push"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 57,
+                  "column": 14,
+                  "symbol": "particles"
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 57,
+                  "column": 25,
+                  "symbol": "p"
+                }
+              ],
+              "line": 58,
+              "column": 9
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "Identifier",
+                "line": 58,
+                "column": 9,
+                "symbol": "i"
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 58,
+                  "column": 13,
+                  "symbol": "i"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 58,
+                  "column": 17,
+                  "value": 1
+                },
+                "line": 59,
+                "column": 5
+              },
+              "line": 58,
+              "column": 11
+            }
+          ]
+        },
+        {
+          "kind": "Identifier",
+          "line": 60,
+          "column": 5,
+          "symbol": "i"
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "resetGame",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 64,
+              "column": 5,
+              "symbol": "dragon"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 64,
+              "column": 12,
+              "symbol": "y"
+            },
+            "computed": false,
+            "line": 64,
+            "column": 14
+          },
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 64,
+            "column": 16,
+            "value": 350
+          },
+          "line": 64,
+          "column": 14
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 65,
+              "column": 5,
+              "symbol": "dragon"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 65,
+              "column": 12,
+              "symbol": "vy"
+            },
+            "computed": false,
+            "line": 65,
+            "column": 15
+          },
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 65,
+            "column": 17,
+            "value": 0
+          },
+          "line": 65,
+          "column": 15
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 66,
+              "column": 5,
+              "symbol": "dragon"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 66,
+              "column": 12,
+              "symbol": "angle"
+            },
+            "computed": false,
+            "line": 66,
+            "column": 18
+          },
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 66,
+            "column": 20,
+            "value": 0
+          },
+          "line": 66,
+          "column": 18
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "Identifier",
+            "line": 67,
+            "column": 5,
+            "symbol": "pipes"
+          },
+          "value": {
+            "kind": "ArrayLiteral",
+            "elements": []
+          },
+          "line": 67,
+          "column": 11
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "Identifier",
+            "line": 68,
+            "column": 5,
+            "symbol": "particles"
+          },
+          "value": {
+            "kind": "ArrayLiteral",
+            "elements": []
+          },
+          "line": 68,
+          "column": 15
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "Identifier",
+            "line": 69,
+            "column": 5,
+            "symbol": "score"
+          },
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 69,
+            "column": 13,
+            "value": 0
+          },
+          "line": 69,
+          "column": 11
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "Identifier",
+            "line": 70,
+            "column": 5,
+            "symbol": "gameOver"
+          },
+          "value": {
+            "kind": "Identifier",
+            "line": 70,
+            "column": 16,
+            "symbol": "false"
+          },
+          "line": 70,
+          "column": 14
+        },
+        {
+          "kind": "AssignmentExpr",
+          "assignee": {
+            "kind": "Identifier",
+            "line": 71,
+            "column": 5,
+            "symbol": "gameStarted"
+          },
+          "value": {
+            "kind": "Identifier",
+            "line": 71,
+            "column": 19,
+            "symbol": "false"
+          },
+          "line": 71,
+          "column": 17
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 72,
+            "column": 5,
+            "symbol": "spawnPipe"
+          },
+          "args": [],
+          "line": 73,
+          "column": 5
+        },
+        {
+          "kind": "Identifier",
+          "line": 73,
+          "column": 5,
+          "symbol": "false"
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateLogic",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "t",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "Identifier",
+              "line": 77,
+              "column": 13,
+              "symbol": "time"
+            },
+            "args": [],
+            "line": 80,
+            "column": 5
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "flap",
+          "constant": false,
+          "value": {
+            "kind": "BinaryExpr",
+            "operator": "||",
+            "left": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 80,
+                  "column": 16,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 80,
+                  "column": 23,
+                  "symbol": "getKeyDown"
+                },
+                "computed": false,
+                "line": 80,
+                "column": 33
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 80,
+                  "column": 34,
+                  "value": "Space"
+                }
+              ],
+              "line": 80,
+              "column": 43
+            },
+            "right": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 80,
+                  "column": 46,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 80,
+                  "column": 53,
+                  "symbol": "getMouseButton"
+                },
+                "computed": false,
+                "line": 80,
+                "column": 67
+              },
+              "args": [],
+              "line": 81,
+              "column": 5
+            },
+            "line": 81,
+            "column": 5
+          }
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "Identifier",
+            "line": 81,
+            "column": 9,
+            "symbol": "flap"
+          },
+          "thenBranch": [
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "UnaryExpr",
+                "operator": "!",
+                "argument": {
+                  "kind": "Identifier",
+                  "line": 82,
+                  "column": 14,
+                  "symbol": "gameOver"
+                },
+                "line": 82,
+                "column": 22
+              },
+              "thenBranch": [
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 83,
+                      "column": 13,
+                      "symbol": "dragon"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 83,
+                      "column": 20,
+                      "symbol": "vy"
+                    },
+                    "computed": false,
+                    "line": 83,
+                    "column": 23
+                  },
+                  "value": {
+                    "kind": "Identifier",
+                    "line": 83,
+                    "column": 25,
+                    "symbol": "jumpStrength"
+                  },
+                  "line": 83,
+                  "column": 23
+                },
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "Identifier",
+                    "line": 84,
+                    "column": 13,
+                    "symbol": "gameStarted"
+                  },
+                  "value": {
+                    "kind": "Identifier",
+                    "line": 84,
+                    "column": 27,
+                    "symbol": "true"
+                  },
+                  "line": 84,
+                  "column": 25
+                },
+                {
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "Identifier",
+                    "line": 85,
+                    "column": 13,
+                    "symbol": "spawnParticles"
+                  },
+                  "args": [
+                    {
+                      "kind": "NumericLiteral",
+                      "line": 85,
+                      "column": 28,
+                      "value": 100
+                    },
+                    {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 85,
+                        "column": 33,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 85,
+                        "column": 40,
+                        "symbol": "y"
+                      },
+                      "computed": false,
+                      "line": 85,
+                      "column": 41
+                    },
+                    {
+                      "kind": "Identifier",
+                      "line": 85,
+                      "column": 43,
+                      "symbol": "colorDragon"
+                    },
+                    {
+                      "kind": "NumericLiteral",
+                      "line": 85,
+                      "column": 56,
+                      "value": 5
+                    }
+                  ],
+                  "line": 86,
+                  "column": 9
+                }
+              ],
+              "line": 0,
+              "column": 0
+            }
+          ],
+          "line": 0,
+          "column": 0
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "Identifier",
+            "line": 89,
+            "column": 9,
+            "symbol": "gameStarted"
+          },
+          "thenBranch": [
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "UnaryExpr",
+                "operator": "!",
+                "argument": {
+                  "kind": "Identifier",
+                  "line": 90,
+                  "column": 14,
+                  "symbol": "gameOver"
+                },
+                "line": 90,
+                "column": 22
+              },
+              "thenBranch": [
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 92,
+                      "column": 13,
+                      "symbol": "dragon"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 92,
+                      "column": 20,
+                      "symbol": "vy"
+                    },
+                    "computed": false,
+                    "line": 92,
+                    "column": 23
+                  },
+                  "value": {
+                    "kind": "BinaryExpr",
+                    "operator": "+",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 92,
+                        "column": 25,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 92,
+                        "column": 32,
+                        "symbol": "vy"
+                      },
+                      "computed": false,
+                      "line": 92,
+                      "column": 35
+                    },
+                    "right": {
+                      "kind": "Identifier",
+                      "line": 92,
+                      "column": 37,
+                      "symbol": "gravity"
+                    },
+                    "line": 93,
+                    "column": 13
+                  },
+                  "line": 92,
+                  "column": 23
+                },
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 93,
+                      "column": 13,
+                      "symbol": "dragon"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 93,
+                      "column": 20,
+                      "symbol": "y"
+                    },
+                    "computed": false,
+                    "line": 93,
+                    "column": 22
+                  },
+                  "value": {
+                    "kind": "BinaryExpr",
+                    "operator": "+",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 93,
+                        "column": 24,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 93,
+                        "column": 31,
+                        "symbol": "y"
+                      },
+                      "computed": false,
+                      "line": 93,
+                      "column": 33
+                    },
+                    "right": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 93,
+                        "column": 35,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 93,
+                        "column": 42,
+                        "symbol": "vy"
+                      },
+                      "computed": false,
+                      "line": 94,
+                      "column": 13
+                    },
+                    "line": 94,
+                    "column": 13
+                  },
+                  "line": 93,
+                  "column": 22
+                },
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 94,
+                      "column": 13,
+                      "symbol": "dragon"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 94,
+                      "column": 20,
+                      "symbol": "angle"
+                    },
+                    "computed": false,
+                    "line": 94,
+                    "column": 26
+                  },
+                  "value": {
+                    "kind": "BinaryExpr",
+                    "operator": "*",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 94,
+                        "column": 28,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 94,
+                        "column": 35,
+                        "symbol": "vy"
+                      },
+                      "computed": false,
+                      "line": 94,
+                      "column": 38
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 94,
+                      "column": 40,
+                      "value": 2
+                    },
+                    "line": 97,
+                    "column": 13
+                  },
+                  "line": 94,
+                  "column": 26
+                },
+                {
+                  "kind": "VarDeclaration",
+                  "identifier": "tooLow",
+                  "constant": false,
+                  "value": {
+                    "kind": "BinaryExpr",
+                    "operator": ">",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 97,
+                        "column": 26,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 97,
+                        "column": 33,
+                        "symbol": "y"
+                      },
+                      "computed": false,
+                      "line": 97,
+                      "column": 35
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 97,
+                      "column": 37,
+                      "value": 670
+                    },
+                    "line": 98,
+                    "column": 13
+                  }
+                },
+                {
+                  "kind": "IfStmt",
+                  "condition": {
+                    "kind": "Identifier",
+                    "line": 98,
+                    "column": 17,
+                    "symbol": "tooLow"
+                  },
+                  "thenBranch": [
+                    {
+                      "kind": "AssignmentExpr",
+                      "assignee": {
+                        "kind": "Identifier",
+                        "line": 98,
+                        "column": 27,
+                        "symbol": "gameOver"
+                      },
+                      "value": {
+                        "kind": "Identifier",
+                        "line": 98,
+                        "column": 38,
+                        "symbol": "true"
+                      },
+                      "line": 98,
+                      "column": 36
+                    },
+                    {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 98,
+                        "column": 44,
+                        "symbol": "spawnParticles"
+                      },
+                      "args": [
+                        {
+                          "kind": "NumericLiteral",
+                          "line": 98,
+                          "column": 59,
+                          "value": 100
+                        },
+                        {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 98,
+                            "column": 64,
+                            "symbol": "dragon"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 98,
+                            "column": 71,
+                            "symbol": "y"
+                          },
+                          "computed": false,
+                          "line": 98,
+                          "column": 72
+                        },
+                        {
+                          "kind": "Identifier",
+                          "line": 98,
+                          "column": 74,
+                          "symbol": "colorDragon"
+                        },
+                        {
+                          "kind": "NumericLiteral",
+                          "line": 98,
+                          "column": 87,
+                          "value": 20
+                        }
+                      ],
+                      "line": 98,
+                      "column": 91
+                    }
+                  ],
+                  "line": 0,
+                  "column": 0
+                },
+                {
+                  "kind": "VarDeclaration",
+                  "identifier": "tooHigh",
+                  "constant": false,
+                  "value": {
+                    "kind": "BinaryExpr",
+                    "operator": "<",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 99,
+                        "column": 27,
+                        "symbol": "dragon"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 99,
+                        "column": 34,
+                        "symbol": "y"
+                      },
+                      "computed": false,
+                      "line": 99,
+                      "column": 36
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 99,
+                      "column": 38,
+                      "value": 0
+                    },
+                    "line": 100,
+                    "column": 13
+                  }
+                },
+                {
+                  "kind": "IfStmt",
+                  "condition": {
+                    "kind": "Identifier",
+                    "line": 100,
+                    "column": 17,
+                    "symbol": "tooHigh"
+                  },
+                  "thenBranch": [
+                    {
+                      "kind": "AssignmentExpr",
+                      "assignee": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 100,
+                          "column": 28,
+                          "symbol": "dragon"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 100,
+                          "column": 35,
+                          "symbol": "y"
+                        },
+                        "computed": false,
+                        "line": 100,
+                        "column": 37
+                      },
+                      "value": {
+                        "kind": "NumericLiteral",
+                        "line": 100,
+                        "column": 39,
+                        "value": 0
+                      },
+                      "line": 100,
+                      "column": 37
+                    },
+                    {
+                      "kind": "AssignmentExpr",
+                      "assignee": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 100,
+                          "column": 42,
+                          "symbol": "dragon"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 100,
+                          "column": 49,
+                          "symbol": "vy"
+                        },
+                        "computed": false,
+                        "line": 100,
+                        "column": 52
+                      },
+                      "value": {
+                        "kind": "NumericLiteral",
+                        "line": 100,
+                        "column": 54,
+                        "value": 0
+                      },
+                      "line": 100,
+                      "column": 52
+                    }
+                  ],
+                  "line": 0,
+                  "column": 0
+                },
+                {
+                  "kind": "VarDeclaration",
+                  "identifier": "i",
+                  "constant": false,
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "line": 103,
+                    "column": 21,
+                    "value": 0
+                  }
+                },
+                {
+                  "kind": "WhileStmt",
+                  "condition": {
+                    "kind": "BinaryExpr",
+                    "operator": "<",
+                    "left": {
+                      "kind": "Identifier",
+                      "line": 104,
+                      "column": 20,
+                      "symbol": "i"
+                    },
+                    "right": {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 104,
+                        "column": 24,
+                        "symbol": "len"
+                      },
+                      "args": [
+                        {
+                          "kind": "Identifier",
+                          "line": 104,
+                          "column": 28,
+                          "symbol": "pipes"
+                        }
+                      ],
+                      "line": 104,
+                      "column": 34
+                    },
+                    "line": 104,
+                    "column": 34
+                  },
+                  "body": [
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "p",
+                      "constant": false,
+                      "value": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 105,
+                          "column": 25,
+                          "symbol": "pipes"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 105,
+                          "column": 31,
+                          "symbol": "i"
+                        },
+                        "computed": true,
+                        "line": 106,
+                        "column": 17
+                      }
+                    },
+                    {
+                      "kind": "AssignmentExpr",
+                      "assignee": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 106,
+                          "column": 17,
+                          "symbol": "p"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 106,
+                          "column": 19,
+                          "symbol": "x"
+                        },
+                        "computed": false,
+                        "line": 106,
+                        "column": 21
+                      },
+                      "value": {
+                        "kind": "BinaryExpr",
+                        "operator": "-",
+                        "left": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 106,
+                            "column": 23,
+                            "symbol": "p"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 106,
+                            "column": 25,
+                            "symbol": "x"
+                          },
+                          "computed": false,
+                          "line": 106,
+                          "column": 27
+                        },
+                        "right": {
+                          "kind": "Identifier",
+                          "line": 106,
+                          "column": 29,
+                          "symbol": "pipeSpeed"
+                        },
+                        "line": 109,
+                        "column": 17
+                      },
+                      "line": 106,
+                      "column": 21
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "xHit",
+                      "constant": false,
+                      "value": {
+                        "kind": "BinaryExpr",
+                        "operator": "&&",
+                        "left": {
+                          "kind": "BinaryExpr",
+                          "operator": ">",
+                          "left": {
+                            "kind": "BinaryExpr",
+                            "operator": "+",
+                            "left": {
+                              "kind": "NumericLiteral",
+                              "line": 109,
+                              "column": 29,
+                              "value": 100
+                            },
+                            "right": {
+                              "kind": "MemberExpr",
+                              "object": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 35,
+                                "symbol": "dragon"
+                              },
+                              "property": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 42,
+                                "symbol": "size"
+                              },
+                              "computed": false,
+                              "line": 109,
+                              "column": 47
+                            },
+                            "line": 109,
+                            "column": 47
+                          },
+                          "right": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 109,
+                              "column": 49,
+                              "symbol": "p"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 109,
+                              "column": 51,
+                              "symbol": "x"
+                            },
+                            "computed": false,
+                            "line": 109,
+                            "column": 52
+                          },
+                          "line": 109,
+                          "column": 52
+                        },
+                        "right": {
+                          "kind": "BinaryExpr",
+                          "operator": "<",
+                          "left": {
+                            "kind": "BinaryExpr",
+                            "operator": "-",
+                            "left": {
+                              "kind": "NumericLiteral",
+                              "line": 109,
+                              "column": 58,
+                              "value": 100
+                            },
+                            "right": {
+                              "kind": "MemberExpr",
+                              "object": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 64,
+                                "symbol": "dragon"
+                              },
+                              "property": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 71,
+                                "symbol": "size"
+                              },
+                              "computed": false,
+                              "line": 109,
+                              "column": 76
+                            },
+                            "line": 109,
+                            "column": 76
+                          },
+                          "right": {
+                            "kind": "BinaryExpr",
+                            "operator": "+",
+                            "left": {
+                              "kind": "MemberExpr",
+                              "object": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 78,
+                                "symbol": "p"
+                              },
+                              "property": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 80,
+                                "symbol": "x"
+                              },
+                              "computed": false,
+                              "line": 109,
+                              "column": 82
+                            },
+                            "right": {
+                              "kind": "Identifier",
+                              "line": 109,
+                              "column": 84,
+                              "symbol": "pipeWidth"
+                            },
+                            "line": 109,
+                            "column": 93
+                          },
+                          "line": 109,
+                          "column": 93
+                        },
+                        "line": 110,
+                        "column": 17
+                      }
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "topHit",
+                      "constant": false,
+                      "value": {
+                        "kind": "BinaryExpr",
+                        "operator": "<",
+                        "left": {
+                          "kind": "BinaryExpr",
+                          "operator": "-",
+                          "left": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 110,
+                              "column": 30,
+                              "symbol": "dragon"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 110,
+                              "column": 37,
+                              "symbol": "y"
+                            },
+                            "computed": false,
+                            "line": 110,
+                            "column": 39
+                          },
+                          "right": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 110,
+                              "column": 41,
+                              "symbol": "dragon"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 110,
+                              "column": 48,
+                              "symbol": "size"
+                            },
+                            "computed": false,
+                            "line": 110,
+                            "column": 53
+                          },
+                          "line": 110,
+                          "column": 53
+                        },
+                        "right": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 110,
+                            "column": 55,
+                            "symbol": "p"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 110,
+                            "column": 57,
+                            "symbol": "topH"
+                          },
+                          "computed": false,
+                          "line": 111,
+                          "column": 17
+                        },
+                        "line": 111,
+                        "column": 17
+                      }
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "botHit",
+                      "constant": false,
+                      "value": {
+                        "kind": "BinaryExpr",
+                        "operator": ">",
+                        "left": {
+                          "kind": "BinaryExpr",
+                          "operator": "+",
+                          "left": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 111,
+                              "column": 30,
+                              "symbol": "dragon"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 111,
+                              "column": 37,
+                              "symbol": "y"
+                            },
+                            "computed": false,
+                            "line": 111,
+                            "column": 39
+                          },
+                          "right": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 111,
+                              "column": 41,
+                              "symbol": "dragon"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 111,
+                              "column": 48,
+                              "symbol": "size"
+                            },
+                            "computed": false,
+                            "line": 111,
+                            "column": 53
+                          },
+                          "line": 111,
+                          "column": 53
+                        },
+                        "right": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 111,
+                            "column": 55,
+                            "symbol": "p"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 111,
+                            "column": 57,
+                            "symbol": "bottomY"
+                          },
+                          "computed": false,
+                          "line": 113,
+                          "column": 17
+                        },
+                        "line": 113,
+                        "column": 17
+                      }
+                    },
+                    {
+                      "kind": "IfStmt",
+                      "condition": {
+                        "kind": "Identifier",
+                        "line": 113,
+                        "column": 21,
+                        "symbol": "xHit"
+                      },
+                      "thenBranch": [
+                        {
+                          "kind": "IfStmt",
+                          "condition": {
+                            "kind": "Identifier",
+                            "line": 114,
+                            "column": 25,
+                            "symbol": "topHit"
+                          },
+                          "thenBranch": [
+                            {
+                              "kind": "AssignmentExpr",
+                              "assignee": {
+                                "kind": "Identifier",
+                                "line": 114,
+                                "column": 35,
+                                "symbol": "gameOver"
+                              },
+                              "value": {
+                                "kind": "Identifier",
+                                "line": 114,
+                                "column": 46,
+                                "symbol": "true"
+                              },
+                              "line": 114,
+                              "column": 44
+                            },
+                            {
+                              "kind": "CallExpr",
+                              "caller": {
+                                "kind": "Identifier",
+                                "line": 114,
+                                "column": 52,
+                                "symbol": "spawnParticles"
+                              },
+                              "args": [
+                                {
+                                  "kind": "NumericLiteral",
+                                  "line": 114,
+                                  "column": 67,
+                                  "value": 100
+                                },
+                                {
+                                  "kind": "MemberExpr",
+                                  "object": {
+                                    "kind": "Identifier",
+                                    "line": 114,
+                                    "column": 72,
+                                    "symbol": "dragon"
+                                  },
+                                  "property": {
+                                    "kind": "Identifier",
+                                    "line": 114,
+                                    "column": 79,
+                                    "symbol": "y"
+                                  },
+                                  "computed": false,
+                                  "line": 114,
+                                  "column": 80
+                                },
+                                {
+                                  "kind": "Identifier",
+                                  "line": 114,
+                                  "column": 82,
+                                  "symbol": "colorDragon"
+                                },
+                                {
+                                  "kind": "NumericLiteral",
+                                  "line": 114,
+                                  "column": 95,
+                                  "value": 20
+                                }
+                              ],
+                              "line": 114,
+                              "column": 99
+                            }
+                          ],
+                          "line": 0,
+                          "column": 0
+                        },
+                        {
+                          "kind": "IfStmt",
+                          "condition": {
+                            "kind": "Identifier",
+                            "line": 115,
+                            "column": 25,
+                            "symbol": "botHit"
+                          },
+                          "thenBranch": [
+                            {
+                              "kind": "AssignmentExpr",
+                              "assignee": {
+                                "kind": "Identifier",
+                                "line": 115,
+                                "column": 35,
+                                "symbol": "gameOver"
+                              },
+                              "value": {
+                                "kind": "Identifier",
+                                "line": 115,
+                                "column": 46,
+                                "symbol": "true"
+                              },
+                              "line": 115,
+                              "column": 44
+                            },
+                            {
+                              "kind": "CallExpr",
+                              "caller": {
+                                "kind": "Identifier",
+                                "line": 115,
+                                "column": 52,
+                                "symbol": "spawnParticles"
+                              },
+                              "args": [
+                                {
+                                  "kind": "NumericLiteral",
+                                  "line": 115,
+                                  "column": 67,
+                                  "value": 100
+                                },
+                                {
+                                  "kind": "MemberExpr",
+                                  "object": {
+                                    "kind": "Identifier",
+                                    "line": 115,
+                                    "column": 72,
+                                    "symbol": "dragon"
+                                  },
+                                  "property": {
+                                    "kind": "Identifier",
+                                    "line": 115,
+                                    "column": 79,
+                                    "symbol": "y"
+                                  },
+                                  "computed": false,
+                                  "line": 115,
+                                  "column": 80
+                                },
+                                {
+                                  "kind": "Identifier",
+                                  "line": 115,
+                                  "column": 82,
+                                  "symbol": "colorDragon"
+                                },
+                                {
+                                  "kind": "NumericLiteral",
+                                  "line": 115,
+                                  "column": 95,
+                                  "value": 20
+                                }
+                              ],
+                              "line": 115,
+                              "column": 99
+                            }
+                          ],
+                          "line": 0,
+                          "column": 0
+                        }
+                      ],
+                      "line": 0,
+                      "column": 0
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "pass",
+                      "constant": false,
+                      "value": {
+                        "kind": "BinaryExpr",
+                        "operator": "&&",
+                        "left": {
+                          "kind": "BinaryExpr",
+                          "operator": "<",
+                          "left": {
+                            "kind": "BinaryExpr",
+                            "operator": "+",
+                            "left": {
+                              "kind": "MemberExpr",
+                              "object": {
+                                "kind": "Identifier",
+                                "line": 119,
+                                "column": 29,
+                                "symbol": "p"
+                              },
+                              "property": {
+                                "kind": "Identifier",
+                                "line": 119,
+                                "column": 31,
+                                "symbol": "x"
+                              },
+                              "computed": false,
+                              "line": 119,
+                              "column": 33
+                            },
+                            "right": {
+                              "kind": "Identifier",
+                              "line": 119,
+                              "column": 35,
+                              "symbol": "pipeWidth"
+                            },
+                            "line": 119,
+                            "column": 45
+                          },
+                          "right": {
+                            "kind": "NumericLiteral",
+                            "line": 119,
+                            "column": 47,
+                            "value": 80
+                          },
+                          "line": 119,
+                          "column": 49
+                        },
+                        "right": {
+                          "kind": "UnaryExpr",
+                          "operator": "!",
+                          "argument": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 119,
+                              "column": 56,
+                              "symbol": "p"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 119,
+                              "column": 58,
+                              "symbol": "passed"
+                            },
+                            "computed": false,
+                            "line": 119,
+                            "column": 64
+                          },
+                          "line": 119,
+                          "column": 64
+                        },
+                        "line": 120,
+                        "column": 17
+                      }
+                    },
+                    {
+                      "kind": "IfStmt",
+                      "condition": {
+                        "kind": "Identifier",
+                        "line": 120,
+                        "column": 21,
+                        "symbol": "pass"
+                      },
+                      "thenBranch": [
+                        {
+                          "kind": "AssignmentExpr",
+                          "assignee": {
+                            "kind": "MemberExpr",
+                            "object": {
+                              "kind": "Identifier",
+                              "line": 121,
+                              "column": 21,
+                              "symbol": "p"
+                            },
+                            "property": {
+                              "kind": "Identifier",
+                              "line": 121,
+                              "column": 23,
+                              "symbol": "passed"
+                            },
+                            "computed": false,
+                            "line": 121,
+                            "column": 30
+                          },
+                          "value": {
+                            "kind": "Identifier",
+                            "line": 121,
+                            "column": 32,
+                            "symbol": "true"
+                          },
+                          "line": 121,
+                          "column": 30
+                        },
+                        {
+                          "kind": "AssignmentExpr",
+                          "assignee": {
+                            "kind": "Identifier",
+                            "line": 122,
+                            "column": 21,
+                            "symbol": "score"
+                          },
+                          "value": {
+                            "kind": "BinaryExpr",
+                            "operator": "+",
+                            "left": {
+                              "kind": "Identifier",
+                              "line": 122,
+                              "column": 29,
+                              "symbol": "score"
+                            },
+                            "right": {
+                              "kind": "NumericLiteral",
+                              "line": 122,
+                              "column": 37,
+                              "value": 1
+                            },
+                            "line": 123,
+                            "column": 21
+                          },
+                          "line": 122,
+                          "column": 27
+                        },
+                        {
+                          "kind": "CallExpr",
+                          "caller": {
+                            "kind": "Identifier",
+                            "line": 123,
+                            "column": 21,
+                            "symbol": "spawnParticles"
+                          },
+                          "args": [
+                            {
+                              "kind": "NumericLiteral",
+                              "line": 123,
+                              "column": 36,
+                              "value": 100
+                            },
+                            {
+                              "kind": "NumericLiteral",
+                              "line": 123,
+                              "column": 41,
+                              "value": 50
+                            },
+                            {
+                              "kind": "Identifier",
+                              "line": 123,
+                              "column": 45,
+                              "symbol": "colorWhite"
+                            },
+                            {
+                              "kind": "NumericLiteral",
+                              "line": 123,
+                              "column": 57,
+                              "value": 5
+                            }
+                          ],
+                          "line": 124,
+                          "column": 17
+                        }
+                      ],
+                      "line": 0,
+                      "column": 0
+                    },
+                    {
+                      "kind": "IfStmt",
+                      "condition": {
+                        "kind": "BinaryExpr",
+                        "operator": "<",
+                        "left": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 127,
+                            "column": 21,
+                            "symbol": "p"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 127,
+                            "column": 23,
+                            "symbol": "x"
+                          },
+                          "computed": false,
+                          "line": 127,
+                          "column": 25
+                        },
+                        "right": {
+                          "kind": "NumericLiteral",
+                          "line": 127,
+                          "column": 27,
+                          "value": -100
+                        },
+                        "line": 127,
+                        "column": 31
+                      },
+                      "thenBranch": [
+                        {
+                          "kind": "CallExpr",
+                          "caller": {
+                            "kind": "Identifier",
+                            "line": 127,
+                            "column": 35,
+                            "symbol": "shift"
+                          },
+                          "args": [
+                            {
+                              "kind": "Identifier",
+                              "line": 127,
+                              "column": 41,
+                              "symbol": "pipes"
+                            }
+                          ],
+                          "line": 127,
+                          "column": 48
+                        }
+                      ],
+                      "line": 0,
+                      "column": 0
+                    },
+                    {
+                      "kind": "IfStmt",
+                      "condition": {
+                        "kind": "BinaryExpr",
+                        "operator": ">=",
+                        "left": {
+                          "kind": "MemberExpr",
+                          "object": {
+                            "kind": "Identifier",
+                            "line": 129,
+                            "column": 21,
+                            "symbol": "p"
+                          },
+                          "property": {
+                            "kind": "Identifier",
+                            "line": 129,
+                            "column": 23,
+                            "symbol": "x"
+                          },
+                          "computed": false,
+                          "line": 129,
+                          "column": 25
+                        },
+                        "right": {
+                          "kind": "NumericLiteral",
+                          "line": 129,
+                          "column": 28,
+                          "value": -100
+                        },
+                        "line": 129,
+                        "column": 32
+                      },
+                      "thenBranch": [
+                        {
+                          "kind": "AssignmentExpr",
+                          "assignee": {
+                            "kind": "Identifier",
+                            "line": 129,
+                            "column": 36,
+                            "symbol": "i"
+                          },
+                          "value": {
+                            "kind": "BinaryExpr",
+                            "operator": "+",
+                            "left": {
+                              "kind": "Identifier",
+                              "line": 129,
+                              "column": 40,
+                              "symbol": "i"
+                            },
+                            "right": {
+                              "kind": "NumericLiteral",
+                              "line": 129,
+                              "column": 44,
+                              "value": 1
+                            },
+                            "line": 129,
+                            "column": 46
+                          },
+                          "line": 129,
+                          "column": 38
+                        }
+                      ],
+                      "line": 0,
+                      "column": 0
+                    }
+                  ]
+                },
+                {
+                  "kind": "VarDeclaration",
+                  "identifier": "lastP",
+                  "constant": false,
+                  "value": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 133,
+                      "column": 25,
+                      "symbol": "pipes"
+                    },
+                    "property": {
+                      "kind": "BinaryExpr",
+                      "operator": "-",
+                      "left": {
+                        "kind": "CallExpr",
+                        "caller": {
+                          "kind": "Identifier",
+                          "line": 133,
+                          "column": 31,
+                          "symbol": "len"
+                        },
+                        "args": [
+                          {
+                            "kind": "Identifier",
+                            "line": 133,
+                            "column": 35,
+                            "symbol": "pipes"
+                          }
+                        ],
+                        "line": 133,
+                        "column": 42
+                      },
+                      "right": {
+                        "kind": "NumericLiteral",
+                        "line": 133,
+                        "column": 44,
+                        "value": 1
+                      },
+                      "line": 133,
+                      "column": 45
+                    },
+                    "computed": true,
+                    "line": 134,
+                    "column": 13
+                  }
+                },
+                {
+                  "kind": "IfStmt",
+                  "condition": {
+                    "kind": "BinaryExpr",
+                    "operator": "<",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 134,
+                        "column": 17,
+                        "symbol": "lastP"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 134,
+                        "column": 23,
+                        "symbol": "x"
+                      },
+                      "computed": false,
+                      "line": 134,
+                      "column": 25
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 134,
+                      "column": 27,
+                      "value": 300
+                    },
+                    "line": 134,
+                    "column": 30
+                  },
+                  "thenBranch": [
+                    {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 134,
+                        "column": 34,
+                        "symbol": "spawnPipe"
+                      },
+                      "args": [],
+                      "line": 134,
+                      "column": 46
+                    }
+                  ],
+                  "line": 0,
+                  "column": 0
+                }
+              ],
+              "line": 0,
+              "column": 0
+            }
+          ],
+          "line": 0,
+          "column": 0
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "pi",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 139,
+            "column": 14,
+            "value": 0
+          }
+        },
+        {
+          "kind": "WhileStmt",
+          "condition": {
+            "kind": "BinaryExpr",
+            "operator": "<",
+            "left": {
+              "kind": "Identifier",
+              "line": 140,
+              "column": 12,
+              "symbol": "pi"
+            },
+            "right": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 140,
+                "column": 17,
+                "symbol": "len"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 140,
+                  "column": 21,
+                  "symbol": "particles"
+                }
+              ],
+              "line": 140,
+              "column": 31
+            },
+            "line": 140,
+            "column": 31
+          },
+          "body": [
+            {
+              "kind": "VarDeclaration",
+              "identifier": "p",
+              "constant": false,
+              "value": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 141,
+                  "column": 17,
+                  "symbol": "particles"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 141,
+                  "column": 27,
+                  "symbol": "pi"
+                },
+                "computed": true,
+                "line": 142,
+                "column": 9
+              }
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 142,
+                  "column": 9,
+                  "symbol": "p"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 142,
+                  "column": 11,
+                  "symbol": "x"
+                },
+                "computed": false,
+                "line": 142,
+                "column": 13
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 142,
+                    "column": 15,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 142,
+                    "column": 17,
+                    "symbol": "x"
+                  },
+                  "computed": false,
+                  "line": 142,
+                  "column": 19
+                },
+                "right": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 142,
+                    "column": 21,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 142,
+                    "column": 23,
+                    "symbol": "vx"
+                  },
+                  "computed": false,
+                  "line": 143,
+                  "column": 9
+                },
+                "line": 143,
+                "column": 9
+              },
+              "line": 142,
+              "column": 13
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 143,
+                  "column": 9,
+                  "symbol": "p"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 143,
+                  "column": 11,
+                  "symbol": "y"
+                },
+                "computed": false,
+                "line": 143,
+                "column": 13
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 143,
+                    "column": 15,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 143,
+                    "column": 17,
+                    "symbol": "y"
+                  },
+                  "computed": false,
+                  "line": 143,
+                  "column": 19
+                },
+                "right": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 143,
+                    "column": 21,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 143,
+                    "column": 23,
+                    "symbol": "vy"
+                  },
+                  "computed": false,
+                  "line": 144,
+                  "column": 9
+                },
+                "line": 144,
+                "column": 9
+              },
+              "line": 143,
+              "column": 13
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 144,
+                  "column": 9,
+                  "symbol": "p"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 144,
+                  "column": 11,
+                  "symbol": "life"
+                },
+                "computed": false,
+                "line": 144,
+                "column": 16
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "-",
+                "left": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 144,
+                    "column": 18,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 144,
+                    "column": 20,
+                    "symbol": "life"
+                  },
+                  "computed": false,
+                  "line": 144,
+                  "column": 25
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 144,
+                  "column": 27,
+                  "value": 0.02
+                },
+                "line": 145,
+                "column": 9
+              },
+              "line": 144,
+              "column": 16
+            },
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "BinaryExpr",
+                "operator": "<=",
+                "left": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 145,
+                    "column": 13,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 145,
+                    "column": 15,
+                    "symbol": "life"
+                  },
+                  "computed": false,
+                  "line": 145,
+                  "column": 20
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 145,
+                  "column": 23,
+                  "value": 0
+                },
+                "line": 145,
+                "column": 24
+              },
+              "thenBranch": [
+                {
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "Identifier",
+                    "line": 145,
+                    "column": 28,
+                    "symbol": "shift"
+                  },
+                  "args": [
+                    {
+                      "kind": "Identifier",
+                      "line": 145,
+                      "column": 34,
+                      "symbol": "particles"
+                    }
+                  ],
+                  "line": 145,
+                  "column": 45
+                }
+              ],
+              "line": 0,
+              "column": 0
+            },
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "BinaryExpr",
+                "operator": ">",
+                "left": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 146,
+                    "column": 13,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 146,
+                    "column": 15,
+                    "symbol": "life"
+                  },
+                  "computed": false,
+                  "line": 146,
+                  "column": 20
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 146,
+                  "column": 22,
+                  "value": 0
+                },
+                "line": 146,
+                "column": 23
+              },
+              "thenBranch": [
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "Identifier",
+                    "line": 146,
+                    "column": 27,
+                    "symbol": "pi"
+                  },
+                  "value": {
+                    "kind": "BinaryExpr",
+                    "operator": "+",
+                    "left": {
+                      "kind": "Identifier",
+                      "line": 146,
+                      "column": 32,
+                      "symbol": "pi"
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 146,
+                      "column": 37,
+                      "value": 1
+                    },
+                    "line": 146,
+                    "column": 39
+                  },
+                  "line": 146,
+                  "column": 30
+                }
+              ],
+              "line": 0,
+              "column": 0
+            }
+          ]
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "Identifier",
+            "line": 149,
+            "column": 9,
+            "symbol": "gameOver"
+          },
+          "thenBranch": [
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "CallExpr",
+                "caller": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 150,
+                    "column": 13,
+                    "symbol": "Window"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 150,
+                    "column": 20,
+                    "symbol": "getKeyDown"
+                  },
+                  "computed": false,
+                  "line": 150,
+                  "column": 30
+                },
+                "args": [
+                  {
+                    "kind": "StringLiteral",
+                    "line": 150,
+                    "column": 31,
+                    "value": "R"
+                  }
+                ],
+                "line": 150,
+                "column": 35
+              },
+              "thenBranch": [
+                {
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "Identifier",
+                    "line": 150,
+                    "column": 39,
+                    "symbol": "resetGame"
+                  },
+                  "args": [],
+                  "line": 150,
+                  "column": 51
+                }
+              ],
+              "line": 0,
+              "column": 0
+            }
+          ],
+          "line": 0,
+          "column": 0
+        },
+        {
+          "kind": "Identifier",
+          "line": 152,
+          "column": 5,
+          "symbol": "t"
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "drawFrame",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "t",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "Identifier",
+              "line": 156,
+              "column": 13,
+              "symbol": "time"
+            },
+            "args": [],
+            "line": 157,
+            "column": 5
+          }
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 157,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 157,
+              "column": 12,
+              "symbol": "clear"
+            },
+            "computed": false,
+            "line": 157,
+            "column": 17
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 157,
+              "column": 18,
+              "symbol": "colorSky"
+            }
+          ],
+          "line": 160,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 160,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 160,
+              "column": 12,
+              "symbol": "setColor"
+            },
+            "computed": false,
+            "line": 160,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 160,
+              "column": 21,
+              "value": "rgba(255, 255, 255, 0.1)"
+            }
+          ],
+          "line": 161,
+          "column": 5
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "s",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 161,
+            "column": 13,
+            "value": 0
+          }
+        },
+        {
+          "kind": "WhileStmt",
+          "condition": {
+            "kind": "BinaryExpr",
+            "operator": "<",
+            "left": {
+              "kind": "Identifier",
+              "line": 162,
+              "column": 12,
+              "symbol": "s"
+            },
+            "right": {
+              "kind": "NumericLiteral",
+              "line": 162,
+              "column": 16,
+              "value": 20
+            },
+            "line": 162,
+            "column": 18
+          },
+          "body": [
+            {
+              "kind": "VarDeclaration",
+              "identifier": "sx",
+              "constant": false,
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "%",
+                "left": {
+                  "kind": "BinaryExpr",
+                  "operator": "*",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 163,
+                    "column": 19,
+                    "symbol": "s"
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 163,
+                    "column": 23,
+                    "value": 137
+                  },
+                  "line": 163,
+                  "column": 26
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 163,
+                  "column": 30,
+                  "value": 500
+                },
+                "line": 164,
+                "column": 9
+              }
+            },
+            {
+              "kind": "VarDeclaration",
+              "identifier": "sy",
+              "constant": false,
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "%",
+                "left": {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "BinaryExpr",
+                    "operator": "*",
+                    "left": {
+                      "kind": "Identifier",
+                      "line": 164,
+                      "column": 19,
+                      "symbol": "s"
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 164,
+                      "column": 23,
+                      "value": 251
+                    },
+                    "line": 164,
+                    "column": 27
+                  },
+                  "right": {
+                    "kind": "BinaryExpr",
+                    "operator": "/",
+                    "left": {
+                      "kind": "Identifier",
+                      "line": 164,
+                      "column": 29,
+                      "symbol": "t"
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 164,
+                      "column": 33,
+                      "value": 50
+                    },
+                    "line": 164,
+                    "column": 35
+                  },
+                  "line": 164,
+                  "column": 35
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 164,
+                  "column": 39,
+                  "value": 700
+                },
+                "line": 165,
+                "column": 9
+              }
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 165,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 165,
+                  "column": 16,
+                  "symbol": "drawCircle"
+                },
+                "computed": false,
+                "line": 165,
+                "column": 26
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 165,
+                  "column": 27,
+                  "symbol": "sx"
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 165,
+                  "column": 31,
+                  "symbol": "sy"
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 165,
+                  "column": 35,
+                  "value": 2
+                }
+              ],
+              "line": 166,
+              "column": 9
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "Identifier",
+                "line": 166,
+                "column": 9,
+                "symbol": "s"
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 166,
+                  "column": 13,
+                  "symbol": "s"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 166,
+                  "column": 17,
+                  "value": 1
+                },
+                "line": 167,
+                "column": 5
+              },
+              "line": 166,
+              "column": 11
+            }
+          ]
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "i",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 170,
+            "column": 13,
+            "value": 0
+          }
+        },
+        {
+          "kind": "WhileStmt",
+          "condition": {
+            "kind": "BinaryExpr",
+            "operator": "<",
+            "left": {
+              "kind": "Identifier",
+              "line": 171,
+              "column": 12,
+              "symbol": "i"
+            },
+            "right": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 171,
+                "column": 16,
+                "symbol": "len"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 171,
+                  "column": 20,
+                  "symbol": "pipes"
+                }
+              ],
+              "line": 171,
+              "column": 26
+            },
+            "line": 171,
+            "column": 26
+          },
+          "body": [
+            {
+              "kind": "VarDeclaration",
+              "identifier": "p",
+              "constant": false,
+              "value": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 172,
+                  "column": 17,
+                  "symbol": "pipes"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 172,
+                  "column": 23,
+                  "symbol": "i"
+                },
+                "computed": true,
+                "line": 175,
+                "column": 9
+              }
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 175,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 175,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 175,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 175,
+                  "column": 25,
+                  "symbol": "colorPipeGlow"
+                }
+              ],
+              "line": 176,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 176,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 176,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 176,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "-",
+                  "left": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 176,
+                      "column": 25,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 176,
+                      "column": 27,
+                      "symbol": "x"
+                    },
+                    "computed": false,
+                    "line": 176,
+                    "column": 29
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 176,
+                    "column": 31,
+                    "value": 4
+                  },
+                  "line": 176,
+                  "column": 32
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 176,
+                  "column": 34,
+                  "value": -10
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 176,
+                    "column": 39,
+                    "symbol": "pipeWidth"
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 176,
+                    "column": 51,
+                    "value": 8
+                  },
+                  "line": 176,
+                  "column": 52
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 176,
+                      "column": 54,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 176,
+                      "column": 56,
+                      "symbol": "topH"
+                    },
+                    "computed": false,
+                    "line": 176,
+                    "column": 61
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 176,
+                    "column": 63,
+                    "value": 14
+                  },
+                  "line": 176,
+                  "column": 65
+                }
+              ],
+              "line": 178,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 178,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 178,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 178,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 178,
+                  "column": 25,
+                  "symbol": "colorPipe"
+                }
+              ],
+              "line": 179,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 179,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 179,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 179,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 179,
+                    "column": 25,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 179,
+                    "column": 27,
+                    "symbol": "x"
+                  },
+                  "computed": false,
+                  "line": 179,
+                  "column": 28
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 179,
+                  "column": 30,
+                  "value": -10
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 179,
+                  "column": 35,
+                  "symbol": "pipeWidth"
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 179,
+                      "column": 46,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 179,
+                      "column": 48,
+                      "symbol": "topH"
+                    },
+                    "computed": false,
+                    "line": 179,
+                    "column": 53
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 179,
+                    "column": 55,
+                    "value": 10
+                  },
+                  "line": 179,
+                  "column": 57
+                }
+              ],
+              "line": 182,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 182,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 182,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 182,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 182,
+                  "column": 25,
+                  "symbol": "colorPipeGlow"
+                }
+              ],
+              "line": 183,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 183,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 183,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 183,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "-",
+                  "left": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 183,
+                      "column": 25,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 183,
+                      "column": 27,
+                      "symbol": "x"
+                    },
+                    "computed": false,
+                    "line": 183,
+                    "column": 29
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 183,
+                    "column": 31,
+                    "value": 4
+                  },
+                  "line": 183,
+                  "column": 32
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "-",
+                  "left": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 183,
+                      "column": 34,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 183,
+                      "column": 36,
+                      "symbol": "bottomY"
+                    },
+                    "computed": false,
+                    "line": 183,
+                    "column": 44
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 183,
+                    "column": 46,
+                    "value": 4
+                  },
+                  "line": 183,
+                  "column": 47
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 183,
+                    "column": 49,
+                    "symbol": "pipeWidth"
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 183,
+                    "column": 61,
+                    "value": 8
+                  },
+                  "line": 183,
+                  "column": 62
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "BinaryExpr",
+                    "operator": "-",
+                    "left": {
+                      "kind": "NumericLiteral",
+                      "line": 183,
+                      "column": 64,
+                      "value": 710
+                    },
+                    "right": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 183,
+                        "column": 70,
+                        "symbol": "p"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 183,
+                        "column": 72,
+                        "symbol": "bottomY"
+                      },
+                      "computed": false,
+                      "line": 183,
+                      "column": 80
+                    },
+                    "line": 183,
+                    "column": 80
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 183,
+                    "column": 82,
+                    "value": 8
+                  },
+                  "line": 183,
+                  "column": 83
+                }
+              ],
+              "line": 185,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 185,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 185,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 185,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 185,
+                  "column": 25,
+                  "symbol": "colorPipe"
+                }
+              ],
+              "line": 186,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 186,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 186,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 186,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 186,
+                    "column": 25,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 186,
+                    "column": 27,
+                    "symbol": "x"
+                  },
+                  "computed": false,
+                  "line": 186,
+                  "column": 28
+                },
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 186,
+                    "column": 30,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 186,
+                    "column": 32,
+                    "symbol": "bottomY"
+                  },
+                  "computed": false,
+                  "line": 186,
+                  "column": 39
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 186,
+                  "column": 41,
+                  "symbol": "pipeWidth"
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "BinaryExpr",
+                    "operator": "-",
+                    "left": {
+                      "kind": "NumericLiteral",
+                      "line": 186,
+                      "column": 52,
+                      "value": 700
+                    },
+                    "right": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 186,
+                        "column": 58,
+                        "symbol": "p"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 186,
+                        "column": 60,
+                        "symbol": "bottomY"
+                      },
+                      "computed": false,
+                      "line": 186,
+                      "column": 68
+                    },
+                    "line": 186,
+                    "column": 68
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 186,
+                    "column": 70,
+                    "value": 10
+                  },
+                  "line": 186,
+                  "column": 72
+                }
+              ],
+              "line": 188,
+              "column": 9
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "Identifier",
+                "line": 188,
+                "column": 9,
+                "symbol": "i"
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 188,
+                  "column": 13,
+                  "symbol": "i"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 188,
+                  "column": 17,
+                  "value": 1
+                },
+                "line": 189,
+                "column": 5
+              },
+              "line": 188,
+              "column": 11
+            }
+          ]
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "pi",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 192,
+            "column": 14,
+            "value": 0
+          }
+        },
+        {
+          "kind": "WhileStmt",
+          "condition": {
+            "kind": "BinaryExpr",
+            "operator": "<",
+            "left": {
+              "kind": "Identifier",
+              "line": 193,
+              "column": 12,
+              "symbol": "pi"
+            },
+            "right": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 193,
+                "column": 17,
+                "symbol": "len"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 193,
+                  "column": 21,
+                  "symbol": "particles"
+                }
+              ],
+              "line": 193,
+              "column": 31
+            },
+            "line": 193,
+            "column": 31
+          },
+          "body": [
+            {
+              "kind": "VarDeclaration",
+              "identifier": "p",
+              "constant": false,
+              "value": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 194,
+                  "column": 17,
+                  "symbol": "particles"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 194,
+                  "column": 27,
+                  "symbol": "pi"
+                },
+                "computed": true,
+                "line": 195,
+                "column": 9
+              }
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 195,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 195,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 195,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 195,
+                    "column": 25,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 195,
+                    "column": 27,
+                    "symbol": "color"
+                  },
+                  "computed": false,
+                  "line": 195,
+                  "column": 32
+                }
+              ],
+              "line": 196,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 196,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 196,
+                  "column": 16,
+                  "symbol": "drawCircle"
+                },
+                "computed": false,
+                "line": 196,
+                "column": 26
+              },
+              "args": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 196,
+                    "column": 27,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 196,
+                    "column": 29,
+                    "symbol": "x"
+                  },
+                  "computed": false,
+                  "line": 196,
+                  "column": 30
+                },
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 196,
+                    "column": 32,
+                    "symbol": "p"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 196,
+                    "column": 34,
+                    "symbol": "y"
+                  },
+                  "computed": false,
+                  "line": 196,
+                  "column": 35
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "*",
+                  "left": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 196,
+                      "column": 37,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 196,
+                      "column": 39,
+                      "symbol": "size"
+                    },
+                    "computed": false,
+                    "line": 196,
+                    "column": 44
+                  },
+                  "right": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 196,
+                      "column": 46,
+                      "symbol": "p"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 196,
+                      "column": 48,
+                      "symbol": "life"
+                    },
+                    "computed": false,
+                    "line": 196,
+                    "column": 52
+                  },
+                  "line": 196,
+                  "column": 52
+                }
+              ],
+              "line": 197,
+              "column": 9
+            },
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "Identifier",
+                "line": 197,
+                "column": 9,
+                "symbol": "pi"
+              },
+              "value": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 197,
+                  "column": 14,
+                  "symbol": "pi"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 197,
+                  "column": 19,
+                  "value": 1
+                },
+                "line": 198,
+                "column": 5
+              },
+              "line": 197,
+              "column": 12
+            }
+          ]
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "dx",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 201,
+            "column": 14,
+            "value": 100
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "dy",
+          "constant": false,
+          "value": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 202,
+              "column": 14,
+              "symbol": "dragon"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 202,
+              "column": 21,
+              "symbol": "y"
+            },
+            "computed": false,
+            "line": 205,
+            "column": 5
+          }
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 205,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 205,
+              "column": 12,
+              "symbol": "setColor"
+            },
+            "computed": false,
+            "line": 205,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 205,
+              "column": 21,
+              "symbol": "colorDragon"
+            }
+          ],
+          "line": 206,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 206,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 206,
+              "column": 12,
+              "symbol": "drawCircle"
+            },
+            "computed": false,
+            "line": 206,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 206,
+              "column": 23,
+              "symbol": "dx"
+            },
+            {
+              "kind": "Identifier",
+              "line": 206,
+              "column": 27,
+              "symbol": "dy"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 206,
+                "column": 31,
+                "symbol": "dragon"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 206,
+                "column": 38,
+                "symbol": "size"
+              },
+              "computed": false,
+              "line": 206,
+              "column": 42
+            }
+          ],
+          "line": 208,
+          "column": 5
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "wingBeat",
+          "constant": false,
+          "value": {
+            "kind": "BinaryExpr",
+            "operator": "*",
+            "left": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 208,
+                  "column": 20,
+                  "symbol": "Math"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 208,
+                  "column": 25,
+                  "symbol": "sin"
+                },
+                "computed": false,
+                "line": 208,
+                "column": 28
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "/",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 208,
+                    "column": 29,
+                    "symbol": "t"
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 208,
+                    "column": 33,
+                    "value": 50
+                  },
+                  "line": 208,
+                  "column": 35
+                }
+              ],
+              "line": 208,
+              "column": 37
+            },
+            "right": {
+              "kind": "NumericLiteral",
+              "line": 208,
+              "column": 39,
+              "value": 15
+            },
+            "line": 209,
+            "column": 5
+          }
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 209,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 209,
+              "column": 12,
+              "symbol": "setColor"
+            },
+            "computed": false,
+            "line": 209,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 209,
+              "column": 21,
+              "symbol": "colorWhite"
+            }
+          ],
+          "line": 210,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 210,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 210,
+              "column": 12,
+              "symbol": "drawRect"
+            },
+            "computed": false,
+            "line": 210,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "-",
+              "left": {
+                "kind": "Identifier",
+                "line": 210,
+                "column": 21,
+                "symbol": "dx"
+              },
+              "right": {
+                "kind": "NumericLiteral",
+                "line": 210,
+                "column": 26,
+                "value": 20
+              },
+              "line": 210,
+              "column": 28
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "BinaryExpr",
+                "operator": "-",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 210,
+                  "column": 30,
+                  "symbol": "dy"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 210,
+                  "column": 35,
+                  "value": 5
+                },
+                "line": 210,
+                "column": 37
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 210,
+                "column": 39,
+                "symbol": "wingBeat"
+              },
+              "line": 210,
+              "column": 47
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 210,
+              "column": 49,
+              "value": 15
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 210,
+              "column": 53,
+              "value": 5
+            }
+          ],
+          "line": 213,
+          "column": 5
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "blink",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 213,
+                "column": 17,
+                "symbol": "Math"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 213,
+                "column": 22,
+                "symbol": "sin"
+              },
+              "computed": false,
+              "line": 213,
+              "column": 25
+            },
+            "args": [
+              {
+                "kind": "BinaryExpr",
+                "operator": "/",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 213,
+                  "column": 26,
+                  "symbol": "t"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 213,
+                  "column": 30,
+                  "value": 1000
+                },
+                "line": 213,
+                "column": 34
+              }
+            ],
+            "line": 214,
+            "column": 5
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "eyeSize",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 214,
+            "column": 19,
+            "value": 12
+          }
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "BinaryExpr",
+            "operator": ">",
+            "left": {
+              "kind": "Identifier",
+              "line": 215,
+              "column": 9,
+              "symbol": "blink"
+            },
+            "right": {
+              "kind": "NumericLiteral",
+              "line": 215,
+              "column": 17,
+              "value": 0.95
+            },
+            "line": 215,
+            "column": 21
+          },
+          "thenBranch": [
+            {
+              "kind": "AssignmentExpr",
+              "assignee": {
+                "kind": "Identifier",
+                "line": 215,
+                "column": 25,
+                "symbol": "eyeSize"
+              },
+              "value": {
+                "kind": "NumericLiteral",
+                "line": 215,
+                "column": 35,
+                "value": 2
+              },
+              "line": 215,
+              "column": 33
+            }
+          ],
+          "line": 0,
+          "column": 0
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 217,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 217,
+              "column": 12,
+              "symbol": "setColor"
+            },
+            "computed": false,
+            "line": 217,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 217,
+              "column": 21,
+              "symbol": "colorEye"
+            }
+          ],
+          "line": 219,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 219,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 219,
+              "column": 12,
+              "symbol": "drawCircle"
+            },
+            "computed": false,
+            "line": 219,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "Identifier",
+                "line": 219,
+                "column": 23,
+                "symbol": "dx"
+              },
+              "right": {
+                "kind": "NumericLiteral",
+                "line": 219,
+                "column": 28,
+                "value": 10
+              },
+              "line": 219,
+              "column": 30
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "-",
+              "left": {
+                "kind": "Identifier",
+                "line": 219,
+                "column": 32,
+                "symbol": "dy"
+              },
+              "right": {
+                "kind": "NumericLiteral",
+                "line": 219,
+                "column": 37,
+                "value": 10
+              },
+              "line": 219,
+              "column": 39
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 219,
+              "column": 41,
+              "value": 14
+            }
+          ],
+          "line": 221,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 221,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 221,
+              "column": 12,
+              "symbol": "drawCircle"
+            },
+            "computed": false,
+            "line": 221,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "Identifier",
+                "line": 221,
+                "column": 23,
+                "symbol": "dx"
+              },
+              "right": {
+                "kind": "NumericLiteral",
+                "line": 221,
+                "column": 28,
+                "value": 5
+              },
+              "line": 221,
+              "column": 29
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "-",
+              "left": {
+                "kind": "Identifier",
+                "line": 221,
+                "column": 31,
+                "symbol": "dy"
+              },
+              "right": {
+                "kind": "NumericLiteral",
+                "line": 221,
+                "column": 36,
+                "value": 15
+              },
+              "line": 221,
+              "column": 38
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 221,
+              "column": 40,
+              "value": 12
+            }
+          ],
+          "line": 223,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 223,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 223,
+              "column": 12,
+              "symbol": "setColor"
+            },
+            "computed": false,
+            "line": 223,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 223,
+              "column": 21,
+              "symbol": "colorPupil"
+            }
+          ],
+          "line": 225,
+          "column": 5
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "shakeX",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 225,
+                "column": 18,
+                "symbol": "Math"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 225,
+                "column": 23,
+                "symbol": "randomInt"
+              },
+              "computed": false,
+              "line": 225,
+              "column": 32
+            },
+            "args": [
+              {
+                "kind": "NumericLiteral",
+                "line": 225,
+                "column": 33,
+                "value": -2
+              },
+              {
+                "kind": "NumericLiteral",
+                "line": 225,
+                "column": 37,
+                "value": 2
+              }
+            ],
+            "line": 226,
+            "column": 5
+          }
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "shakeY",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 226,
+                "column": 18,
+                "symbol": "Math"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 226,
+                "column": 23,
+                "symbol": "randomInt"
+              },
+              "computed": false,
+              "line": 226,
+              "column": 32
+            },
+            "args": [
+              {
+                "kind": "NumericLiteral",
+                "line": 226,
+                "column": 33,
+                "value": -2
+              },
+              {
+                "kind": "NumericLiteral",
+                "line": 226,
+                "column": 37,
+                "value": 2
+              }
+            ],
+            "line": 227,
+            "column": 5
+          }
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 227,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 227,
+              "column": 12,
+              "symbol": "drawCircle"
+            },
+            "computed": false,
+            "line": 227,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 227,
+                  "column": 23,
+                  "symbol": "dx"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 227,
+                  "column": 28,
+                  "value": 15
+                },
+                "line": 227,
+                "column": 31
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 227,
+                "column": 33,
+                "symbol": "shakeX"
+              },
+              "line": 227,
+              "column": 39
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "BinaryExpr",
+                "operator": "-",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 227,
+                  "column": 41,
+                  "symbol": "dy"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 227,
+                  "column": 46,
+                  "value": 12
+                },
+                "line": 227,
+                "column": 49
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 227,
+                "column": 51,
+                "symbol": "shakeY"
+              },
+              "line": 227,
+              "column": 57
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 227,
+              "column": 59,
+              "value": 4
+            }
+          ],
+          "line": 228,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 228,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 228,
+              "column": 12,
+              "symbol": "drawCircle"
+            },
+            "computed": false,
+            "line": 228,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "BinaryExpr",
+                "operator": "+",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 228,
+                  "column": 23,
+                  "symbol": "dx"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 228,
+                  "column": 28,
+                  "value": 8
+                },
+                "line": 228,
+                "column": 30
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 228,
+                "column": 32,
+                "symbol": "shakeX"
+              },
+              "line": 228,
+              "column": 38
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "BinaryExpr",
+                "operator": "-",
+                "left": {
+                  "kind": "Identifier",
+                  "line": 228,
+                  "column": 40,
+                  "symbol": "dy"
+                },
+                "right": {
+                  "kind": "NumericLiteral",
+                  "line": 228,
+                  "column": 45,
+                  "value": 17
+                },
+                "line": 228,
+                "column": 48
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 228,
+                "column": 50,
+                "symbol": "shakeY"
+              },
+              "line": 228,
+              "column": 56
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 228,
+              "column": 58,
+              "value": 3
+            }
+          ],
+          "line": 231,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 231,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 231,
+              "column": 12,
+              "symbol": "setColor"
+            },
+            "computed": false,
+            "line": 231,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 231,
+              "column": 21,
+              "symbol": "colorWhite"
+            }
+          ],
+          "line": 232,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 232,
+              "column": 5,
+              "symbol": "Window"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 232,
+              "column": 12,
+              "symbol": "drawText"
+            },
+            "computed": false,
+            "line": 232,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "StringLiteral",
+                "line": 232,
+                "column": 21,
+                "value": "BRAIN FREEZE: "
+              },
+              "right": {
+                "kind": "CallExpr",
+                "caller": {
+                  "kind": "Identifier",
+                  "line": 232,
+                  "column": 40,
+                  "symbol": "str"
+                },
+                "args": [
+                  {
+                    "kind": "Identifier",
+                    "line": 232,
+                    "column": 44,
+                    "symbol": "score"
+                  }
+                ],
+                "line": 232,
+                "column": 50
+              },
+              "line": 232,
+              "column": 50
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 232,
+              "column": 52,
+              "value": 20
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 232,
+              "column": 56,
+              "value": 30
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 232,
+              "column": 60,
+              "value": 24
+            }
+          ],
+          "line": 234,
+          "column": 5
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "UnaryExpr",
+            "operator": "!",
+            "argument": {
+              "kind": "Identifier",
+              "line": 234,
+              "column": 10,
+              "symbol": "gameStarted"
+            },
+            "line": 234,
+            "column": 21
+          },
+          "thenBranch": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 235,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 235,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 235,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 235,
+                  "column": 25,
+                  "value": "rgba(0,0,0,0.5)"
+                }
+              ],
+              "line": 236,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 236,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 236,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 236,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "NumericLiteral",
+                  "line": 236,
+                  "column": 25,
+                  "value": 0
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 236,
+                  "column": 28,
+                  "value": 0
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 236,
+                  "column": 31,
+                  "value": 500
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 236,
+                  "column": 36,
+                  "value": 700
+                }
+              ],
+              "line": 237,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 237,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 237,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 237,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 237,
+                  "column": 25,
+                  "symbol": "colorDragon"
+                }
+              ],
+              "line": 238,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 238,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 238,
+                  "column": 16,
+                  "symbol": "drawText"
+                },
+                "computed": false,
+                "line": 238,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 238,
+                  "column": 25,
+                  "value": "TAP TO FLAP"
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 238,
+                  "column": 40,
+                  "value": 140
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 238,
+                  "column": 45,
+                  "value": 320
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 238,
+                  "column": 50,
+                  "value": 30
+                }
+              ],
+              "line": 239,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 239,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 239,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 239,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 239,
+                  "column": 25,
+                  "symbol": "colorWhite"
+                }
+              ],
+              "line": 240,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 240,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 240,
+                  "column": 16,
+                  "symbol": "drawText"
+                },
+                "computed": false,
+                "line": 240,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 240,
+                  "column": 25,
+                  "value": "Help the derp avoid the neon pops!"
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 240,
+                  "column": 63,
+                  "value": 100
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 240,
+                  "column": 68,
+                  "value": 360
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 240,
+                  "column": 73,
+                  "value": 18
+                }
+              ],
+              "line": 241,
+              "column": 5
+            }
+          ],
+          "line": 0,
+          "column": 0
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "Identifier",
+            "line": 243,
+            "column": 9,
+            "symbol": "gameOver"
+          },
+          "thenBranch": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 244,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 244,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 244,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 244,
+                  "column": 25,
+                  "value": "rgba(255, 0, 85, 0.4)"
+                }
+              ],
+              "line": 245,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 245,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 245,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 245,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "NumericLiteral",
+                  "line": 245,
+                  "column": 25,
+                  "value": 0
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 245,
+                  "column": 28,
+                  "value": 0
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 245,
+                  "column": 31,
+                  "value": 500
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 245,
+                  "column": 36,
+                  "value": 700
+                }
+              ],
+              "line": 246,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 246,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 246,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 246,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 246,
+                  "column": 25,
+                  "symbol": "colorWhite"
+                }
+              ],
+              "line": 247,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 247,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 247,
+                  "column": 16,
+                  "symbol": "drawText"
+                },
+                "computed": false,
+                "line": 247,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 247,
+                  "column": 25,
+                  "value": "OOPSIE!"
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 247,
+                  "column": 36,
+                  "value": 170
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 247,
+                  "column": 41,
+                  "value": 300
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 247,
+                  "column": 46,
+                  "value": 50
+                }
+              ],
+              "line": 248,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 248,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 248,
+                  "column": 16,
+                  "symbol": "drawText"
+                },
+                "computed": false,
+                "line": 248,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "StringLiteral",
+                    "line": 248,
+                    "column": 25,
+                    "value": "SCORE: "
+                  },
+                  "right": {
+                    "kind": "CallExpr",
+                    "caller": {
+                      "kind": "Identifier",
+                      "line": 248,
+                      "column": 37,
+                      "symbol": "str"
+                    },
+                    "args": [
+                      {
+                        "kind": "Identifier",
+                        "line": 248,
+                        "column": 41,
+                        "symbol": "score"
+                      }
+                    ],
+                    "line": 248,
+                    "column": 47
+                  },
+                  "line": 248,
+                  "column": 47
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 248,
+                  "column": 49,
+                  "value": 190
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 248,
+                  "column": 54,
+                  "value": 360
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 248,
+                  "column": 59,
+                  "value": 24
+                }
+              ],
+              "line": 249,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 249,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 249,
+                  "column": 16,
+                  "symbol": "drawText"
+                },
+                "computed": false,
+                "line": 249,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 249,
+                  "column": 25,
+                  "value": "PRESS 'R' TO RE-DERP"
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 249,
+                  "column": 49,
+                  "value": 130
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 249,
+                  "column": 54,
+                  "value": 420
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 249,
+                  "column": 59,
+                  "value": 20
+                }
+              ],
+              "line": 250,
+              "column": 5
+            }
+          ],
+          "line": 0,
+          "column": 0
+        }
+      ]
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "update",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 254,
+            "column": 5,
+            "symbol": "updateLogic"
+          },
+          "args": [],
+          "line": 255,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 255,
+            "column": 5,
+            "symbol": "drawFrame"
+          },
+          "args": [],
+          "line": 256,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 256,
+            "column": 5,
+            "symbol": "time"
+          },
+          "args": [],
+          "line": 257,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 259,
+        "column": 1,
+        "symbol": "resetGame"
+      },
+      "args": [],
+      "line": 260,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 260,
+          "column": 1,
+          "symbol": "Window"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 260,
+          "column": 8,
+          "symbol": "onUpdate"
+        },
+        "computed": false,
+        "line": 260,
+        "column": 16
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 260,
+          "column": 17,
+          "symbol": "update"
+        }
+      ],
+      "line": 261,
+      "column": 1
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

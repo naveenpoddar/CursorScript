@@ -7,6 +7,9 @@ let food = { x: 5, y: 5 };
 let score = 0;
 let frameCount = 0;
 let gameOver = false;
+let lastTime = time();
+let fps = 0;
+
 
 fn spawnFood() {
     food.x = Math.randomInt(0, 29)
@@ -40,11 +43,7 @@ fn update() {
         Window.setColor("#2ed573")
         Window.drawRect(btnX, btnY, btnW, btnH)
         Window.setColor("black")
-        
-        let txt = "RESTART";
-        let fontSize = 24;
-        let tw = Window.measureText(txt, fontSize);
-        Window.drawText(txt, btnX + (btnW - tw) / 2, btnY + (btnH - fontSize) / 2 + 5, fontSize)
+        Window.drawText("RESTART", btnX + 50, btnY + 35, 24)
 
         // Mouse Check for Restart
         if (Window.getMouseButton()) {
@@ -57,19 +56,19 @@ fn update() {
         }
     } else {
         // Handle Input
-        if (Window.getKeyDown("ArrowUp") && dy == 0) { 
+        if ((Window.getKeyDown("ArrowUp") || Window.getKeyDown("W")) && dy == 0) { 
             dx = 0
             dy = -1
         }
-        if (Window.getKeyDown("ArrowDown") && dy == 0) { 
+        if ((Window.getKeyDown("ArrowDown") || Window.getKeyDown("S")) && dy == 0) { 
             dx = 0
             dy = 1
         }
-        if (Window.getKeyDown("ArrowLeft") && dx == 0) { 
+        if ((Window.getKeyDown("ArrowLeft") || Window.getKeyDown("A")) && dx == 0) { 
             dx = -1
             dy = 0
         }
-        if (Window.getKeyDown("ArrowRight") && dx == 0) { 
+        if ((Window.getKeyDown("ArrowRight") || Window.getKeyDown("D")) && dx == 0) { 
             dx = 1
             dy = 0
         }
@@ -113,6 +112,16 @@ fn update() {
 
         // Rendering
         Window.clear("#1a1a1a")
+
+        let currentTime = time();
+        let deltaTime = currentTime - lastTime;
+        if (deltaTime > 0) {
+            let currentFps = 1000 / deltaTime;
+            fps = fps * 0.9 + currentFps * 0.1
+        }
+        lastTime = currentTime
+
+
         
         // Draw Food
         Window.setColor("#ff4757")
@@ -135,6 +144,11 @@ fn update() {
         // Score
         Window.setColor("white")
         Window.drawText("Score: " + str(score), 10, 30, 20)
+
+        // FPS Counter
+        Window.setColor("#2ed573")
+        Window.drawText("FPS: " + str(Math.round(fps)), 520, 30, 16)
+
     }
 }
 

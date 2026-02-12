@@ -48,18 +48,100 @@ const COLORS = {
   blue: 0xffff0000,
 };
 const KEYS: Record<string, number> = {
-  ArrowUp: 265,
-  ArrowDown: 264,
-  ArrowLeft: 263,
-  ArrowRight: 262,
+  // Alphanumeric keys
+  A: 65,
+  B: 66,
+  C: 67,
+  D: 68,
+  E: 69,
+  F: 70,
+  G: 71,
+  H: 72,
+  I: 73,
+  J: 74,
+  K: 75,
+  L: 76,
+  M: 77,
+  N: 78,
+  O: 79,
+  P: 80,
+  Q: 81,
+  R: 82,
+  S: 83,
+  T: 84,
+  U: 85,
+  V: 86,
+  W: 87,
+  X: 88,
+  Y: 89,
+  Z: 90,
+  Zero: 48,
+  One: 49,
+  Two: 50,
+  Three: 51,
+  Four: 52,
+  Five: 53,
+  Six: 54,
+  Seven: 55,
+  Eight: 56,
+  Nine: 57,
+
+  // Control keys
   Space: 32,
-  Enter: 257,
   Escape: 256,
+  Enter: 257,
+  Tab: 258,
+  Backspace: 259,
+  Insert: 260,
+  Delete: 261,
+  Right: 262,
+  Left: 263,
+  Down: 264,
+  Up: 265,
+  ArrowRight: 262,
+  ArrowLeft: 263,
+  ArrowDown: 264,
+  ArrowUp: 265,
+  PageUp: 266,
+  PageDown: 267,
+  Home: 268,
+  End: 269,
+  CapsLock: 280,
+  ScrollLock: 281,
+  NumLock: 282,
+  PrintScreen: 283,
+  Pause: 284,
+  F1: 290,
+  F2: 291,
+  F3: 292,
+  F4: 293,
+  F5: 294,
+  F6: 295,
+  F7: 296,
+  F8: 297,
+  F9: 298,
+  F10: 299,
+  F11: 300,
+  F12: 301,
+  LeftShift: 340,
+  LeftControl: 341,
+  LeftAlt: 342,
+  LeftSuper: 343,
+  RightShift: 344,
+  RightControl: 345,
+  RightAlt: 346,
+  RightSuper: 347,
+  KBMenu: 348,
 };
+
 const MOUSE: Record<string, number> = {
   left: 0,
   right: 1,
   middle: 2,
+  side: 3,
+  extra: 4,
+  forward: 5,
+  back: 6,
 };
 
 class _WindowL {
@@ -126,7 +208,8 @@ class _WindowL {
 
     if (!c) return COLORS.black;
 
-    if (COLORS[c.toLowerCase()]) return COLORS[c.toLowerCase()];
+    if (COLORS[c.toLowerCase() as keyof typeof COLORS])
+      return COLORS[c.toLowerCase() as keyof typeof COLORS];
 
     if (c.startsWith("#")) {
       const hex = c.substring(1);
@@ -136,9 +219,9 @@ class _WindowL {
         const b = parseInt(hex.substring(4, 6), 16);
         return (r | (g << 8) | (b << 16) | (0xff << 24)) >>> 0;
       } else if (hex.length === 3) {
-        const r = parseInt(hex[0] + hex[0], 16);
-        const g = parseInt(hex[1] + hex[1], 16);
-        const b = parseInt(hex[2] + hex[2], 16);
+        const r = parseInt(hex[0]! + hex[0]!, 16);
+        const g = parseInt(hex[1]! + hex[1]!, 16);
+        const b = parseInt(hex[2]! + hex[2]!, 16);
         return (r | (g << 8) | (b << 16) | (0xff << 24)) >>> 0;
       }
     }

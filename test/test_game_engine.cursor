@@ -5,6 +5,19 @@ let scene = Engine3D.createScene()
 // Seed the random noise engine
 PerlinNoise.seed(rand(111111, 999999))
 
+let getHeight = (x, z) -> {
+    let scale1 = 0.015
+    let scale2 = 0.05
+    let scale3 = 0.1
+    
+    let h1 = PerlinNoise.noise2D(x * scale1, z * scale1) * 35 
+    let h2 = PerlinNoise.noise2D(x * scale2, z * scale2) * 12
+    let h3 = PerlinNoise.noise2D(x * scale3, z * scale3) * 4
+    
+    let combined = h1 + h2 + h3 + 12
+    Math.round(combined)
+}
+
 // 2. Setup Sun/Light
 Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
 let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C") // Sun Core
@@ -55,13 +68,36 @@ let dlX = 0; let dlY = 0; let dlZ = 0; let ambient = 0.45; let lr = 1.0; let lg 
 let sunX = 0; let sunY = 0; let sunZ = 0
 let moonX = 0; let moonY = 0; let moonZ = 0
 
-
-let getHeight = (x, z) -> {
-    let elevation = PerlinNoise.noise2D(x * 0.05, z * 0.05)
-    let h = 32 + Math.round(elevation * 16)
-    if (h > 64) { h = 64 }
-    if (h < 0) { h = 0 }
-    h
+// --- Collision Helper ---
+let checkSolid = (tx, tz, ty) -> {
+    let bx = Math.round(tx)
+    let by = Math.round(ty)
+    let bz = Math.round(tz)
+    let bcx = Math.floor(bx / 16)
+    let bcz = Math.floor(bz / 16)
+    
+    let res = false
+    let ci = 0
+    let clen = len(loadedCols)
+    while (ci < clen) {
+        let col = loadedCols[ci]
+        if (col.x == bcx && col.z == bcz) {
+            let cm = col.meshes
+            let cmlen = len(cm)
+            let mi = 0
+            while (mi < cmlen) {
+                let m = cm[mi]
+                if (m.x == bx && m.y == by && m.z == bz) {
+                    res = true
+                    mi = cmlen // Break
+                }
+                mi = mi + 1
+            }
+            ci = clen // Break
+        }
+        ci = ci + 1
+    }
+    res
 }
 
 // Lock cursor for FPS view!
@@ -73,54 +109,73 @@ Window.onFixedUpdate(() -> {
     let yawRad = yaw * (Math.PI / 180)
 
     
-    // --- FPS Movement (WASD Space/Shift) ---
+    // --- FPS Movement (WASD with Horizontal Collision) ---
+    let moveX = 0
+    let moveZ = 0
     if (Window.getKeyDown("W")) {
-        px = px + Math.sin(yawRad) * speed
-        pz = pz + Math.cos(yawRad) * speed
+        moveX = moveX + Math.sin(yawRad) * speed
+        moveZ = moveZ + Math.cos(yawRad) * speed
     }
     if (Window.getKeyDown("S")) {
-        px = px - Math.sin(yawRad) * speed
-        pz = pz - Math.cos(yawRad) * speed
+        moveX = moveX - Math.sin(yawRad) * speed
+        moveZ = moveZ - Math.cos(yawRad) * speed
     }
     if (Window.getKeyDown("A")) {
-        px = px - Math.cos(yawRad) * speed
-        pz = pz + Math.sin(yawRad) * speed
+        moveX = moveX - Math.cos(yawRad) * speed
+        moveZ = moveZ + Math.sin(yawRad) * speed
     }
     if (Window.getKeyDown("D")) {
-        px = px + Math.cos(yawRad) * speed
-        pz = pz - Math.sin(yawRad) * speed
+        moveX = moveX + Math.cos(yawRad) * speed
+        moveZ = moveZ - Math.sin(yawRad) * speed
     }
+
+    // Try X Move
+    let testX = px + moveX
+    let colX = false
+    // Check 3 points of player height
+    if (checkSolid(testX, pz, py)) { colX = true }
+    if (checkSolid(testX, pz, py - 1)) { colX = true }
+    if (checkSolid(testX, pz, py - 1.8)) { colX = true }
+    if (colX == false) { px = testX }
+
+    // Try Z Move
+    let testZ = pz + moveZ
+    let colZ = false
+    if (checkSolid(px, testZ, py)) { colZ = true }
+    if (checkSolid(px, testZ, py - 1)) { colZ = true }
+    if (checkSolid(px, testZ, py - 1.8)) { colZ = true }
+    if (colZ == false) { pz = testZ }
     
-    // --- Gravity & Physics ---
+    // --- Vertical Physics ---
     yVel = yVel - 0.015
     let newPy = py + yVel
     
-    // --- Improved Collision Loop (Highly optimized for high mesh counts) ---
+    // Floor detection
+    let floorY = -10
     let bpx = Math.round(px)
     let bpz = Math.round(pz)
-    let floorY = -10
-    
     let bcx = Math.floor(bpx / 16)
     let bcz = Math.floor(bpz / 16)
-    let ci = 0
-    while (ci < len(loadedCols)) {
-        let col = loadedCols[ci]
+    
+    let fci = 0
+    while (fci < len(loadedCols)) {
+        let col = loadedCols[fci]
         if (col.x == bcx && col.z == bcz) {
-            let mj = 0
             let cm = col.meshes
             let clen = len(cm)
-            while (mj < clen) {
-                let m = cm[mj]
-                // Quick coordinate check before complex logic
+            let mi = 0
+            while (mi < clen) {
+                let m = cm[mi]
                 if (m.x == bpx && m.z == bpz) {
                     if (m.y > floorY && m.y <= py - 1.5) {
                         floorY = m.y
                     }
                 }
-                mj = mj + 1
+                mi = mi + 1
             }
+            fci = len(loadedCols)
         }
-        ci = ci + 1
+        fci = fci + 1
     }
 
     if (newPy <= floorY + 2.5) {
@@ -136,6 +191,7 @@ Window.onFixedUpdate(() -> {
         isGrounded = false
     }
     py = newPy
+
     
     // --- Hotbar Switching ---
     if (Window.getKeyDown("One")) { selectedSlot = 0 }

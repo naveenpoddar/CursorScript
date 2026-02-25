@@ -77,6 +77,7 @@ const lib = dlopen(libPath, {
   DisableCursor: { args: [], returns: FFIType.void },
   EnableCursor: { args: [], returns: FFIType.void },
   GetMouseDelta: { args: [], returns: FFIType.f64 }, // Packs the 8-byte Vector2 struct
+  GetMouseWheelMove: { args: [], returns: FFIType.f32 },
 });
 
 // Color utility (Raylib uses RGBA as a single u32)
@@ -414,6 +415,10 @@ class _WindowL {
     let buf = new Float64Array([delta]);
     let f32 = new Float32Array(buf.buffer);
     return f32[1];
+  }
+
+  public getMouseWheel() {
+    return lib.symbols.GetMouseWheelMove();
   }
 
   public getKeyDown(key: any) {

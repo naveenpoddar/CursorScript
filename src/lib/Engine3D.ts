@@ -384,7 +384,7 @@ class _Engine3D {
       const camZ = z3;
 
       // 1. Z-Near and Z-Far Culling
-      if (camZ < 0.1 || camZ > 180) continue;
+      if (camZ < 0.1 || camZ > 2000) continue;
 
       // 2. FOV-based Horizontal and Vertical Culling
       // We use the exact perspective projection math to define the frustum

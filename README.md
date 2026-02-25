@@ -19,11 +19,25 @@ CursorScript is a high-performance, interpreted programming language designed fo
 
 ## Getting Started 📦
 
-### Prerequisites
+### Installation
+
+#### Linux & MacOS
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.sh | bash
+```
+
+#### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.ps1 | iex
+```
+
+### Manual Installation (From Source)
+
+#### Prerequisites
 
 You need [Bun](https://bun.sh/) installed.
-
-### Installation
 
 1. `git clone https://github.com/naveenpoddar/cursorscript.git`
 2. `cd CursorPP`

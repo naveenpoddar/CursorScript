@@ -4,9 +4,11 @@ $installDir = "$HOME\.$packageName"
 $url = "https://github.com/naveenpoddar/cursorscript/releases/latest/download/cursorscript-windows-x64-baseline.zip"
 
 # 1. Prepare Directory
-if (!(Test-Path $installDir)) { 
-    New-Item -ItemType Directory -Path $installDir -Force 
+if (Test-Path $installDir) {
+    Write-Host "🗑️ Removing existing $installDir..." -ForegroundColor Yellow
+    Remove-Item -Path $installDir -Recurse -Force
 }
+New-Item -ItemType Directory -Path $installDir -Force
 
 # 2. Download and Extract
 Write-Host "📥 Downloading latest build..." -ForegroundColor Cyan

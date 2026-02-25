@@ -15,8 +15,13 @@ ARCH="$(uname -m)"
 TARGET="${PACKAGE_NAME}-${OS}-${ARCH}.zip"
 URL="https://github.com/naveenpoddar/cursorscript/releases/latest/download/$TARGET"
 
-echo "📦 Downloading $TARGET..."
+# 1. Prepare Directory
+if [ -d "$INSTALL_ROOT" ]; then
+    echo "�️ Removing existing $INSTALL_ROOT..."
+    rm -rf "$INSTALL_ROOT"
+fi
 mkdir -p "$INSTALL_ROOT"
+echo "📦 Downloading $TARGET..."
 curl -L "$URL" -o "$INSTALL_ROOT/package.zip"
 
 # 2. Extract & Clean up

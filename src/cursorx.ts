@@ -75,6 +75,30 @@ async function downloadAndExtract(url: string, targetDir: string) {
   }
 }
 
+async function verifyDependency(targetDir: string, slug: string) {
+  const depConfigPath = join(targetDir, CURSOR_JSON);
+  if (!existsSync(depConfigPath)) {
+    console.warn(
+      `\n⚠️  Warning: The module '${slug}' does not contain a ${CURSOR_JSON} file. It might not be a valid CursorScript dependency.\n`,
+    );
+    return;
+  }
+
+  try {
+    const config: any = await Bun.file(depConfigPath).json();
+    // Basic heuristic: check for name and a .cursor main file
+    if (!config.name || (config.main && !config.main.endsWith(".cursor"))) {
+      console.warn(
+        `\n⚠️  Warning: The module '${slug}' has a ${CURSOR_JSON} but it does not appear to be a standard CursorScript dependency.\n`,
+      );
+    }
+  } catch (e) {
+    console.warn(
+      `\n⚠️  Warning: Failed to parse ${CURSOR_JSON} in module '${slug}'.\n`,
+    );
+  }
+}
+
 async function addModule(repoUrl: string) {
   if (!repoUrl) {
     console.error("Usage: cursorx add <repository-url>");
@@ -87,6 +111,11 @@ async function addModule(repoUrl: string) {
   }
 
   const config: CursorConfig = await Bun.file(CURSOR_JSON).json();
+  if (!config.name || (config.main && !config.main.endsWith(".cursor"))) {
+    console.warn(
+      `\n⚠️  Warning: The local ${CURSOR_JSON} does not appear to be a standard CursorScript project.\n`,
+    );
+  }
   const slug = repoUrl.split("/").pop()?.replace(".git", "") || "unknown";
   console.log(`Installing module '${slug}' from ${repoUrl}...`);
 
@@ -104,6 +133,7 @@ async function addModule(repoUrl: string) {
   }
 
   if (success) {
+    await verifyDependency(targetDir, slug);
     config.packages[slug] = repoUrl;
     await Bun.write(CURSOR_JSON, JSON.stringify(config, null, 2));
     console.log(`✅ Module '${slug}' installed to ${DEP_DIR}/${slug}`);
@@ -121,6 +151,11 @@ async function installAll() {
   }
 
   const config: CursorConfig = await Bun.file(CURSOR_JSON).json();
+  if (!config.name || (config.main && !config.main.endsWith(".cursor"))) {
+    console.warn(
+      `\n⚠️  Warning: The local ${CURSOR_JSON} does not appear to be a standard CursorScript project.\n`,
+    );
+  }
   const pkgs = config.packages || {};
 
   if (Object.keys(pkgs).length === 0) {
@@ -146,6 +181,10 @@ async function installAll() {
         `${baseUrl}/tarball/master`,
         targetDir,
       );
+    }
+
+    if (success) {
+      await verifyDependency(targetDir, slug);
     }
   }
   console.log("✅ All packages installed.");

@@ -8,10 +8,28 @@ import { join, dirname } from "path";
 import { existsSync } from "node:fs";
 
 // 1. Dynamic Path Loading (Detects .dll, .so, or .dylib automatically)
-// Try development path first, then fallback to executable-relative path for built versions
-const devPath = join(import.meta.dir, "..", "..", `lib/libraylib.${suffix}`);
-const buildPath = join(dirname(process.execPath), `lib/libraylib.${suffix}`);
-const libPath = existsSync(devPath) ? devPath : buildPath;
+const isCompiled = Bun.main === process.execPath;
+
+const devPath = join(import.meta.dir, "..", "..", "lib", `libraylib.${suffix}`);
+const buildPath = join(dirname(process.execPath), "lib", `libraylib.${suffix}`);
+
+// If compiled, prefer the library bundled with the executable
+const libPath = isCompiled
+  ? buildPath
+  : existsSync(devPath)
+    ? devPath
+    : buildPath;
+
+if (!existsSync(libPath)) {
+  console.error(
+    `\n❌ Native Library Error: Could not find libraylib.${suffix}`,
+  );
+  console.error(`   Mode: ${isCompiled ? "Compiled" : "Development"}`);
+  console.error(`   Searched Path: ${libPath}`);
+  console.error(
+    `   Please ensure the 'lib' folder exists next to the ${isCompiled ? "executable" : "source folder"}.\n`,
+  );
+}
 
 const lib = dlopen(libPath, {
   InitWindow: {

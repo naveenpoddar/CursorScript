@@ -20,14 +20,9 @@ import { handleCursorXCommand } from "./cursorx";
 
 async function main() {
   // Check if we are running as a script (bun run src/main.ts) or as a compiled binary (cursorx.exe)
-  const isScript =
-    Bun.argv[1] &&
-    (Bun.argv[1].endsWith(".ts") ||
-      Bun.argv[1].endsWith(".js") ||
-      Bun.argv[1].endsWith(".cursor") ||
-      Bun.argv[1].endsWith(".Cursor"));
+  const isCompiled = Bun.main.toLowerCase() === process.execPath.toLowerCase();
 
-  const args = Bun.argv.slice(isScript ? 2 : 1);
+  const args = Bun.argv.slice(isCompiled ? 1 : 2);
 
   if (args.length === 0) {
     // No arguments provided -> Start REPL
@@ -43,8 +38,8 @@ async function main() {
   }
 }
 
-import { readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { readFileSync, existsSync, mkdirSync } from "fs";
+import { join, dirname, basename, resolve } from "path";
 
 global.loadModule = (path: string) => {
   let relativePath = path;
@@ -114,18 +109,22 @@ global.loadModule = (path: string) => {
 async function run(filePath: string = "./test/Main.Cursor") {
   const parser = new Parser();
   const env = createGlobalEnv();
-  env.currentFile = join(process.cwd(), filePath);
+  env.currentFile = resolve(filePath);
   global.currentEnv = env;
 
   try {
     const input = await Bun.file(filePath).text();
     const program = parser.produceAST(input, filePath);
 
-    const parts = filePath.split("\\");
-    const filename = parts[parts.length - 1];
-    const path = parts.slice(0, parts.length - 1).join("\\");
+    const filename = basename(filePath);
+    const dir = dirname(filePath);
+    const debugDir = join(dir, "debug");
 
-    const newFilePath = `${path}\\debug\\${filename}`;
+    if (!existsSync(debugDir)) {
+      mkdirSync(debugDir, { recursive: true });
+    }
+
+    const newFilePath = join(debugDir, filename);
 
     await Bun.write(
       `${newFilePath}.program.json`,

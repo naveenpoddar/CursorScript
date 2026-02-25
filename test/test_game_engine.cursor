@@ -7,6 +7,9 @@ PerlinNoise.seed(rand(111111, 999999))
 
 // 2. Setup Sun/Light
 Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
+let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C") // Sun Core
+let sunGlow1 = Engine3D.createCube(scene, 32, "rgba(255, 232, 124, 0.35)") // Inner Glow
+let sunGlow2 = Engine3D.createCube(scene, 50, "rgba(255, 232, 124, 0.1)") // Outer Glow
 
 // 3. Player Properties
 let px = 0
@@ -129,6 +132,11 @@ Window.onUpdate(() -> {
             step = step + 1
         }
     }
+    
+    // Keep Sun in the sky relative to player (direction 0.5, 1, 0.5)
+    Engine3D.setPosition(scene, sunMesh, px + 80, py + 120, pz + 80)
+    Engine3D.setPosition(scene, sunGlow1, px + 80, py + 120, pz + 80)
+    Engine3D.setPosition(scene, sunGlow2, px + 80, py + 120, pz + 80)
 
     // --- Dynamic Terrain System ---
     let cx = Math.floor(px)
@@ -209,6 +217,13 @@ Window.onUpdate(() -> {
                                 if (currY < h) { color = "#d35400" } // dirt
                                 if (currY <= h - 2 && h > 2) { color = "#7f8c8d" } // stone
                                 
+                                // Ambient Voxel Shadows (Directional shadowing based on sun)
+                                if (h_px > currY || h_nz > currY) {
+                                    if (color == "#78e08f") { color = "#55a060" } // shadowed grass
+                                    else if (color == "#d35400") { color = "#a04000" } // shadowed dirt
+                                    else if (color == "#7f8c8d") { color = "#5a6667" } // shadowed stone
+                                }
+                                
                                 let cube = Engine3D.createCube(scene, 1, color)
                                 Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
                                 Engine3D.setSolidMode(scene, cube, true)
@@ -221,7 +236,7 @@ Window.onUpdate(() -> {
                                     let rand = randVal - Math.floor(randVal)
                                     
                                     // 1% chance to spawn a tree
-                                    if (rand < 0.01) {
+                                    if (rand < 0.0075) {
                                         // Variable heights between 3 and 7
                                         let treeHeight = 3 + Math.floor(rand * 100) % 5
                                         

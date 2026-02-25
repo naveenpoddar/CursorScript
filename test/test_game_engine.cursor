@@ -16,6 +16,9 @@ let pz = -8
 let yaw = 0
 let pitch = 0
 let speed = 0.25
+let yVel = 0
+let isGrounded = false
+let breakCooldown = 0
 
 let loadedCols = []
 let viewDist = 3  // Changed view distance from 8 to 2 chunks for performance
@@ -65,8 +68,67 @@ Window.onUpdate(() -> {
         px = px + Math.cos(yawRad) * speed
         pz = pz - Math.sin(yawRad) * speed
     }
-    if (Window.getKeyDown("Space")) { py = py + speed }
-    if (Window.getKeyDown("LeftShift")) { py = py - speed }
+    
+    // --- Gravity & Physics ---
+    yVel = yVel - 0.015
+    let newPy = py + yVel
+    
+    // Collision checking (floor only for simplicity)
+    let floorY = getHeight(Math.round(px), Math.round(pz))
+    if (newPy <= floorY + 2.5) {
+        newPy = floorY + 2.5
+        yVel = 0
+        isGrounded = true
+    } else {
+        isGrounded = false
+    }
+
+    if (Window.getKeyDown("Space") && isGrounded == true) {
+        yVel = 0.3
+        isGrounded = false
+    }
+    py = newPy
+    
+    // --- Block Breaking (Mouse Left Click) ---
+    if (breakCooldown > 0) { breakCooldown = breakCooldown - 1 }
+    // Fallback to getKeyDown if getMouseButtonDown is failing, but WindowLib usually maps getMouseButtonDown
+    if (Window.getMouseButtonDown && Window.getMouseButtonDown(0) && breakCooldown == 0) {
+        breakCooldown = 15 // About 1/4th second cooldown
+        let pitchRad = pitch * (Math.PI / 180)
+        let rx = px
+        let ry = py
+        let rz = pz
+        let hit = false
+        let step = 0
+        
+        while (step < 15 && hit == false) {
+            rx = rx + Math.sin(yawRad) * Math.cos(pitchRad) * 0.5
+            ry = ry - Math.sin(pitchRad) * 0.5
+            rz = rz + Math.cos(yawRad) * Math.cos(pitchRad) * 0.5
+            
+            let bx = Math.round(rx)
+            let by = Math.round(ry)
+            let bz = Math.round(rz)
+            
+            let ci = 0
+            while (ci < len(loadedCols) && hit == false) {
+                let cm = loadedCols[ci].meshes
+                let cj = 0
+                while (cj < len(cm) && hit == false) {
+                    if (cm[cj].x == bx && cm[cj].y == by && cm[cj].z == bz) {
+                        Engine3D.deleteMesh(scene, cm[cj].id)
+                        cm[cj] = cm[len(cm) - 1]
+                        pop(cm)
+                        hit = true
+                    } else {
+                        cj = cj + 1
+                    }
+                }
+                ci = ci + 1
+            }
+            step = step + 1
+        }
+    }
 
     // --- Dynamic Terrain System ---
     let cx = Math.floor(px)
@@ -84,7 +146,7 @@ Window.onUpdate(() -> {
         if (dist > viewDist * 1.6) {
             let j = 0
             while (j < len(col.meshes)) {
-                Engine3D.deleteMesh(scene, col.meshes[j])
+                Engine3D.deleteMesh(scene, col.meshes[j].id)
                 j = j + 1
             }
             // Array fast remove using pop
@@ -150,7 +212,89 @@ Window.onUpdate(() -> {
                                 let cube = Engine3D.createCube(scene, 1, color)
                                 Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
                                 Engine3D.setSolidMode(scene, cube, true)
-                                push(colMeshes, cube)
+                                push(colMeshes, { id: cube, x: wrldX, y: currY, z: wrldZ })
+                                
+                                // Tree Generation
+                                if (currY == h && color == "#78e08f") {
+                                    // Deterministic random pseudo-hash based on x/z
+                                    let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453
+                                    let rand = randVal - Math.floor(randVal)
+                                    
+                                    // 1% chance to spawn a tree
+                                    if (rand < 0.01) {
+                                        // Variable heights between 3 and 7
+                                        let treeHeight = 3 + Math.floor(rand * 100) % 5
+                                        
+                                        // Tree Variations
+                                        let leafColor = "#228B22" // Default ForestGreen
+                                        let trunkColor = "#8B4513" // Default SaddleBrown
+                                        
+                                        let varSeed = Math.floor(rand * 1000) % 4
+                                        if (varSeed == 0) { 
+                                            // Pine / Dark Tree
+                                            leafColor = "#006400" // DarkGreen
+                                            treeHeight = treeHeight + 1 // Pines are usually taller
+                                        }
+                                        if (varSeed == 1) {
+                                            // Birch
+                                            trunkColor = "#F5DEB3" // Wheat/Whiteish
+                                            leafColor = "#9ACD32" // YellowGreen
+                                        }
+                                        if (varSeed == 2) {
+                                            // Autumn
+                                            leafColor = "#FF8C00" // DarkOrange
+                                        }
+                                        if (varSeed == 3) {
+                                            // Cherry Blossom
+                                            leafColor = "#FFB7C5" // Cherry Pink
+                                        }
+                                        
+                                        // Trunk
+                                        let ty = 1
+                                        while (ty <= treeHeight) {
+                                            let trunk = Engine3D.createCube(scene, 1, trunkColor)
+                                            Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ)
+                                            Engine3D.setSolidMode(scene, trunk, true)
+                                            push(colMeshes, { id: trunk, x: wrldX, y: h + ty, z: wrldZ })
+                                            ty = ty + 1
+                                        }
+                                        
+                                        // Leaves shape (adjust size based on height)
+                                        let leafSpread = 1
+                                        if (treeHeight > 5) { leafSpread = 2 }
+                                        
+                                        let lx = -leafSpread
+                                        while (lx <= leafSpread) {
+                                            let lz = -leafSpread
+                                            while (lz <= leafSpread) {
+                                                let maxLy = treeHeight + 1
+                                                let minLy = treeHeight - 1
+                                                // If tree is wider, drop the leaves one lower
+                                                if (leafSpread == 2) { minLy = treeHeight - 2 }
+                                                
+                                                let ly = minLy
+                                                while (ly <= maxLy) {
+                                                    // Add randomness to leaves shape to make it organic
+                                                    let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy
+                                                    if (isCorner == false) {
+                                                        // For large leaves, hollow out the corners more
+                                                        let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy
+                                                        if (isOuterCorner == false) {
+                                                            let leaf = Engine3D.createCube(scene, 1, leafColor)
+                                                            Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz)
+                                                            Engine3D.setSolidMode(scene, leaf, true)
+                                                            push(colMeshes, { id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz })
+                                                        }
+                                                    }
+                                                    ly = ly + 1
+                                                }
+                                                lz = lz + 1
+                                            }
+                                            lx = lx + 1
+                                        }
+                                    }
+                                }
+                                
                                 currY = currY + 1
                             }
                             bz = bz + 1

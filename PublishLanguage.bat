@@ -31,23 +31,35 @@ if "!HAS_CHANGES!"=="1" (
 )
 
 :check_commits
-:: Get the latest tag from git
-for /f "tokens=*" %%a in ('git describe --tags --abbrev=0 2^>nul') do set LATEST_TAG=%%a
+:: Get the latest tag from git using version sort (most robust method)
+set LATEST_TAG=
+for /f "tokens=*" %%a in ('git tag --sort=-v:refname') do (
+    set LATEST_TAG=%%a
+    goto :found_tag
+)
 
+:found_tag
 :: If no tag exists, start at v0.0.0
 if not defined LATEST_TAG (
     set LATEST_TAG=v0.0.0
-    echo No tags found, starting from v0.0.0
+    echo ℹ️  No tags found in repository, starting from v0.0.0
 ) else (
     echo Latest tag found: %LATEST_TAG%
     
     :: Check if there are any commits since the last tag
-    for /f "tokens=*" %%c in ('git rev-list %LATEST_TAG%..HEAD --count') do set COMMITS_SINCE=%%c
+    :: Note: describe will still tell us if HEAD matches the tag or how many commits away it is
+    for /f "tokens=*" %%c in ('git rev-list %LATEST_TAG%..HEAD --count 2^>nul') do (
+        set COMMITS_SINCE=%%c
+    )
+    if not defined COMMITS_SINCE set COMMITS_SINCE=unknown
+
     if "!COMMITS_SINCE!"=="0" (
         echo.
         echo ℹ️  No new commits since %LATEST_TAG%.
         set /p FORCE="Create a new tag anyway? (y/n) [n]: "
         if /i "!FORCE!" neq "y" exit /b 0
+    ) else if "!COMMITS_SINCE!"=="unknown" (
+        echo 📈 Tag %LATEST_TAG% is not in the current branch history.
     ) else (
         echo 📈 There are !COMMITS_SINCE! new commit(s^) since %LATEST_TAG%
     )

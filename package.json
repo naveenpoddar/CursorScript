@@ -1,6 +1,6 @@
 {
     "name":  "cursorscript",
-    "version":  "1.5.7",
+    "version":  "1.5.8",
     "devDependencies":  {
                             "@types/bun":  "latest"
                         },

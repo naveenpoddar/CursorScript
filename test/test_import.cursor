@@ -1,0 +1,8 @@
+import { myValue, greet, person, myValue2 } from "./test_module"
+
+print("Imported value:", myValue)
+greet("User")
+
+
+print("myValue", myValue2)
+print("person", person)

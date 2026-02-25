@@ -23,6 +23,9 @@ import type {
   UnaryExpr,
   VarDeclaration,
   WhileStmt,
+  LambdaExpr,
+  ImportDeclaration,
+  ExportDeclaration,
 } from "../frontend/ast";
 import type Environment from "./environment";
 import {
@@ -31,6 +34,8 @@ import {
   evaluateWhileStmt,
   evaluateProgram,
   evaluateVarDeclaration,
+  evaluateImportDeclaration,
+  evaluateExportDeclaration,
 } from "./eval/statements";
 
 import {
@@ -42,6 +47,7 @@ import {
   evaluateIdentifier,
   evaluateMemberExpr,
   evaluateUnaryExpr,
+  evaluateLambdaExpr,
 } from "./eval/expressions";
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
@@ -97,6 +103,15 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
 
     case "WhileStmt":
       return evaluateWhileStmt(astNode as WhileStmt, env);
+
+    case "ImportDeclaration":
+      return evaluateImportDeclaration(astNode as ImportDeclaration, env);
+
+    case "ExportDeclaration":
+      return evaluateExportDeclaration(astNode as ExportDeclaration, env);
+
+    case "LambdaExpr":
+      return evaluateLambdaExpr(astNode as LambdaExpr, env);
 
     default:
       console.error(

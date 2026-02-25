@@ -5,6 +5,8 @@ export type NodeType =
   | "FunctionDeclaration"
   | "IfStmt"
   | "WhileStmt"
+  | "ImportDeclaration"
+  | "ExportDeclaration"
 
   // Expressions
   | "AssignmentExpr"
@@ -19,7 +21,14 @@ export type NodeType =
   | "Identifier"
   | "BinaryExpr"
   | "UnaryExpr"
-  | "ArrayLiteral";
+  | "ArrayLiteral"
+  | "LambdaExpr";
+
+export interface LambdaExpr extends Expr {
+  kind: "LambdaExpr";
+  parameters: string[];
+  body: Stmt[];
+}
 
 // ...
 export interface ArrayLiteral extends Expr {
@@ -57,6 +66,16 @@ export interface FunctionDeclaration extends Stmt {
   parameters: string[];
   name: string;
   body: Stmt[];
+}
+
+export interface ImportDeclaration extends Stmt {
+  kind: "ImportDeclaration";
+  source: string; // "anyfile"
+  specifiers: string[]; // ["AnyThing"]
+}
+export interface ExportDeclaration extends Stmt {
+  kind: "ExportDeclaration";
+  declaration: Stmt; // The variable or function being exported
 }
 
 export interface IfStmt extends Stmt {

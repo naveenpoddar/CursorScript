@@ -1,0 +1,36 @@
+print("Testing Network Header Management...")
+
+// 1. Add a single header
+Network.AddHeader("X-Custom-Header", "HelloHeader")
+
+// 2. Set multiple headers
+Network.SetHeaders({
+    "Authorization": "Bearer some-token",
+    "X-Another-One": "Value"
+})
+
+print("Fetching headers from httpbin...")
+
+Network.get("https://httpbin.org/headers", (data, error) -> {
+    if (error) {
+        printError("Request failed:", error)
+    } else {
+        print("Response received!")
+        let headers = data.headers
+        print("X-Custom-Header:", headers["X-Custom-Header"])
+        print("Authorization:", headers["Authorization"])
+        print("X-Another-One:", headers["X-Another-One"])
+    }
+})
+
+// 3. Clear headers and check again
+Network.ClearHeaders()
+Network.get("https://httpbin.org/headers", (data, error) -> {
+    if (error) {
+        printError("Request failed:", error)
+    } else {
+        print("\nHeaders after ClearHeaders():")
+        let headers = data.headers
+        print("X-Custom-Header present?", headers["X-Custom-Header"])
+    }
+})

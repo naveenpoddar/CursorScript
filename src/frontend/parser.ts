@@ -15,6 +15,9 @@ import {
   type StringLiteral,
   type WhileStmt,
   type ArrayLiteral,
+  type LambdaExpr,
+  type ImportDeclaration,
+  type ExportDeclaration,
 } from "./ast";
 import { tokenise, type Token, TokenType } from "./lexer";
 
@@ -79,6 +82,12 @@ export default class Parser {
 
       case TokenType.While:
         return this.parse_while_stmt();
+
+      case TokenType.Import:
+        return this.parse_import_declaration();
+
+      case TokenType.Export:
+        return this.parse_export_declaration();
 
       default:
         const expr = this.parse_expr();
@@ -225,6 +234,61 @@ export default class Parser {
     } as VarDeclaration;
   }
 
+  private parse_import_declaration(): Stmt {
+    this.eat(); // consume import
+
+    this.expect(TokenType.OpenBrace, "Expected '{' after import");
+    const specifiers: string[] = [];
+
+    while (this.notEOF() && this.at().type !== TokenType.CloseBrace) {
+      specifiers.push(
+        this.expect(TokenType.Identifier, "Expected identifier in import list")
+          .value,
+      );
+      if (this.at().type === TokenType.Comma) {
+        this.eat();
+      }
+    }
+
+    this.expect(TokenType.CloseBrace, "Expected '}' after import list");
+    this.expect(TokenType.From, "Expected 'from' after import specifiers");
+    const source = this.expect(
+      TokenType.String,
+      "Expected string literal for import source",
+    ).value;
+
+    if (this.at().type === TokenType.Semicolon) {
+      this.eat();
+    }
+
+    return {
+      kind: "ImportDeclaration",
+      source,
+      specifiers,
+      line: this.at().line,
+      column: this.at().column,
+    } as ImportDeclaration;
+  }
+
+  private parse_export_declaration(): Stmt {
+    this.eat(); // consume export
+    const declaration = this.parse_stmt();
+
+    if (
+      declaration.kind !== "VarDeclaration" &&
+      declaration.kind !== "FunctionDeclaration"
+    ) {
+      throw "Export declaration must be a variable or function declaration.";
+    }
+
+    return {
+      kind: "ExportDeclaration",
+      declaration,
+      line: this.at().line,
+      column: this.at().column,
+    } as ExportDeclaration;
+  }
+
   private parse_expr(): Expr {
     return this.parse_assignment_expr();
   }
@@ -302,10 +366,17 @@ export default class Parser {
     const properties = new Array<Property>();
 
     while (this.notEOF() && this.at().type != TokenType.CloseBrace) {
-      const key = this.expect(
-        TokenType.Identifier,
-        "Object literal key expected",
-      ).value;
+      const token = this.eat();
+      let key: string;
+
+      if (
+        token.type === TokenType.Identifier ||
+        token.type === TokenType.String
+      ) {
+        key = token.value;
+      } else {
+        throw `Object literal key expected, got ${TokenType[token.type]} at ${this.filename}:${token.line}:${token.column}`;
+      }
 
       if (this.at().type === TokenType.Comma) {
         this.eat();
@@ -522,6 +593,68 @@ export default class Parser {
     return object;
   }
 
+  private isLambda(): boolean {
+    if (this.at().type !== TokenType.OpenParen) return false;
+
+    let parenCount = 0;
+    for (let i = 0; i < this.tokens.length; i++) {
+      const type = this.tokens[i]!.type;
+      if (type === TokenType.OpenParen) parenCount++;
+      else if (type === TokenType.CloseParen) {
+        parenCount--;
+        if (parenCount === 0) {
+          return this.tokens[i + 1]?.type === TokenType.Arrow;
+        }
+      } else if (type === TokenType.EOF) return false;
+    }
+    return false;
+  }
+
+  private parse_lambda_expr(): Expr {
+    this.expect(TokenType.OpenParen, "Expected '(' at start of lambda");
+
+    const params: string[] = [];
+    if (this.at().type !== TokenType.CloseParen) {
+      params.push(
+        this.expect(
+          TokenType.Identifier,
+          "Expected identifier in lambda params",
+        ).value,
+      );
+      while (this.at().type === TokenType.Comma) {
+        this.eat();
+        params.push(
+          this.expect(
+            TokenType.Identifier,
+            "Expected identifier after comma in lambda params",
+          ).value,
+        );
+      }
+    }
+
+    this.expect(TokenType.CloseParen, "Expected ')' after lambda params");
+    this.expect(TokenType.Arrow, "Expected '->' after lambda params");
+
+    const body: Stmt[] = [];
+    if (this.at().type === TokenType.OpenBrace) {
+      this.eat();
+      while (this.notEOF() && this.at().type !== TokenType.CloseBrace) {
+        body.push(this.parse_stmt());
+      }
+      this.expect(TokenType.CloseBrace, "Expected '}' after lambda body");
+    } else {
+      body.push(this.parse_expr());
+    }
+
+    return {
+      kind: "LambdaExpr",
+      parameters: params,
+      body,
+      line: this.at().line,
+      column: this.at().column,
+    } as LambdaExpr;
+  }
+
   private parse_primary_expr(): Expr {
     const tk = this.at().type;
 
@@ -551,6 +684,9 @@ export default class Parser {
         } as StringLiteral;
 
       case TokenType.OpenParen:
+        if (this.isLambda()) {
+          return this.parse_lambda_expr();
+        }
         this.eat(); // eat the opening paren
         const value = this.parse_expr();
         this.expect(

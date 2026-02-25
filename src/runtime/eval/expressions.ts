@@ -7,6 +7,7 @@ import type {
   MemberExpr,
   ObjectLiteral,
   UnaryExpr,
+  LambdaExpr,
 } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
@@ -309,4 +310,19 @@ export function evaluateAssignment(
   }
 
   throw `Invalid LHS inside assignment expression: ${JSON.stringify(node.assignee)}`;
+}
+
+export function evaluateLambdaExpr(
+  lambda: LambdaExpr,
+  env: Environment,
+): RuntimeValue {
+  const func: FunctionValue = {
+    type: "function",
+    name: "anonymous",
+    parameters: lambda.parameters,
+    body: lambda.body,
+    declarationEnv: env,
+  };
+
+  return func;
 }

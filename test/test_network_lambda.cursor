@@ -1,0 +1,10 @@
+print("Fetching data with lambda callback...")
+
+Network.get("htstps://jsonplaceholder.typicode.com/todos/1", (data) -> {
+    print("Received Data inside Lambda:")
+    print("ID:", data.id)
+    print("Title:", data.title)
+    print("Completed:", data.completed)
+})
+
+print("Request sent!")

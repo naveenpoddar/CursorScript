@@ -4,6 +4,8 @@ import type {
   WhileStmt,
   Program,
   VarDeclaration,
+  ImportDeclaration,
+  ExportDeclaration,
 } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
@@ -94,4 +96,41 @@ export function evaluateFunctionDeclaration(
   } as FunctionValue;
 
   return env.declareVar(fnDecl.name, fn, true);
+}
+
+export function evaluateImportDeclaration(
+  stmt: ImportDeclaration,
+  env: Environment,
+): RuntimeValue {
+  const exports = global.loadModule(stmt.source);
+
+  for (const name of stmt.specifiers) {
+    if (!exports.has(name)) {
+      throw `Module "${stmt.source}" does not export "${name}".`;
+    }
+    env.declareVar(name, exports.get(name)! as RuntimeValue, true);
+  }
+
+  return MK_NULL();
+}
+
+export function evaluateExportDeclaration(
+  stmt: ExportDeclaration,
+  env: Environment,
+): RuntimeValue {
+  const decl = stmt.declaration;
+  let name = "";
+
+  if (decl.kind === "VarDeclaration") {
+    const varDecl = decl as VarDeclaration;
+    name = varDecl.identifier;
+    evaluateVarDeclaration(varDecl, env);
+  } else if (decl.kind === "FunctionDeclaration") {
+    const fnDecl = decl as FunctionDeclaration;
+    name = fnDecl.name;
+    evaluateFunctionDeclaration(fnDecl, env);
+  }
+
+  env.exports.add(name);
+  return MK_NULL();
 }

@@ -39,6 +39,11 @@ export enum TokenType {
   AmpersandAmpersand, // &&
   BarBar, // ||
   Bang, // !
+  Arrow, // ->
+
+  Import, // import
+  Export, // export
+  From, // from
 
   EOF, // End of File
 }
@@ -53,6 +58,9 @@ const KEYWORDS: Record<string, TokenType> = {
   if: TokenType.If,
   else: TokenType.Else,
   while: TokenType.While,
+  import: TokenType.Import,
+  export: TokenType.Export,
+  from: TokenType.From,
 };
 
 /**
@@ -281,7 +289,9 @@ class Lexer {
           lastToken.type !== TokenType.Number &&
           lastToken.type !== TokenType.CloseParen));
 
-    if (isNegativeSign) {
+    if (this.match(">")) {
+      this.addToken(TokenType.Arrow);
+    } else if (isNegativeSign) {
       this.handleNumber();
     } else {
       this.addToken(TokenType.BinaryOperator);

@@ -1,6 +1,7 @@
 import { MathL } from "../lib/MathLib";
 import { GameL } from "../lib/GameLib";
 import { createWindowLib } from "../lib/WindowLib";
+import { NetworkL } from "../lib/Network";
 import {
   MK_BOOL,
   MK_NULL,
@@ -27,6 +28,16 @@ export function createGlobalEnv() {
     MK_NATIVE_FN((_args, scope) => {
       const args = _args.map(MakePrintable);
       console.log(...args);
+      return MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "printError",
+    MK_NATIVE_FN((_args, scope) => {
+      const args = _args.map(MakePrintable);
+      console.error(...args);
       return MK_NULL();
     }),
     true,
@@ -188,6 +199,7 @@ export function createGlobalEnv() {
   env.declareVar("Math", MathL, true);
   env.declareVar("Game", GameL, true);
   env.declareVar("Window", createWindowLib(), true);
+  env.declareVar("Network", NetworkL, true);
 
   // TODO: readFile, writeFile, deleteFile -> Implment async await
 
@@ -198,11 +210,14 @@ export default class Environment {
   private parent?: Environment;
   private variables: Map<string, RuntimeValue>;
   private constants: Set<string>;
+  public exports: Set<string>;
+  public currentFile?: string;
 
   constructor(parentENV?: Environment) {
     this.parent = parentENV;
     this.variables = new Map();
     this.constants = new Set();
+    this.exports = new Set();
   }
 
   public declareVar(
@@ -247,5 +262,13 @@ export default class Environment {
   public lookupVar(varname: string): RuntimeValue {
     const env = this.resolve(varname);
     return env.variables.get(varname) as RuntimeValue;
+  }
+
+  public getExportedValues(): Map<string, RuntimeValue> {
+    const exportedValues = new Map<string, RuntimeValue>();
+    for (const name of this.exports) {
+      exportedValues.set(name, this.variables.get(name)!);
+    }
+    return exportedValues;
   }
 }

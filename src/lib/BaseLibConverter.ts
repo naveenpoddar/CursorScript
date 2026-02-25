@@ -1,6 +1,6 @@
 // Converts from Normal TS/JS Class to CursorScript Class
 
-import type Environment from "../runtime/environment";
+import Environment from "../runtime/environment";
 import {
   MK_BOOL,
   MK_NATIVE_FN,
@@ -9,6 +9,7 @@ import {
   MK_OBJECT,
   MK_STRING,
   type RuntimeValue,
+  type FunctionValue,
 } from "../runtime/values";
 
 export default function ConvertTOMK_Object(obj: any) {
@@ -20,15 +21,8 @@ export default function ConvertTOMK_Object(obj: any) {
     const value = obj[key];
     if (typeof value === "function") continue;
 
-    // Only convert simple types for properties to avoid recursion into native objects
-    if (
-      typeof value === "number" ||
-      typeof value === "string" ||
-      typeof value === "boolean" ||
-      value == null
-    ) {
-      propertiesMap.set(key, GetCursorXType(value)!);
-    }
+    // Convert all properties to CursorScript types
+    propertiesMap.set(key, GetCursorXType(value)!);
   }
 
   const proto = Object.getPrototypeOf(obj);
@@ -44,9 +38,38 @@ export default function ConvertTOMK_Object(obj: any) {
         try {
           // 1. Map arguments and execute the native method
           // We provide the raw parameters and environment as well for advanced libs
-          const rawArgs = args.map((arg) =>
-            (arg as any).hasOwnProperty("value") ? (arg as any).value : arg,
-          );
+          const rawArgs = args.map((arg) => {
+            if ((arg as any).hasOwnProperty("value")) return (arg as any).value;
+
+            // If it is a function, we must wrap it so native code can call it easily
+            if (arg.type === "function") {
+              const fn = arg as FunctionValue;
+              return (...nativeArgs: any[]) => {
+                // Convert native args back to CursorX types
+                const runtimeArgs = nativeArgs.map((a) => GetCursorXType(a)!);
+
+                const scope = new Environment(fn.declarationEnv);
+                for (let i = 0; i < fn.parameters.length; i++) {
+                  scope.declareVar(
+                    fn.parameters[i]!,
+                    runtimeArgs[i] || MK_NULL(),
+                    false,
+                  );
+                }
+
+                let lastResult: RuntimeValue = MK_NULL();
+                for (const stmt of fn.body) {
+                  lastResult = global.evaluate(stmt, scope);
+                }
+
+                return (lastResult as any).value !== undefined
+                  ? (lastResult as any).value
+                  : lastResult;
+              };
+            }
+
+            return arg;
+          });
           const result = method.apply(obj, [...rawArgs, args, env]);
 
           // 2. Convert result to CursorScript type

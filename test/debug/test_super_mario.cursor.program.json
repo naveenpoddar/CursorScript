@@ -9758,10 +9758,10 @@
               },
               "args": [
                 {
-                  "kind": "Identifier",
+                  "kind": "StringLiteral",
                   "line": 366,
                   "column": 25,
-                  "symbol": "colorPlayer"
+                  "value": "rgba(0, 255, 204, 0.3)"
                 }
               ],
               "line": 367,
@@ -9789,52 +9789,124 @@
               },
               "args": [
                 {
-                  "kind": "Identifier",
+                  "kind": "BinaryExpr",
+                  "operator": "-",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 367,
+                    "column": 25,
+                    "symbol": "px"
+                  },
+                  "right": {
+                    "kind": "BinaryExpr",
+                    "operator": "*",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 367,
+                        "column": 31,
+                        "symbol": "player"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 367,
+                        "column": 38,
+                        "symbol": "vx"
+                      },
+                      "computed": false,
+                      "line": 367,
+                      "column": 41
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 367,
+                      "column": 43,
+                      "value": 1.5
+                    },
+                    "line": 367,
+                    "column": 46
+                  },
                   "line": 367,
-                  "column": 25,
-                  "symbol": "px"
+                  "column": 47
                 },
                 {
-                  "kind": "Identifier",
+                  "kind": "BinaryExpr",
+                  "operator": "-",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 367,
+                    "column": 49,
+                    "symbol": "py"
+                  },
+                  "right": {
+                    "kind": "BinaryExpr",
+                    "operator": "*",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 367,
+                        "column": 55,
+                        "symbol": "player"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 367,
+                        "column": 62,
+                        "symbol": "vy"
+                      },
+                      "computed": false,
+                      "line": 367,
+                      "column": 65
+                    },
+                    "right": {
+                      "kind": "NumericLiteral",
+                      "line": 367,
+                      "column": 67,
+                      "value": 0.5
+                    },
+                    "line": 367,
+                    "column": 70
+                  },
                   "line": 367,
-                  "column": 29,
-                  "symbol": "py"
+                  "column": 71
                 },
                 {
                   "kind": "MemberExpr",
                   "object": {
                     "kind": "Identifier",
                     "line": 367,
-                    "column": 33,
+                    "column": 73,
                     "symbol": "player"
                   },
                   "property": {
                     "kind": "Identifier",
                     "line": 367,
-                    "column": 40,
+                    "column": 80,
                     "symbol": "w"
                   },
                   "computed": false,
                   "line": 367,
-                  "column": 41
+                  "column": 81
                 },
                 {
                   "kind": "MemberExpr",
                   "object": {
                     "kind": "Identifier",
                     "line": 367,
-                    "column": 43,
+                    "column": 83,
                     "symbol": "player"
                   },
                   "property": {
                     "kind": "Identifier",
                     "line": 367,
-                    "column": 50,
+                    "column": 90,
                     "symbol": "h"
                   },
                   "computed": false,
                   "line": 367,
-                  "column": 51
+                  "column": 91
                 }
               ],
               "line": 370,
@@ -9862,10 +9934,10 @@
               },
               "args": [
                 {
-                  "kind": "StringLiteral",
+                  "kind": "Identifier",
                   "line": 370,
                   "column": 25,
-                  "value": "#050510"
+                  "symbol": "colorPlayer"
                 }
               ],
               "line": 371,
@@ -9893,55 +9965,55 @@
               },
               "args": [
                 {
-                  "kind": "BinaryExpr",
-                  "operator": "+",
-                  "left": {
-                    "kind": "Identifier",
-                    "line": 371,
-                    "column": 25,
-                    "symbol": "px"
-                  },
-                  "right": {
-                    "kind": "NumericLiteral",
-                    "line": 371,
-                    "column": 30,
-                    "value": 6
-                  },
+                  "kind": "Identifier",
                   "line": 371,
-                  "column": 31
+                  "column": 25,
+                  "symbol": "px"
                 },
                 {
-                  "kind": "BinaryExpr",
-                  "operator": "+",
-                  "left": {
+                  "kind": "Identifier",
+                  "line": 371,
+                  "column": 29,
+                  "symbol": "py"
+                },
+                {
+                  "kind": "MemberExpr",
+                  "object": {
                     "kind": "Identifier",
                     "line": 371,
                     "column": 33,
-                    "symbol": "py"
+                    "symbol": "player"
                   },
-                  "right": {
-                    "kind": "NumericLiteral",
+                  "property": {
+                    "kind": "Identifier",
                     "line": 371,
-                    "column": 38,
-                    "value": 8
+                    "column": 40,
+                    "symbol": "w"
                   },
+                  "computed": false,
                   "line": 371,
-                  "column": 39
+                  "column": 41
                 },
                 {
-                  "kind": "NumericLiteral",
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 371,
+                    "column": 43,
+                    "symbol": "player"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 371,
+                    "column": 50,
+                    "symbol": "h"
+                  },
+                  "computed": false,
                   "line": 371,
-                  "column": 41,
-                  "value": 4
-                },
-                {
-                  "kind": "NumericLiteral",
-                  "line": 371,
-                  "column": 44,
-                  "value": 4
+                  "column": 51
                 }
               ],
-              "line": 372,
+              "line": 374,
               "column": 9
             },
             {
@@ -9950,18 +10022,49 @@
                 "kind": "MemberExpr",
                 "object": {
                   "kind": "Identifier",
-                  "line": 372,
+                  "line": 374,
                   "column": 9,
                   "symbol": "Window"
                 },
                 "property": {
                   "kind": "Identifier",
-                  "line": 372,
+                  "line": 374,
+                  "column": 16,
+                  "symbol": "setColor"
+                },
+                "computed": false,
+                "line": 374,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 374,
+                  "column": 25,
+                  "value": "#050510"
+                }
+              ],
+              "line": 375,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 375,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 375,
                   "column": 16,
                   "symbol": "drawRect"
                 },
                 "computed": false,
-                "line": 372,
+                "line": 375,
                 "column": 24
               },
               "args": [
@@ -9970,17 +10073,90 @@
                   "operator": "+",
                   "left": {
                     "kind": "Identifier",
-                    "line": 372,
+                    "line": 375,
                     "column": 25,
                     "symbol": "px"
                   },
                   "right": {
                     "kind": "NumericLiteral",
-                    "line": 372,
+                    "line": 375,
+                    "column": 30,
+                    "value": 6
+                  },
+                  "line": 375,
+                  "column": 31
+                },
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 375,
+                    "column": 33,
+                    "symbol": "py"
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 375,
+                    "column": 38,
+                    "value": 8
+                  },
+                  "line": 375,
+                  "column": 39
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 375,
+                  "column": 41,
+                  "value": 4
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 375,
+                  "column": 44,
+                  "value": 4
+                }
+              ],
+              "line": 376,
+              "column": 9
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 376,
+                  "column": 9,
+                  "symbol": "Window"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 376,
+                  "column": 16,
+                  "symbol": "drawRect"
+                },
+                "computed": false,
+                "line": 376,
+                "column": 24
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "Identifier",
+                    "line": 376,
+                    "column": 25,
+                    "symbol": "px"
+                  },
+                  "right": {
+                    "kind": "NumericLiteral",
+                    "line": 376,
                     "column": 30,
                     "value": 16
                   },
-                  "line": 372,
+                  "line": 376,
                   "column": 32
                 },
                 {
@@ -9988,33 +10164,33 @@
                   "operator": "+",
                   "left": {
                     "kind": "Identifier",
-                    "line": 372,
+                    "line": 376,
                     "column": 34,
                     "symbol": "py"
                   },
                   "right": {
                     "kind": "NumericLiteral",
-                    "line": 372,
+                    "line": 376,
                     "column": 39,
                     "value": 8
                   },
-                  "line": 372,
+                  "line": 376,
                   "column": 40
                 },
                 {
                   "kind": "NumericLiteral",
-                  "line": 372,
+                  "line": 376,
                   "column": 42,
                   "value": 4
                 },
                 {
                   "kind": "NumericLiteral",
-                  "line": 372,
+                  "line": 376,
                   "column": 45,
                   "value": 4
                 }
               ],
-              "line": 375,
+              "line": 379,
               "column": 9
             },
             {
@@ -10023,18 +10199,18 @@
                 "kind": "MemberExpr",
                 "object": {
                   "kind": "Identifier",
-                  "line": 375,
+                  "line": 379,
                   "column": 13,
                   "symbol": "player"
                 },
                 "property": {
                   "kind": "Identifier",
-                  "line": 375,
+                  "line": 379,
                   "column": 20,
                   "symbol": "onGround"
                 },
                 "computed": false,
-                "line": 375,
+                "line": 379,
                 "column": 28
               },
               "thenBranch": [
@@ -10044,18 +10220,18 @@
                     "kind": "MemberExpr",
                     "object": {
                       "kind": "Identifier",
-                      "line": 377,
+                      "line": 381,
                       "column": 13,
                       "symbol": "Window"
                     },
                     "property": {
                       "kind": "Identifier",
-                      "line": 377,
+                      "line": 381,
                       "column": 20,
                       "symbol": "drawRect"
                     },
                     "computed": false,
-                    "line": 377,
+                    "line": 381,
                     "column": 28
                   },
                   "args": [
@@ -10064,17 +10240,17 @@
                       "operator": "+",
                       "left": {
                         "kind": "Identifier",
-                        "line": 377,
+                        "line": 381,
                         "column": 29,
                         "symbol": "px"
                       },
                       "right": {
                         "kind": "NumericLiteral",
-                        "line": 377,
+                        "line": 381,
                         "column": 34,
                         "value": 8
                       },
-                      "line": 377,
+                      "line": 381,
                       "column": 35
                     },
                     {
@@ -10082,33 +10258,33 @@
                       "operator": "+",
                       "left": {
                         "kind": "Identifier",
-                        "line": 377,
+                        "line": 381,
                         "column": 37,
                         "symbol": "py"
                       },
                       "right": {
                         "kind": "NumericLiteral",
-                        "line": 377,
+                        "line": 381,
                         "column": 42,
                         "value": 18
                       },
-                      "line": 377,
+                      "line": 381,
                       "column": 44
                     },
                     {
                       "kind": "NumericLiteral",
-                      "line": 377,
+                      "line": 381,
                       "column": 46,
                       "value": 10
                     },
                     {
                       "kind": "NumericLiteral",
-                      "line": 377,
+                      "line": 381,
                       "column": 50,
                       "value": 2
                     }
                   ],
-                  "line": 378,
+                  "line": 382,
                   "column": 13
                 },
                 {
@@ -10117,18 +10293,18 @@
                     "kind": "MemberExpr",
                     "object": {
                       "kind": "Identifier",
-                      "line": 378,
+                      "line": 382,
                       "column": 13,
                       "symbol": "Window"
                     },
                     "property": {
                       "kind": "Identifier",
-                      "line": 378,
+                      "line": 382,
                       "column": 20,
                       "symbol": "drawRect"
                     },
                     "computed": false,
-                    "line": 378,
+                    "line": 382,
                     "column": 28
                   },
                   "args": [
@@ -10137,17 +10313,17 @@
                       "operator": "+",
                       "left": {
                         "kind": "Identifier",
-                        "line": 378,
+                        "line": 382,
                         "column": 29,
                         "symbol": "px"
                       },
                       "right": {
                         "kind": "NumericLiteral",
-                        "line": 378,
+                        "line": 382,
                         "column": 34,
                         "value": 6
                       },
-                      "line": 378,
+                      "line": 382,
                       "column": 35
                     },
                     {
@@ -10155,139 +10331,35 @@
                       "operator": "+",
                       "left": {
                         "kind": "Identifier",
-                        "line": 378,
+                        "line": 382,
                         "column": 37,
                         "symbol": "py"
                       },
                       "right": {
                         "kind": "NumericLiteral",
-                        "line": 378,
+                        "line": 382,
                         "column": 42,
                         "value": 16
                       },
-                      "line": 378,
+                      "line": 382,
                       "column": 44
                     },
                     {
                       "kind": "NumericLiteral",
-                      "line": 378,
+                      "line": 382,
                       "column": 46,
                       "value": 2
                     },
                     {
                       "kind": "NumericLiteral",
-                      "line": 378,
+                      "line": 382,
                       "column": 49,
                       "value": 2
                     }
                   ],
-                  "line": 379,
+                  "line": 383,
                   "column": 13
                 },
-                {
-                  "kind": "CallExpr",
-                  "caller": {
-                    "kind": "MemberExpr",
-                    "object": {
-                      "kind": "Identifier",
-                      "line": 379,
-                      "column": 13,
-                      "symbol": "Window"
-                    },
-                    "property": {
-                      "kind": "Identifier",
-                      "line": 379,
-                      "column": 20,
-                      "symbol": "drawRect"
-                    },
-                    "computed": false,
-                    "line": 379,
-                    "column": 28
-                  },
-                  "args": [
-                    {
-                      "kind": "BinaryExpr",
-                      "operator": "+",
-                      "left": {
-                        "kind": "Identifier",
-                        "line": 379,
-                        "column": 29,
-                        "symbol": "px"
-                      },
-                      "right": {
-                        "kind": "NumericLiteral",
-                        "line": 379,
-                        "column": 34,
-                        "value": 18
-                      },
-                      "line": 379,
-                      "column": 36
-                    },
-                    {
-                      "kind": "BinaryExpr",
-                      "operator": "+",
-                      "left": {
-                        "kind": "Identifier",
-                        "line": 379,
-                        "column": 38,
-                        "symbol": "py"
-                      },
-                      "right": {
-                        "kind": "NumericLiteral",
-                        "line": 379,
-                        "column": 43,
-                        "value": 16
-                      },
-                      "line": 379,
-                      "column": 45
-                    },
-                    {
-                      "kind": "NumericLiteral",
-                      "line": 379,
-                      "column": 47,
-                      "value": 2
-                    },
-                    {
-                      "kind": "NumericLiteral",
-                      "line": 379,
-                      "column": 50,
-                      "value": 2
-                    }
-                  ],
-                  "line": 380,
-                  "column": 9
-                }
-              ],
-              "line": 0,
-              "column": 0
-            },
-            {
-              "kind": "IfStmt",
-              "condition": {
-                "kind": "UnaryExpr",
-                "operator": "!",
-                "argument": {
-                  "kind": "MemberExpr",
-                  "object": {
-                    "kind": "Identifier",
-                    "line": 381,
-                    "column": 14,
-                    "symbol": "player"
-                  },
-                  "property": {
-                    "kind": "Identifier",
-                    "line": 381,
-                    "column": 21,
-                    "symbol": "onGround"
-                  },
-                  "computed": false,
-                  "line": 381,
-                  "column": 29
-                },
-                "line": 381,
-                "column": 29
-              },
-              "thenBranch": [
                 {
                   "kind": "CallExpr",
                   "caller": {
@@ -10322,113 +10394,9 @@
                         "kind": "NumericLiteral",
                         "line": 383,
                         "column": 34,
-                        "value": 9
+                        "value": 18
                       },
                       "line": 383,
-                      "column": 35
-                    },
-                    {
-                      "kind": "BinaryExpr",
-                      "operator": "+",
-                      "left": {
-                        "kind": "Identifier",
-                        "line": 383,
-                        "column": 37,
-                        "symbol": "py"
-                      },
-                      "right": {
-                        "kind": "NumericLiteral",
-                        "line": 383,
-                        "column": 42,
-                        "value": 16
-                      },
-                      "line": 383,
-                      "column": 44
-                    },
-                    {
-                      "kind": "NumericLiteral",
-                      "line": 383,
-                      "column": 46,
-                      "value": 8
-                    },
-                    {
-                      "kind": "NumericLiteral",
-                      "line": 383,
-                      "column": 49,
-                      "value": 6
-                    }
-                  ],
-                  "line": 384,
-                  "column": 13
-                },
-                {
-                  "kind": "CallExpr",
-                  "caller": {
-                    "kind": "MemberExpr",
-                    "object": {
-                      "kind": "Identifier",
-                      "line": 384,
-                      "column": 13,
-                      "symbol": "Window"
-                    },
-                    "property": {
-                      "kind": "Identifier",
-                      "line": 384,
-                      "column": 20,
-                      "symbol": "setColor"
-                    },
-                    "computed": false,
-                    "line": 384,
-                    "column": 28
-                  },
-                  "args": [
-                    {
-                      "kind": "Identifier",
-                      "line": 384,
-                      "column": 29,
-                      "symbol": "colorPlayer"
-                    }
-                  ],
-                  "line": 385,
-                  "column": 13
-                },
-                {
-                  "kind": "CallExpr",
-                  "caller": {
-                    "kind": "MemberExpr",
-                    "object": {
-                      "kind": "Identifier",
-                      "line": 385,
-                      "column": 13,
-                      "symbol": "Window"
-                    },
-                    "property": {
-                      "kind": "Identifier",
-                      "line": 385,
-                      "column": 20,
-                      "symbol": "drawRect"
-                    },
-                    "computed": false,
-                    "line": 385,
-                    "column": 28
-                  },
-                  "args": [
-                    {
-                      "kind": "BinaryExpr",
-                      "operator": "+",
-                      "left": {
-                        "kind": "Identifier",
-                        "line": 385,
-                        "column": 29,
-                        "symbol": "px"
-                      },
-                      "right": {
-                        "kind": "NumericLiteral",
-                        "line": 385,
-                        "column": 34,
-                        "value": 11
-                      },
-                      "line": 385,
                       "column": 36
                     },
                     {
@@ -10436,33 +10404,33 @@
                       "operator": "+",
                       "left": {
                         "kind": "Identifier",
-                        "line": 385,
+                        "line": 383,
                         "column": 38,
                         "symbol": "py"
                       },
                       "right": {
                         "kind": "NumericLiteral",
-                        "line": 385,
+                        "line": 383,
                         "column": 43,
-                        "value": 18
+                        "value": 16
                       },
-                      "line": 385,
+                      "line": 383,
                       "column": 45
                     },
                     {
                       "kind": "NumericLiteral",
-                      "line": 385,
+                      "line": 383,
                       "column": 47,
-                      "value": 4
+                      "value": 2
                     },
                     {
                       "kind": "NumericLiteral",
-                      "line": 385,
+                      "line": 383,
                       "column": 50,
-                      "value": 3
+                      "value": 2
                     }
                   ],
-                  "line": 386,
+                  "line": 384,
                   "column": 9
                 }
               ],
@@ -10470,168 +10438,212 @@
               "column": 0
             },
             {
-              "kind": "CallExpr",
-              "caller": {
-                "kind": "MemberExpr",
-                "object": {
-                  "kind": "Identifier",
-                  "line": 389,
-                  "column": 9,
-                  "symbol": "Window"
-                },
-                "property": {
-                  "kind": "Identifier",
-                  "line": 389,
-                  "column": 16,
-                  "symbol": "setColor"
-                },
-                "computed": false,
-                "line": 389,
-                "column": 24
-              },
-              "args": [
-                {
-                  "kind": "StringLiteral",
-                  "line": 389,
-                  "column": 25,
-                  "value": "rgba(0, 255, 204, 0.3)"
-                }
-              ],
-              "line": 390,
-              "column": 9
-            },
-            {
-              "kind": "CallExpr",
-              "caller": {
-                "kind": "MemberExpr",
-                "object": {
-                  "kind": "Identifier",
-                  "line": 390,
-                  "column": 9,
-                  "symbol": "Window"
-                },
-                "property": {
-                  "kind": "Identifier",
-                  "line": 390,
-                  "column": 16,
-                  "symbol": "drawRect"
-                },
-                "computed": false,
-                "line": 390,
-                "column": 24
-              },
-              "args": [
-                {
-                  "kind": "BinaryExpr",
-                  "operator": "-",
-                  "left": {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "UnaryExpr",
+                "operator": "!",
+                "argument": {
+                  "kind": "MemberExpr",
+                  "object": {
                     "kind": "Identifier",
-                    "line": 390,
-                    "column": 25,
-                    "symbol": "px"
+                    "line": 385,
+                    "column": 14,
+                    "symbol": "player"
                   },
-                  "right": {
-                    "kind": "BinaryExpr",
-                    "operator": "*",
-                    "left": {
-                      "kind": "MemberExpr",
-                      "object": {
-                        "kind": "Identifier",
-                        "line": 390,
-                        "column": 30,
-                        "symbol": "player"
-                      },
-                      "property": {
-                        "kind": "Identifier",
-                        "line": 390,
-                        "column": 37,
-                        "symbol": "vx"
-                      },
-                      "computed": false,
-                      "line": 390,
-                      "column": 40
-                    },
-                    "right": {
-                      "kind": "NumericLiteral",
-                      "line": 390,
-                      "column": 42,
-                      "value": 2
-                    },
-                    "line": 390,
-                    "column": 43
-                  },
-                  "line": 390,
-                  "column": 43
-                },
-                {
-                  "kind": "BinaryExpr",
-                  "operator": "-",
-                  "left": {
+                  "property": {
                     "kind": "Identifier",
-                    "line": 390,
-                    "column": 45,
-                    "symbol": "py"
+                    "line": 385,
+                    "column": 21,
+                    "symbol": "onGround"
                   },
-                  "right": {
+                  "computed": false,
+                  "line": 385,
+                  "column": 29
+                },
+                "line": 385,
+                "column": 29
+              },
+              "thenBranch": [
+                {
+                  "kind": "CallExpr",
+                  "caller": {
                     "kind": "MemberExpr",
                     "object": {
                       "kind": "Identifier",
-                      "line": 390,
-                      "column": 50,
-                      "symbol": "player"
+                      "line": 387,
+                      "column": 13,
+                      "symbol": "Window"
                     },
                     "property": {
                       "kind": "Identifier",
-                      "line": 390,
-                      "column": 57,
-                      "symbol": "vy"
+                      "line": 387,
+                      "column": 20,
+                      "symbol": "drawRect"
                     },
                     "computed": false,
-                    "line": 390,
-                    "column": 59
+                    "line": 387,
+                    "column": 28
                   },
-                  "line": 390,
-                  "column": 59
+                  "args": [
+                    {
+                      "kind": "BinaryExpr",
+                      "operator": "+",
+                      "left": {
+                        "kind": "Identifier",
+                        "line": 387,
+                        "column": 29,
+                        "symbol": "px"
+                      },
+                      "right": {
+                        "kind": "NumericLiteral",
+                        "line": 387,
+                        "column": 34,
+                        "value": 9
+                      },
+                      "line": 387,
+                      "column": 35
+                    },
+                    {
+                      "kind": "BinaryExpr",
+                      "operator": "+",
+                      "left": {
+                        "kind": "Identifier",
+                        "line": 387,
+                        "column": 37,
+                        "symbol": "py"
+                      },
+                      "right": {
+                        "kind": "NumericLiteral",
+                        "line": 387,
+                        "column": 42,
+                        "value": 16
+                      },
+                      "line": 387,
+                      "column": 44
+                    },
+                    {
+                      "kind": "NumericLiteral",
+                      "line": 387,
+                      "column": 46,
+                      "value": 8
+                    },
+                    {
+                      "kind": "NumericLiteral",
+                      "line": 387,
+                      "column": 49,
+                      "value": 6
+                    }
+                  ],
+                  "line": 388,
+                  "column": 13
                 },
                 {
-                  "kind": "MemberExpr",
-                  "object": {
-                    "kind": "Identifier",
-                    "line": 390,
-                    "column": 61,
-                    "symbol": "player"
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 388,
+                      "column": 13,
+                      "symbol": "Window"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 388,
+                      "column": 20,
+                      "symbol": "setColor"
+                    },
+                    "computed": false,
+                    "line": 388,
+                    "column": 28
                   },
-                  "property": {
-                    "kind": "Identifier",
-                    "line": 390,
-                    "column": 68,
-                    "symbol": "w"
-                  },
-                  "computed": false,
-                  "line": 390,
-                  "column": 69
+                  "args": [
+                    {
+                      "kind": "Identifier",
+                      "line": 388,
+                      "column": 29,
+                      "symbol": "colorPlayer"
+                    }
+                  ],
+                  "line": 389,
+                  "column": 13
                 },
                 {
-                  "kind": "MemberExpr",
-                  "object": {
-                    "kind": "Identifier",
-                    "line": 390,
-                    "column": 71,
-                    "symbol": "player"
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 389,
+                      "column": 13,
+                      "symbol": "Window"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 389,
+                      "column": 20,
+                      "symbol": "drawRect"
+                    },
+                    "computed": false,
+                    "line": 389,
+                    "column": 28
                   },
-                  "property": {
-                    "kind": "Identifier",
-                    "line": 390,
-                    "column": 78,
-                    "symbol": "h"
-                  },
-                  "computed": false,
+                  "args": [
+                    {
+                      "kind": "BinaryExpr",
+                      "operator": "+",
+                      "left": {
+                        "kind": "Identifier",
+                        "line": 389,
+                        "column": 29,
+                        "symbol": "px"
+                      },
+                      "right": {
+                        "kind": "NumericLiteral",
+                        "line": 389,
+                        "column": 34,
+                        "value": 11
+                      },
+                      "line": 389,
+                      "column": 36
+                    },
+                    {
+                      "kind": "BinaryExpr",
+                      "operator": "+",
+                      "left": {
+                        "kind": "Identifier",
+                        "line": 389,
+                        "column": 38,
+                        "symbol": "py"
+                      },
+                      "right": {
+                        "kind": "NumericLiteral",
+                        "line": 389,
+                        "column": 43,
+                        "value": 18
+                      },
+                      "line": 389,
+                      "column": 45
+                    },
+                    {
+                      "kind": "NumericLiteral",
+                      "line": 389,
+                      "column": 47,
+                      "value": 4
+                    },
+                    {
+                      "kind": "NumericLiteral",
+                      "line": 389,
+                      "column": 50,
+                      "value": 3
+                    }
+                  ],
                   "line": 390,
-                  "column": 79
+                  "column": 9
                 }
               ],
-              "line": 391,
-              "column": 5
+              "line": 0,
+              "column": 0
             }
           ],
           "line": 0,

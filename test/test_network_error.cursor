@@ -1,0 +1,12 @@
+print("Fetching data with potential error...")
+
+// Callback now receives (data, error)
+Network.get("htstps://jsonplaceholder.typicode.com/todos/1", (data, error) -> {
+    if (error) {
+        printError("Caught Error in Lambda:", error)
+    } else {
+        print("Received Data:", data.title)
+    }
+})
+
+print("Network request initiated (with typo in URL).")

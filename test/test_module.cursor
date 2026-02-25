@@ -1,0 +1,16 @@
+export let myValue = 42
+
+export fn greet(name) {
+    print("Hello,", name, "from the module!")
+}
+
+print("Module 'test_module' loaded!")
+
+export const myValue2 = 422
+
+export const person = {
+    name: "John",
+    age: 30,
+    city: "New York",
+    myValue
+}

@@ -186,7 +186,11 @@ const MOUSE: Record<string, number> = {
 
 class _WindowL {
   private updateCallback: any = null;
+  private fixedUpdateCallback: any = null;
   private activeColor: number = COLORS.white;
+  private lastTime: number = performance.now();
+  private accumulatedTime: number = 0;
+  private readonly fixedTimeStep: number = 0.01666; // ~60Hz fixed update
 
   public create(width: any, height: any, title: any) {
     const w = requireNumber(width);
@@ -208,6 +212,26 @@ class _WindowL {
         process.exit(0);
       }
 
+      // Timing
+      const currentTime = performance.now();
+      const deltaTime = (currentTime - this.lastTime) / 1000.0;
+      this.lastTime = currentTime;
+      this.accumulatedTime += deltaTime;
+
+      // --- 1. Fixed Update Loop (Physics) ---
+      // We run this at a consistent 60Hz regardless of rendering speed
+      while (this.accumulatedTime >= this.fixedTimeStep) {
+        try {
+          if (this.fixedUpdateCallback) {
+            this.executeCallback(this.fixedUpdateCallback);
+          }
+        } catch (e) {
+          console.error("Runtime Error in fixedUpdate callback:", e);
+        }
+        this.accumulatedTime -= this.fixedTimeStep;
+      }
+
+      // --- 2. Update Loop (Render & Input) ---
       lib.symbols.BeginDrawing();
       try {
         if (this.updateCallback) {
@@ -215,7 +239,6 @@ class _WindowL {
         }
       } catch (e) {
         console.error("Runtime Error in update callback:", e);
-        // Note: We don't exit here so the window stays open for debugging
       }
       lib.symbols.EndDrawing();
 
@@ -227,6 +250,10 @@ class _WindowL {
 
   public onUpdate(fn: any) {
     this.updateCallback = fn;
+  }
+
+  public onFixedUpdate(fn: any) {
+    this.fixedUpdateCallback = fn;
   }
 
   private parseColor(color: any): number {

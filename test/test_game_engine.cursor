@@ -31,7 +31,7 @@ let pz = -8
 
 let yaw = 0
 let pitch = 0
-let speed = 0.25
+let speed = 0.1
 let yVel = 0
 let isGrounded = false
 let breakCooldown = 0
@@ -45,6 +45,17 @@ let hotbarNames = ["Grass", "Dirt", "Stone", "Wood", "Leaf"]
 let loadedCols = []
 let viewDist = 2 // Optimized for software rendering performance
 
+// --- Global Rendering State ---
+let skyColor = "rgba(135, 206, 235, 1)"
+let skyR = 135
+let skyG = 206
+let skyB = 235
+let dlX = 0; let dlY = 0; let dlZ = 0; let ambient = 0.45; let lr = 1.0; let lg = 1.0; let lb = 0.9
+
+let sunX = 0; let sunY = 0; let sunZ = 0
+let moonX = 0; let moonY = 0; let moonZ = 0
+
+
 let getHeight = (x, z) -> {
     let elevation = PerlinNoise.noise2D(x * 0.05, z * 0.05)
     let h = 32 + Math.round(elevation * 16)
@@ -56,22 +67,11 @@ let getHeight = (x, z) -> {
 // Lock cursor for FPS view!
 Window.disableCursor()
 
-// 4. Game Loop
-Window.onUpdate(() -> {
-    // --- FPS Mouselook (Locked cursor delta mapping) ---
-    let dx = Window.getMouseDeltaX()
-    let dy = Window.getMouseDeltaY()
-    
-    // Scale delta (sensitivity)
-    yaw = yaw + (dx * 0.1)
-    pitch = pitch + (dy * 0.1)
-    
-    // Clamp pitch (so player doesn't break their neck)
-    if (pitch > 90) { pitch = 90 }
-    if (pitch < -90) { pitch = -90 }
-
+// 4. Physics Loop (Fixed step for stability)
+Window.onFixedUpdate(() -> {
     // Convert degrees to radians for mathematical sin/cos
     let yawRad = yaw * (Math.PI / 180)
+
     
     // --- FPS Movement (WASD Space/Shift) ---
     if (Window.getKeyDown("W")) {
@@ -237,27 +237,27 @@ Window.onUpdate(() -> {
     let sDist = 180
     let sDistZ = 80 // slight offset
     
-    let sunX = Math.sin(sunTime) * sDist
-    let sunY = Math.cos(sunTime) * sDist
-    let sunZ = sDistZ
+    sunX = Math.sin(sunTime) * sDist
+    sunY = Math.cos(sunTime) * sDist
+    sunZ = sDistZ
     
     // Moon is on the opposite side
-    let moonX = -sunX
-    let moonY = -sunY
-    let moonZ = -sunZ // Pointing back
+    moonX = -sunX
+    moonY = -sunY
+    moonZ = -sunZ // Pointing back
     
-    let dlX = sunX
-    let dlY = sunY
-    let dlZ = sunZ
+    dlX = sunX
+    dlY = sunY
+    dlZ = sunZ
     
-    let ambient = 0.45
-    let skyR = 135
-    let skyG = 206
-    let skyB = 235
+    ambient = 0.45
+    skyR = 135
+    skyG = 206
+    skyB = 235
     
-    let lr = 1.0
-    let lg = 1.0
-    let lb = 0.9 // Daytime: Slightly yellow white
+    lr = 1.0
+    lg = 1.0
+    lb = 0.9 // Daytime: Slightly yellow white
     
     if (sunY < -20) { 
         // Peak Night: Directional light from Moon (Blue tinted)
@@ -317,7 +317,8 @@ Window.onUpdate(() -> {
     skyR = Math.round(skyR)
     skyG = Math.round(skyG)
     skyB = Math.round(skyB)
-    let skyColor = "rgba(" + str(skyR) + ", " + str(skyG) + ", " + str(skyB) + ", 1)"
+    skyColor = "rgba(" + str(skyR) + ", " + str(skyG) + ", " + str(skyB) + ", 1)"
+
     
     Engine3D.setLight(scene, dlX, dlY, dlZ, ambient)
     Engine3D.setLightColor(scene, lr, lg, lb)
@@ -339,8 +340,19 @@ Window.onUpdate(() -> {
     Engine3D.setRotation(scene, sunGlow1, pitch, -yaw, 0)
     Engine3D.setRotation(scene, moonMesh, pitch, -yaw, 0)
     Engine3D.setRotation(scene, moonGlow, pitch, -yaw, 0)
+})
 
-    // --- Dynamic Terrain System ---
+// 5. Render & Input Loop
+Window.onUpdate(() -> {
+    // --- FPS Mouselook ---
+    let dx = Window.getMouseDeltaX()
+    let dy = Window.getMouseDeltaY()
+    yaw = yaw + (dx * 0.1)
+    pitch = pitch + (dy * 0.1)
+    if (pitch > 90) { pitch = 90 }
+    if (pitch < -90) { pitch = -90 }
+
+    // --- Dynamic Terrain System (Chunk Loading) ---
     let cx = Math.floor(px)
     let cz = Math.floor(pz)
     

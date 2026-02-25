@@ -1,0 +1,101 @@
+Window.create(800, 600, "Minecraft Clone (CursorScript)")
+let scene = Engine3D.createScene()
+
+// 1. Terrain Generation
+// Let's create an 14x14 grid of blocks
+let worldSize = 7
+let x = -worldSize
+while (x <= worldSize) {
+    let z = -worldSize
+    while (z <= worldSize) {
+        // Pseudo-random heightmap using sine/cosine overlapping waves!
+        let h = Math.round(Math.sin(x * 0.4) * 1.5 + Math.cos(z * 0.4) * 1.5) 
+        
+        let y = -2 // Dig down
+        while (y <= h) {
+            let color = "#78e08f" // Grass color
+            if (y < h) { color = "#d35400" } // Dirt color under the grass
+            if (y == -2) { color = "#7f8c8d" } // Stone Bedrock
+            
+            let cube = Engine3D.createCube(scene, 1, color)
+            Engine3D.setPosition(scene, cube, x, y, z)
+            Engine3D.setSolidMode(scene, cube, true)
+            y = y + 1
+        }
+        z = z + 1
+    }
+    x = x + 1
+}
+
+// 2. Setup Sun/Light
+Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
+
+// 3. Player Properties
+let px = 0
+let py = 5
+let pz = -8
+
+let yaw = 0
+let pitch = 0
+let speed = 0.25
+
+// Lock cursor for FPS view!
+Window.disableCursor()
+
+// 4. Game Loop
+Window.onUpdate(() -> {
+    // --- FPS Mouselook (Locked cursor delta mapping) ---
+    let dx = Window.getMouseDeltaX()
+    let dy = Window.getMouseDeltaY()
+    
+    // Scale delta (sensitivity)
+    yaw = yaw + (dx * 0.1)
+    pitch = pitch + (dy * 0.1)
+    
+    // Clamp pitch (so player doesn't break their neck)
+    if (pitch > 90) { pitch = 90 }
+    if (pitch < -90) { pitch = -90 }
+
+    // Convert degrees to radians for mathematical sin/cos
+    let yawRad = yaw * (Math.PI / 180)
+    
+    // --- FPS Movement (WASD Space/Shift) ---
+    if (Window.getKeyDown("W")) {
+        px = px + Math.sin(yawRad) * speed
+        pz = pz + Math.cos(yawRad) * speed
+    }
+    if (Window.getKeyDown("S")) {
+        px = px - Math.sin(yawRad) * speed
+        pz = pz - Math.cos(yawRad) * speed
+    }
+    if (Window.getKeyDown("A")) {
+        px = px - Math.cos(yawRad) * speed
+        pz = pz + Math.sin(yawRad) * speed
+    }
+    if (Window.getKeyDown("D")) {
+        px = px + Math.cos(yawRad) * speed
+        pz = pz - Math.sin(yawRad) * speed
+    }
+    if (Window.getKeyDown("Space")) { py = py + speed }
+    if (Window.getKeyDown("LeftShift")) { py = py - speed }
+
+    // Update Camera position in Engine
+    // Note: camera FOV is set to 600
+    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 600)
+    
+    // --- Rendering ---
+    Window.clear("#87ceeb") // Beautiful Sky blue background
+    Engine3D.render(scene, 800, 600)
+    
+    // --- UIOverlay ---
+    Window.setColor("black")
+    Window.drawText("Minecraft CursorScript Clone", 10, 10, 20)
+    Window.drawText("WASD to move, Mouse to look freely! (ESC to exit)", 10, 35, 16)
+    Window.drawText("Space/Shift to fly up/down", 10, 55, 16)
+    Window.drawText("X: " + str(Math.floor(px)) + " Y: " + str(Math.floor(py)) + " Z: " + str(Math.floor(pz)), 10, 80, 16)
+    
+    // Quick Crosshair
+    Window.setColor("white")
+    Window.drawRect(400 - 2, 300 - 10, 4, 20)
+    Window.drawRect(400 - 10, 300 - 2, 20, 4)
+})

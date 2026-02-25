@@ -1,4 +1,4 @@
-import { dlopen, FFIType, suffix } from "bun:ffi";
+import { dlopen, FFIType, suffix, ptr } from "bun:ffi";
 import type { FunctionValue, RuntimeValue } from "../runtime/values";
 import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
@@ -46,6 +46,14 @@ const lib = dlopen(libPath, {
     args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
     returns: FFIType.void,
   },
+  DrawTriangleFan: {
+    args: [
+      FFIType.ptr, // point to array of Vector2 structs
+      FFIType.i32, // pointCount
+      FFIType.u32, // color
+    ],
+    returns: FFIType.void,
+  },
   DrawLine: {
     args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
     returns: FFIType.void,
@@ -64,6 +72,9 @@ const lib = dlopen(libPath, {
   IsMouseButtonPressed: { args: [FFIType.i32], returns: FFIType.bool },
   IsMouseButtonDown: { args: [FFIType.i32], returns: FFIType.bool },
   MeasureText: { args: [FFIType.cstring, FFIType.i32], returns: FFIType.i32 },
+  DisableCursor: { args: [], returns: FFIType.void },
+  EnableCursor: { args: [], returns: FFIType.void },
+  GetMouseDelta: { args: [], returns: FFIType.f64 }, // Packs the 8-byte Vector2 struct
 });
 
 // Color utility (Raylib uses RGBA as a single u32)
@@ -283,6 +294,41 @@ class _WindowL {
     );
   }
 
+  public drawTriangle(x1: any, y1: any, x2: any, y2: any, x3: any, y3: any) {
+    const points = new Float32Array([
+      requireNumber(x1),
+      requireNumber(y1),
+      requireNumber(x2),
+      requireNumber(y2),
+      requireNumber(x3),
+      requireNumber(y3),
+    ]);
+    lib.symbols.DrawTriangleFan(ptr(points), 3, this.activeColor);
+  }
+
+  public drawQuad(
+    x1: any,
+    y1: any,
+    x2: any,
+    y2: any,
+    x3: any,
+    y3: any,
+    x4: any,
+    y4: any,
+  ) {
+    const points = new Float32Array([
+      requireNumber(x1),
+      requireNumber(y1),
+      requireNumber(x2),
+      requireNumber(y2),
+      requireNumber(x3),
+      requireNumber(y3),
+      requireNumber(x4),
+      requireNumber(y4),
+    ]);
+    lib.symbols.DrawTriangleFan(ptr(points), 4, this.activeColor);
+  }
+
   public drawLine(startX: any, startY: any, endX: any, endY: any) {
     lib.symbols.DrawLine(
       requireNumber(startX),
@@ -318,6 +364,29 @@ class _WindowL {
   public getMouseY() {
     return lib.symbols.GetMouseY();
   }
+
+  public disableCursor() {
+    lib.symbols.DisableCursor();
+  }
+
+  public enableCursor() {
+    lib.symbols.EnableCursor();
+  }
+
+  public getMouseDeltaX() {
+    let delta = lib.symbols.GetMouseDelta() as number;
+    let buf = new Float64Array([delta]);
+    let f32 = new Float32Array(buf.buffer);
+    return f32[0];
+  }
+
+  public getMouseDeltaY() {
+    let delta = lib.symbols.GetMouseDelta() as number;
+    let buf = new Float64Array([delta]);
+    let f32 = new Float32Array(buf.buffer);
+    return f32[1];
+  }
+
   public getKeyDown(key: any) {
     let k = "";
     if (typeof key === "string") k = key;
@@ -371,3 +440,8 @@ class _WindowL {
 export function createWindowLib() {
   return ConvertTOMK_Object(new _WindowL());
 }
+
+export function parseColor(color: any): number {
+  return (new _WindowL() as any).parseColor(color);
+}
+export { lib, COLORS };

@@ -1,108 +1,422 @@
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { requireNumber } from "./RequireFunctions";
+import { lib as raylib, parseColor } from "./WindowLib";
+import { ptr } from "bun:ffi";
+
+interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
+interface Face {
+  v: number[];
+} // Collection of vertex indices
+
+interface Mesh {
+  id: number;
+  vertices: Vec3[];
+  faces: Face[];
+  pos: Vec3;
+  rot: Vec3;
+  scale: Vec3;
+  color: number;
+  isSolid: boolean;
+}
+
+interface Camera {
+  pos: Vec3;
+  rot: Vec3;
+  fov: number;
+}
+
+interface Scene {
+  id: number;
+  camera: Camera;
+  meshes: Map<number, Mesh>;
+  nextMeshId: number;
+  lightDir: Vec3;
+  ambientLight: number;
+}
+
+// FFI Helper for Raylib Vector2 struct
+// REMOVED packVec2
 
 class _Engine3D {
-  // Vector 3D dot product
+  private scenes: Map<number, Scene> = new Map();
+  private nextSceneId = 1;
+
+  // ----- Vector Math Utility -----
   public dot(x1: any, y1: any, z1: any, x2: any, y2: any, z2: any): number {
-    x1 = requireNumber(x1);
-    y1 = requireNumber(y1);
-    z1 = requireNumber(z1);
-    x2 = requireNumber(x2);
-    y2 = requireNumber(y2);
-    z2 = requireNumber(z2);
-    return x1 * x2 + y1 * y2 + z1 * z2;
+    return (
+      requireNumber(x1) * requireNumber(x2) +
+      requireNumber(y1) * requireNumber(y2) +
+      requireNumber(z1) * requireNumber(z2)
+    );
   }
 
-  // Cross product
-  public cross(x1: any, y1: any, z1: any, x2: any, y2: any, z2: any): any {
-    x1 = requireNumber(x1);
-    y1 = requireNumber(y1);
-    z1 = requireNumber(z1);
-    x2 = requireNumber(x2);
-    y2 = requireNumber(y2);
-    z2 = requireNumber(z2);
-    return {
-      x: y1 * z2 - z1 * y2,
-      y: z1 * x2 - x1 * z2,
-      z: x1 * y2 - y1 * x2,
-    };
-  }
-
-  // Normalize
   public normalize(x: any, y: any, z: any): any {
-    x = requireNumber(x);
-    y = requireNumber(y);
-    z = requireNumber(z);
-    let len = Math.sqrt(x * x + y * y + z * z);
+    let nx = requireNumber(x),
+      ny = requireNumber(y),
+      nz = requireNumber(z);
+    let len = Math.sqrt(nx ** 2 + ny ** 2 + nz ** 2);
     if (len === 0) return { x: 0, y: 0, z: 0 };
-    return { x: x / len, y: y / len, z: z / len };
+    return { x: nx / len, y: ny / len, z: nz / len };
   }
 
-  // Project 3D point to 2D screen
-  // fov: field of view
-  // viewerDistance: distance of eye to screen
-  public project(
+  private dotVec(v1: Vec3, v2: Vec3) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+  }
+
+  // ----- Scene Management -----
+  public createScene(): number {
+    const id = this.nextSceneId++;
+    this.scenes.set(id, {
+      id,
+      camera: {
+        pos: { x: 0, y: 0, z: 0 },
+        rot: { x: 0, y: 0, z: 0 },
+        fov: 400,
+      },
+      meshes: new Map(),
+      nextMeshId: 1,
+      lightDir: { x: 0, y: 0, z: 1 }, // Default light pointing forward
+      ambientLight: 0.3,
+    });
+    return id;
+  }
+
+  public setLight(sceneId: any, dirX: any, dirY: any, dirZ: any, ambient: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    let norm = this.normalize(dirX, dirY, dirZ);
+    scene.lightDir = { x: norm.x, y: norm.y, z: norm.z };
+    scene.ambientLight = requireNumber(ambient);
+  }
+
+  public setCamera(
+    sceneId: any,
     x: any,
     y: any,
     z: any,
-    screenWidth: any,
-    screenHeight: any,
+    rx: any,
+    ry: any,
+    rz: any,
     fov: any,
-    viewerDistance: any,
-  ): any {
-    x = requireNumber(x);
-    y = requireNumber(y);
-    z = requireNumber(z);
-    screenWidth = requireNumber(screenWidth);
-    screenHeight = requireNumber(screenHeight);
-    fov = requireNumber(fov);
-    viewerDistance = requireNumber(viewerDistance);
-
-    let factor = fov / (viewerDistance + z);
-    let xProjected = x * factor + screenWidth / 2;
-    let yProjected = -y * factor + screenHeight / 2;
-
-    return { x: xProjected, y: yProjected, scale: factor };
+  ) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    scene.camera.pos = {
+      x: requireNumber(x),
+      y: requireNumber(y),
+      z: requireNumber(z),
+    };
+    scene.camera.rot = {
+      x: requireNumber(rx),
+      y: requireNumber(ry),
+      z: requireNumber(rz),
+    };
+    scene.camera.fov = requireNumber(fov);
   }
 
-  // Rotate point
-  public rotateX(x: any, y: any, z: any, angle: any): any {
-    x = requireNumber(x);
-    y = requireNumber(y);
-    z = requireNumber(z);
-    angle = requireNumber(angle);
-    let rad = (angle * Math.PI) / 180;
-    let cos = Math.cos(rad);
-    let sin = Math.sin(rad);
-    let ny = y * cos - z * sin;
-    let nz = y * sin + z * cos;
-    return { x: x, y: ny, z: nz };
+  // ----- Mesh Management -----
+  public createCube(sceneId: any, size: any, colorStr: any): number {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return -1;
+
+    const s = requireNumber(size) / 2;
+    const color = parseColor(colorStr);
+
+    const vertices = [
+      { x: -s, y: -s, z: -s },
+      { x: s, y: -s, z: -s },
+      { x: s, y: s, z: -s },
+      { x: -s, y: s, z: -s },
+      { x: -s, y: -s, z: s },
+      { x: s, y: -s, z: s },
+      { x: s, y: s, z: s },
+      { x: -s, y: s, z: s },
+    ];
+
+    // Define faces (Counter-Clockwise winding)
+    const faces = [
+      { v: [0, 3, 2, 1] }, // Front
+      { v: [5, 6, 7, 4] }, // Back
+      { v: [1, 2, 6, 5] }, // Right
+      { v: [4, 7, 3, 0] }, // Left
+      { v: [4, 0, 1, 5] }, // Bottom
+      { v: [3, 7, 6, 2] }, // Top
+    ];
+
+    const meshId = scene.nextMeshId++;
+    scene.meshes.set(meshId, {
+      id: meshId,
+      vertices,
+      faces,
+      pos: { x: 0, y: 0, z: 0 },
+      rot: { x: 0, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 },
+      color,
+      isSolid: true, // Default solid
+    });
+    return meshId;
   }
 
-  public rotateY(x: any, y: any, z: any, angle: any): any {
-    x = requireNumber(x);
-    y = requireNumber(y);
-    z = requireNumber(z);
-    angle = requireNumber(angle);
-    let rad = (angle * Math.PI) / 180;
-    let cos = Math.cos(rad);
-    let sin = Math.sin(rad);
-    let nx = x * cos + z * sin;
-    let nz = -x * sin + z * cos;
-    return { x: nx, y: y, z: nz };
+  public setSolidMode(sceneId: any, meshId: any, isSolid: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    mesh.isSolid = !!isSolid;
   }
 
-  public rotateZ(x: any, y: any, z: any, angle: any): any {
-    x = requireNumber(x);
-    y = requireNumber(y);
-    z = requireNumber(z);
-    angle = requireNumber(angle);
-    let rad = (angle * Math.PI) / 180;
-    let cos = Math.cos(rad);
-    let sin = Math.sin(rad);
-    let nx = x * cos - y * sin;
-    let ny = x * sin + y * cos;
-    return { x: nx, y: ny, z: z };
+  public setPosition(sceneId: any, meshId: any, x: any, y: any, z: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    mesh.pos = {
+      x: requireNumber(x),
+      y: requireNumber(y),
+      z: requireNumber(z),
+    };
+  }
+
+  public setRotation(sceneId: any, meshId: any, x: any, y: any, z: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    mesh.rot = {
+      x: requireNumber(x),
+      y: requireNumber(y),
+      z: requireNumber(z),
+    };
+  }
+
+  public setScale(sceneId: any, meshId: any, x: any, y: any, z: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    mesh.scale = {
+      x: requireNumber(x),
+      y: requireNumber(y),
+      z: requireNumber(z),
+    };
+  }
+
+  public setColor(sceneId: any, meshId: any, colorStr: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    mesh.color = parseColor(colorStr);
+  }
+
+  // ----- Rendering Math -----
+  private rotate3D(v: Vec3, rot: Vec3): Vec3 {
+    let rad = (rot.x * Math.PI) / 180;
+    let c = Math.cos(rad);
+    let s = Math.sin(rad);
+    let y1 = v.y * c - v.z * s;
+    let z1 = v.y * s + v.z * c;
+
+    rad = (rot.y * Math.PI) / 180;
+    c = Math.cos(rad);
+    s = Math.sin(rad);
+    let x2 = v.x * c + z1 * s;
+    let z2 = -v.x * s + z1 * c;
+
+    rad = (rot.z * Math.PI) / 180;
+    c = Math.cos(rad);
+    s = Math.sin(rad);
+    let x3 = x2 * c - y1 * s;
+    let y3 = x2 * s + y1 * c;
+    return { x: x3, y: y3, z: z2 };
+  }
+
+  private shadeColor(color: number, percent: number): number {
+    const r = color & 0x000000ff;
+    const g = (color & 0x0000ff00) >> 8;
+    const b = (color & 0x00ff0000) >> 16;
+    const a = (color & 0xff000000) >>> 24;
+
+    const resR = Math.min(255, Math.max(0, r * percent));
+    const resG = Math.min(255, Math.max(0, g * percent));
+    const resB = Math.min(255, Math.max(0, b * percent));
+
+    return (resR | (resG << 8) | (resB << 16) | (a << 24)) >>> 0;
+  }
+
+  // Calculate face normal
+  private calcNormal(v0: Vec3, v1: Vec3, v2: Vec3): Vec3 {
+    const ax = v1.x - v0.x,
+      ay = v1.y - v0.y,
+      az = v1.z - v0.z;
+    const bx = v2.x - v0.x,
+      by = v2.y - v0.y,
+      bz = v2.z - v0.z;
+    const cx = ay * bz - az * by;
+    const cy = az * bx - ax * bz;
+    const cz = ax * by - ay * bx;
+
+    let len = Math.sqrt(cx * cx + cy * cy + cz * cz);
+    if (len === 0) return { x: 0, y: 0, z: 0 };
+    return { x: cx / len, y: cy / len, z: cz / len };
+  }
+
+  public render(sceneId: any, screenWidth: any, screenHeight: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+
+    const sw = requireNumber(screenWidth);
+    const sh = requireNumber(screenHeight);
+    const cam = scene.camera;
+
+    interface ProjectedFace {
+      v: { x: number; y: number; z: number }[];
+      zDepth: number;
+      normal: Vec3;
+      color: number;
+      isSolid: boolean;
+    }
+    const renderList: ProjectedFace[] = [];
+
+    for (const mesh of scene.meshes.values()) {
+      const transformedVerts: Vec3[] = [];
+      const worldVerts: Vec3[] = [];
+
+      for (const v of mesh.vertices) {
+        // 1. Scale
+        let tv = {
+          x: v.x * mesh.scale.x,
+          y: v.y * mesh.scale.y,
+          z: v.z * mesh.scale.z,
+        };
+        // 2. Rotate
+        tv = this.rotate3D(tv, mesh.rot);
+        // 3. Translate
+        tv.x += mesh.pos.x;
+        tv.y += mesh.pos.y;
+        tv.z += mesh.pos.z;
+        worldVerts.push({ x: tv.x, y: tv.y, z: tv.z });
+
+        // 4. View Camera (Inverse Transform - Yaw then Pitch!)
+        tv.x -= cam.pos.x;
+        tv.y -= cam.pos.y;
+        tv.z -= cam.pos.z;
+
+        // Inverse Yaw (Y)
+        let radY = (-cam.rot.y * Math.PI) / 180;
+        let cy = Math.cos(radY),
+          sy = Math.sin(radY);
+        let x2 = tv.x * cy + tv.z * sy;
+        let z2 = -tv.x * sy + tv.z * cy;
+        tv.x = x2;
+        tv.z = z2;
+
+        // Inverse Pitch (X)
+        let radX = (-cam.rot.x * Math.PI) / 180;
+        let cx = Math.cos(radX),
+          sx = Math.sin(radX);
+        let y2 = tv.y * cx - tv.z * sx;
+        let z3 = tv.y * sx + tv.z * cx;
+        tv.y = y2;
+        tv.z = z3;
+
+        // Inverse Roll (Z - usually 0 for FPS)
+        let radZ = (-cam.rot.z * Math.PI) / 180;
+        let cz = Math.cos(radZ),
+          sz = Math.sin(radZ);
+        let x4 = tv.x * cz - tv.y * sz;
+        let y4 = tv.x * sz + tv.y * cz;
+        tv.x = x4;
+        tv.y = y4;
+        transformedVerts.push(tv);
+      }
+
+      for (const face of mesh.faces) {
+        // Verify at least 3 vertices
+        if (face.v.length < 3) continue;
+
+        const v0 = transformedVerts[face.v[0]!]!;
+        const v1 = transformedVerts[face.v[1]!]!;
+        const v2 = transformedVerts[face.v[2]!]!;
+
+        // Simple culling/clipping check:
+        const isVisible = v0.z > 0.1 && v1.z > 0.1 && v2.z > 0.1;
+        if (!isVisible) continue;
+
+        // Backface culling and Lighting
+        const worldV0 = worldVerts[face.v[0]!]!;
+        const worldV1 = worldVerts[face.v[1]!]!;
+        const worldV2 = worldVerts[face.v[2]!]!;
+        const normal = this.calcNormal(worldV0, worldV1, worldV2);
+
+        // Compute direct lighting based on scene LightDir
+        let lightIntensity = this.dotVec(normal, scene.lightDir);
+
+        // Face visibility using dot product with camera look direction
+        let cameraRay = {
+          x: worldV0.x - cam.pos.x,
+          y: worldV0.y - cam.pos.y,
+          z: worldV0.z - cam.pos.z,
+        };
+        if (mesh.isSolid && this.dotVec(normal, cameraRay) >= 0) {
+          continue; // Back face culled
+        }
+
+        let drawColor = mesh.color;
+        if (mesh.isSolid) {
+          const lum = Math.max(scene.ambientLight, lightIntensity);
+          drawColor = this.shadeColor(mesh.color, lum);
+        }
+
+        const projectedVerts = face.v.map((idx) => {
+          const p = transformedVerts[idx]!;
+          const f = cam.fov / p.z;
+          return { x: p.x * f + sw / 2, y: -p.y * f + sh / 2, z: p.z };
+        });
+
+        const avgZ =
+          projectedVerts.reduce((acc, curr) => acc + curr.z, 0) /
+          projectedVerts.length;
+        renderList.push({
+          v: projectedVerts,
+          zDepth: avgZ,
+          normal: normal,
+          color: drawColor,
+          isSolid: mesh.isSolid,
+        });
+      }
+    }
+
+    // Sort Painter's Algorithm (Furthest Z first)
+    renderList.sort((a, b) => b.zDepth - a.zDepth);
+
+    // Render pass
+    for (const face of renderList) {
+      if (face.isSolid) {
+        // Split polygons into triangles and draw
+        let p0 = face.v[0]!;
+        for (let i = 1; i < face.v.length - 1; i++) {
+          let p1 = face.v[i]!;
+          let p2 = face.v[i + 1]!;
+          // Solid Fill with DrawTriangleFan
+          if (raylib.symbols.DrawTriangleFan) {
+            const pts = new Float32Array([p2.x, p2.y, p1.x, p1.y, p0.x, p0.y]);
+            raylib.symbols.DrawTriangleFan(ptr(pts), 3, face.color);
+          }
+        }
+      } else {
+        // Wireframe Outline
+        for (let i = 0; i < face.v.length; i++) {
+          let p1 = face.v[i]!;
+          let p2 = face.v[(i + 1) % face.v.length]!;
+          raylib.symbols.DrawLine(p1.x, p1.y, p2.x, p2.y, face.color);
+        }
+      }
+    }
   }
 }
 

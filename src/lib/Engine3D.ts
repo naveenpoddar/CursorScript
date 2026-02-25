@@ -21,6 +21,7 @@ interface Mesh {
   scale: Vec3;
   color: number;
   isSolid: boolean;
+  isGlow: boolean;
 }
 
 interface Camera {
@@ -157,6 +158,7 @@ class _Engine3D {
       scale: { x: 1, y: 1, z: 1 },
       color,
       isSolid: true, // Default solid
+      isGlow: false,
     });
     return meshId;
   }
@@ -173,6 +175,14 @@ class _Engine3D {
     const mesh = scene.meshes.get(requireNumber(meshId));
     if (!mesh) return;
     mesh.isSolid = !!isSolid;
+  }
+
+  public setGlowMode(sceneId: any, meshId: any, isGlow: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    mesh.isGlow = !!isGlow;
   }
 
   public setPosition(sceneId: any, meshId: any, x: any, y: any, z: any) {
@@ -285,6 +295,7 @@ class _Engine3D {
       normal: Vec3;
       color: number;
       isSolid: boolean;
+      isGlow: boolean;
     }
     const renderList: ProjectedFace[] = [];
 
@@ -408,6 +419,7 @@ class _Engine3D {
           normal: normal,
           color: drawColor,
           isSolid: mesh.isSolid,
+          isGlow: mesh.isGlow,
         });
       }
     }
@@ -417,6 +429,10 @@ class _Engine3D {
 
     // Render pass
     for (const face of renderList) {
+      if (face.isGlow) {
+        if (raylib.symbols.BeginBlendMode) raylib.symbols.BeginBlendMode(1); // 1 = BLEND_ADDITIVE
+      }
+
       if (face.isSolid) {
         // Split polygons into triangles and draw
         let p0 = face.v[0]!;
@@ -436,6 +452,10 @@ class _Engine3D {
           let p2 = face.v[(i + 1) % face.v.length]!;
           raylib.symbols.DrawLine(p1.x, p1.y, p2.x, p2.y, face.color);
         }
+      }
+
+      if (face.isGlow) {
+        if (raylib.symbols.EndBlendMode) raylib.symbols.EndBlendMode();
       }
     }
   }

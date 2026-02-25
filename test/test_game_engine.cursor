@@ -11,6 +11,10 @@ let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C") // Sun Core
 let sunGlow1 = Engine3D.createCube(scene, 32, "rgba(255, 232, 124, 0.35)") // Inner Glow
 let sunGlow2 = Engine3D.createCube(scene, 50, "rgba(255, 232, 124, 0.1)") // Outer Glow
 
+Engine3D.setGlowMode(scene, sunMesh, true)
+Engine3D.setGlowMode(scene, sunGlow1, true)
+Engine3D.setGlowMode(scene, sunGlow2, true)
+
 // 3. Player Properties
 let px = 0
 let py = 50

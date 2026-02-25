@@ -40,6 +40,8 @@ const lib = dlopen(libPath, {
   CloseWindow: { args: [], returns: FFIType.void },
   BeginDrawing: { args: [], returns: FFIType.void },
   EndDrawing: { args: [], returns: FFIType.void },
+  BeginBlendMode: { args: [FFIType.i32], returns: FFIType.void },
+  EndBlendMode: { args: [], returns: FFIType.void },
   SetTargetFPS: { args: [FFIType.i32], returns: FFIType.void },
   ClearBackground: { args: [FFIType.u32], returns: FFIType.void },
   DrawRectangle: {

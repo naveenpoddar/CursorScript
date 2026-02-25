@@ -48,7 +48,7 @@ You need [Bun](https://bun.sh/) installed.
 Experience the full power of CursorScript by running our reference game:
 
 ```bash
-bun run src/main.ts ./test/test_snakegame.cursor
+cursorx ./test/test_snakegame.cursor
 ```
 
 ## CursorX: Package Management 📦
@@ -57,12 +57,12 @@ CursorScript comes with a built-in package manager called **CursorX** to manage 
 
 ### Commands
 
-| Command                              | Description                                         |
-| :----------------------------------- | :-------------------------------------------------- |
-| `bun run src/main.ts init`           | Initialize a new project with a `cursor.json` file. |
-| `bun run src/main.ts add <repo-url>` | Add a dependency from a GitHub repository.          |
-| `bun run src/main.ts install`        | Install all dependencies listed in `cursor.json`.   |
-| `bun run src/main.ts remove <slug>`  | Remove a dependency.                                |
+| Command                 | Description                                         |
+| :---------------------- | :-------------------------------------------------- |
+| `cursorx init`          | Initialize a new project with a `cursor.json` file. |
+| `cursorx add <url>`     | Add a dependency from a GitHub repository.          |
+| `cursorx install`       | Install all dependencies listed in `cursor.json`.   |
+| `cursorx remove <slug>` | Remove a dependency.                                |
 
 ### Using Packages
 

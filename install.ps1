@@ -1,6 +1,7 @@
-$appName = "cursorscript"
-$installDir = "$HOME\.$appName"
-$url = "https://github.com/OWNER/REPO/releases/latest/download/cursorscript-windows-x64-baseline.zip"
+$appName = "cursorx"
+$packageName = "cursorscript"
+$installDir = "$HOME\.$packageName"
+$url = "https://github.com/naveenpoddar/cursorscript/releases/latest/download/cursorscript-windows-x64-baseline.zip"
 
 # 1. Prepare Directory
 if (!(Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir }

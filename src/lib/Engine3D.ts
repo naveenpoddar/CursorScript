@@ -36,6 +36,8 @@ interface Scene {
   meshes: Map<number, Mesh>;
   nextMeshId: number;
   lightDir: Vec3;
+  lightIntensity: number;
+  lightColor: Vec3; // NEW: Light color (r,g,b)
   ambientLight: number;
 }
 
@@ -81,6 +83,8 @@ class _Engine3D {
       meshes: new Map(),
       nextMeshId: 1,
       lightDir: { x: 0, y: 0, z: 1 }, // Default light pointing forward
+      lightIntensity: 1.0,
+      lightColor: { x: 1, y: 1, z: 1 }, // White light
       ambientLight: 0.3,
     });
     return id;
@@ -89,9 +93,27 @@ class _Engine3D {
   public setLight(sceneId: any, dirX: any, dirY: any, dirZ: any, ambient: any) {
     const scene = this.scenes.get(requireNumber(sceneId));
     if (!scene) return;
-    let norm = this.normalize(dirX, dirY, dirZ);
-    scene.lightDir = { x: norm.x, y: norm.y, z: norm.z };
+    let dx = requireNumber(dirX),
+      dy = requireNumber(dirY),
+      dz = requireNumber(dirZ);
+    let len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    if (len > 0) {
+      scene.lightDir = { x: dx / len, y: dy / len, z: dz / len };
+      scene.lightIntensity = Math.min(1.0, len / 10.0); // Simple scaling if vector is short
+    } else {
+      scene.lightIntensity = 0;
+    }
     scene.ambientLight = requireNumber(ambient);
+  }
+
+  public setLightColor(sceneId: any, r: any, g: any, b: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    scene.lightColor = {
+      x: requireNumber(r),
+      y: requireNumber(g),
+      z: requireNumber(b),
+    };
   }
 
   public setCamera(
@@ -384,11 +406,31 @@ class _Engine3D {
         }
 
         let drawColor = mesh.color;
-        if (mesh.isSolid) {
-          // Better Lighting Engine: Ambient + Diffuse (Lambertian)
-          let diffuse = Math.max(0, lightIntensity);
-          const lum = scene.ambientLight + diffuse * (1.0 - scene.ambientLight);
-          drawColor = this.shadeColor(mesh.color, lum);
+        if (mesh.isSolid && !mesh.isGlow) {
+          // Better Lighting Engine: Ambient + Diffuse (Lambertian) with RGB Light Color
+          let diffuse = Math.max(0, lightIntensity) * scene.lightIntensity;
+
+          let r = mesh.color & 0xff;
+          let g = (mesh.color >> 8) & 0xff;
+          let b = (mesh.color >> 16) & 0xff;
+          let a = (mesh.color >> 24) & 0xff;
+
+          // Apply Ambient + Colored Diffuse
+          let finalR = r * (scene.ambientLight + diffuse * scene.lightColor.x);
+          let finalG = g * (scene.ambientLight + diffuse * scene.lightColor.y);
+          let finalB = b * (scene.ambientLight + diffuse * scene.lightColor.z);
+
+          // Clamp
+          if (finalR > 255) finalR = 255;
+          if (finalG > 255) finalG = 255;
+          if (finalB > 255) finalB = 255;
+
+          drawColor =
+            (Math.floor(finalR) |
+              (Math.floor(finalG) << 8) |
+              (Math.floor(finalB) << 16) |
+              (a << 24)) >>>
+            0;
         }
 
         const projectedVerts = face.v.map((idx) => {

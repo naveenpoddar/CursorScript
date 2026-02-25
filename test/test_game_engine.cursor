@@ -8,12 +8,15 @@ PerlinNoise.seed(rand(111111, 999999))
 // 2. Setup Sun/Light
 Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
 let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C") // Sun Core
-let sunGlow1 = Engine3D.createCube(scene, 32, "rgba(255, 232, 124, 0.35)") // Inner Glow
-let sunGlow2 = Engine3D.createCube(scene, 50, "rgba(255, 232, 124, 0.1)") // Outer Glow
+let sunGlow1 = Engine3D.createCube(scene, 40, "rgba(255, 232, 124, 0.4)") // Inner Glow
+
+let moonMesh = Engine3D.createCube(scene, 15, "#E0E0FF") // Moon Core (Blueish White)
+let moonGlow = Engine3D.createCube(scene, 30, "rgba(100, 100, 255, 0.2)") // Moon Glow
 
 Engine3D.setGlowMode(scene, sunMesh, true)
 Engine3D.setGlowMode(scene, sunGlow1, true)
-Engine3D.setGlowMode(scene, sunGlow2, true)
+Engine3D.setGlowMode(scene, moonMesh, true)
+Engine3D.setGlowMode(scene, moonGlow, true)
 
 // 3. Player Properties
 let px = 0
@@ -26,6 +29,7 @@ let speed = 0.25
 let yVel = 0
 let isGrounded = false
 let breakCooldown = 0
+let sunTime = 1.0 // Start at daytime
 
 let loadedCols = []
 let viewDist = 3  // Changed view distance from 8 to 2 chunks for performance
@@ -137,10 +141,113 @@ Window.onUpdate(() -> {
         }
     }
     
-    // Keep Sun in the sky relative to player (direction 0.5, 1, 0.5)
-    Engine3D.setPosition(scene, sunMesh, px + 80, py + 120, pz + 80)
-    Engine3D.setPosition(scene, sunGlow1, px + 80, py + 120, pz + 80)
-    Engine3D.setPosition(scene, sunGlow2, px + 80, py + 120, pz + 80)
+    // --- Realtime Celestial & Lighting ---
+    sunTime = sunTime + 0.002
+    let sDist = 180
+    let sDistZ = 80 // slight offset
+    
+    let sunX = Math.sin(sunTime) * sDist
+    let sunY = Math.cos(sunTime) * sDist
+    let sunZ = sDistZ
+    
+    // Moon is on the opposite side
+    let moonX = -sunX
+    let moonY = -sunY
+    let moonZ = -sunZ // Pointing back
+    
+    let dlX = sunX
+    let dlY = sunY
+    let dlZ = sunZ
+    
+    let ambient = 0.45
+    let skyR = 135
+    let skyG = 206
+    let skyB = 235
+    
+    let lr = 1.0
+    let lg = 1.0
+    let lb = 0.9 // Daytime: Slightly yellow white
+    
+    if (sunY < -20) { 
+        // Peak Night: Directional light from Moon (Blue tinted)
+        ambient = 0.08
+        dlX = moonX * 0.05 // Drastically weakened moonlight
+        dlY = moonY * 0.05
+        dlZ = moonZ * 0.05
+        
+        lr = 0.1
+        lg = 0.1
+        lb = 0.3 // Dimmer, subtle blue moonlight
+        
+        skyR = 8
+        skyG = 12
+        skyB = 26
+    } else if (sunY < 0) {
+        // Sunset fade part 2: Switch to moon lighting
+        ambient = 0.1
+        let t_moon = sunY / -20
+        dlX = moonX * (t_moon * 0.05)
+        dlY = moonY * (t_moon * 0.05)
+        dlZ = moonZ * (t_moon * 0.05)
+        
+        // Lerp color from orange to dim moon blue
+        lr = 1.0 + (0.1 - 1.0) * t_moon
+        lg = 0.3 + (0.1 - 0.3) * t_moon
+        lb = 0.0 + (0.3 - 0.0) * t_moon
+        
+        let t = (sunY + 20) / 20
+        if (t < 0) { t = 0 }
+        skyR = 8 + (100 - 8) * t
+        skyG = 12 + (30 - 12) * t
+        skyB = 26 + (5 - 26) * t
+    } else if (sunY < 30) { 
+        let t = sunY / 30
+        ambient = 0.1 + t * 0.15 
+        // Sunset color tint
+        lr = 1.0
+        lg = 0.3 + t * 0.4
+        lb = 0.0 + t * 0.4
+        
+        skyR = 100 + (255 - 100) * t
+        skyG = 30 + (140 - 30) * t
+        skyB = 5 + (0 - 5) * t
+    } else if (sunY < 80) {
+        let t = (sunY - 30) / 50
+        ambient = 0.25 + t * 0.2
+        lr = 1.0
+        lg = 0.7 + t * 0.3
+        lb = 0.4 + t * 0.5
+        
+        skyR = 255 + (135 - 255) * t
+        skyG = 140 + (206 - 140) * t
+        skyB = 0 + (235 - 0) * t
+    }
+    
+    skyR = Math.round(skyR)
+    skyG = Math.round(skyG)
+    skyB = Math.round(skyB)
+    let skyColor = "rgba(" + str(skyR) + ", " + str(skyG) + ", " + str(skyB) + ", 1)"
+    
+    Engine3D.setLight(scene, dlX, dlY, dlZ, ambient)
+    Engine3D.setLightColor(scene, lr, lg, lb)
+
+    // Keep Sun/Moon in the sky relative to player
+    let renderSunY = sunY
+    if (sunY < -20) { renderSunY = -9999 }
+    let renderMoonY = moonY
+    if (moonY < -20) { renderMoonY = -9999 }
+    
+    Engine3D.setPosition(scene, sunMesh, px + sunX, py + renderSunY, pz + sunZ)
+    Engine3D.setPosition(scene, sunGlow1, px + sunX, py + renderSunY, pz + sunZ)
+    
+    Engine3D.setPosition(scene, moonMesh, px + moonX, py + renderMoonY, pz + moonZ)
+    Engine3D.setPosition(scene, moonGlow, px + moonX, py + renderMoonY, pz + moonZ)
+    
+    // Billboard Celestial objects
+    Engine3D.setRotation(scene, sunMesh, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, sunGlow1, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, moonMesh, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, moonGlow, pitch, -yaw, 0)
 
     // --- Dynamic Terrain System ---
     let cx = Math.floor(px)
@@ -220,13 +327,6 @@ Window.onUpdate(() -> {
                                 let color = "#78e08f" // grass
                                 if (currY < h) { color = "#d35400" } // dirt
                                 if (currY <= h - 2 && h > 2) { color = "#7f8c8d" } // stone
-                                
-                                // Ambient Voxel Shadows (Directional shadowing based on sun)
-                                if (h_px > currY || h_nz > currY) {
-                                    if (color == "#78e08f") { color = "#55a060" } // shadowed grass
-                                    else if (color == "#d35400") { color = "#a04000" } // shadowed dirt
-                                    else if (color == "#7f8c8d") { color = "#5a6667" } // shadowed stone
-                                }
                                 
                                 let cube = Engine3D.createCube(scene, 1, color)
                                 Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
@@ -334,7 +434,7 @@ Window.onUpdate(() -> {
     Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 400)
     
     // --- Rendering ---
-    Window.clear("#87ceeb") // Beautiful Sky blue background
+    Window.clear(skyColor) // Dynamic Sky Color matching time of day
     Engine3D.render(scene, 800, 600)
     
     // --- UIOverlay ---

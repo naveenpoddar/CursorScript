@@ -2,42 +2,23 @@ Window.create(800, 600, "Minecraft Clone (CursorScript)")
 let scene = Engine3D.createScene()
 
 // 1. Terrain Generation
-// Let's create an 14x14 grid of blocks
-let worldSize = 7
-let x = -worldSize
-while (x <= worldSize) {
-    let z = -worldSize
-    while (z <= worldSize) {
-        // Pseudo-random heightmap using sine/cosine overlapping waves!
-        let h = Math.round(Math.sin(x * 0.4) * 1.5 + Math.cos(z * 0.4) * 1.5) 
-        
-        let y = -2 // Dig down
-        while (y <= h) {
-            let color = "#78e08f" // Grass color
-            if (y < h) { color = "#d35400" } // Dirt color under the grass
-            if (y == -2) { color = "#7f8c8d" } // Stone Bedrock
-            
-            let cube = Engine3D.createCube(scene, 1, color)
-            Engine3D.setPosition(scene, cube, x, y, z)
-            Engine3D.setSolidMode(scene, cube, true)
-            y = y + 1
-        }
-        z = z + 1
-    }
-    x = x + 1
-}
+// Seed the random noise engine
+PerlinNoise.seed(123456)
 
 // 2. Setup Sun/Light
 Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
 
 // 3. Player Properties
 let px = 0
-let py = 5
+let py = 50
 let pz = -8
 
 let yaw = 0
 let pitch = 0
 let speed = 0.25
+
+let loadedCols = []
+let viewDist = 3  // Changed view distance from 8 to 2 chunks for performance
 
 // Lock cursor for FPS view!
 Window.disableCursor()
@@ -79,9 +60,101 @@ Window.onUpdate(() -> {
     if (Window.getKeyDown("Space")) { py = py + speed }
     if (Window.getKeyDown("LeftShift")) { py = py - speed }
 
+    // --- Dynamic Terrain System ---
+    let cx = Math.floor(px)
+    let cz = Math.floor(pz)
+    
+    // Calculate current chunk coordinates
+    let chunkX = Math.floor(cx / 16)
+    let chunkZ = Math.floor(cz / 16)
+
+    // Unload far chunks
+    let i = 0
+    while (i < len(loadedCols)) {
+        let col = loadedCols[i]
+        let dist = Math.abs(col.x - chunkX) + Math.abs(col.z - chunkZ)
+        if (dist > viewDist * 1.6) {
+            let j = 0
+            while (j < len(col.meshes)) {
+                Engine3D.deleteMesh(scene, col.meshes[j])
+                j = j + 1
+            }
+            // Array fast remove using pop
+            let lenCols = len(loadedCols)
+            loadedCols[i] = loadedCols[lenCols - 1]
+            pop(loadedCols)
+        } else {
+            i = i + 1
+        }
+    }
+
+    // Load near chunks (16x16 regions)
+    let ox = -viewDist
+    while (ox <= viewDist) {
+        let oz = -viewDist
+        while (oz <= viewDist) {
+            let wrldChunkX = chunkX + ox
+            let wrldChunkZ = chunkZ + oz
+            
+            // Only load within a circle to save perf
+            if (Math.abs(ox) + Math.abs(oz) <= viewDist * 1.5) {
+                let isLoaded = false
+                let k = 0
+                while (k < len(loadedCols)) {
+                    if (loadedCols[k].x == wrldChunkX && loadedCols[k].z == wrldChunkZ) {
+                        isLoaded = true
+                    }
+                    k = k + 1
+                }
+                
+                if (isLoaded == false) {
+                    let colMeshes = []
+                    
+                    // Generate 16x16 blocks for this chunk
+                    let bx = 0
+                    while (bx < 16) {
+                        let bz = 0
+                        while (bz < 16) {
+                            let wrldX = (wrldChunkX * 16) + bx
+                            let wrldZ = (wrldChunkZ * 16) + bz
+                            
+                            let elevation = PerlinNoise.noise2D(wrldX * 0.05, wrldZ * 0.05)
+                            // Base height at 32, max height 64.
+                            let h = 32 + Math.round(elevation * 16)
+                            if (h > 64) { h = 64 }
+                            if (h < 0) { h = 0 }
+                            
+                            // Optimization: Instead of 64 vertical blocks, just render the top 3 surface blocks
+                            let currY = h - 2
+                            if (currY < 0) { currY = 0 }
+                            
+                            while (currY <= h) {
+                                let color = "#78e08f" // grass
+                                if (currY < h) { color = "#d35400" } // dirt
+                                if (currY == h - 2 && h > 2) { color = "#7f8c8d" } // stone
+                                
+                                let cube = Engine3D.createCube(scene, 1, color)
+                                Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
+                                Engine3D.setSolidMode(scene, cube, true)
+                                push(colMeshes, cube)
+                                currY = currY + 1
+                            }
+                            bz = bz + 1
+                        }
+                        bx = bx + 1
+                    }
+                    
+                    push(loadedCols, { x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes })
+                }
+            }
+            oz = oz + 1
+        }
+        ox = ox + 1
+    }
+
     // Update Camera position in Engine
-    // Note: camera FOV is set to 600
-    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 600)
+    // Note: camera FOV is set to 400
+    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 400)
     
     // --- Rendering ---
     Window.clear("#87ceeb") // Beautiful Sky blue background
@@ -89,10 +162,10 @@ Window.onUpdate(() -> {
     
     // --- UIOverlay ---
     Window.setColor("black")
-    Window.drawText("Minecraft CursorScript Clone", 10, 10, 20)
+    Window.drawText("Minecraft Infinite Procedural World!", 10, 10, 20)
     Window.drawText("WASD to move, Mouse to look freely! (ESC to exit)", 10, 35, 16)
     Window.drawText("Space/Shift to fly up/down", 10, 55, 16)
-    Window.drawText("X: " + str(Math.floor(px)) + " Y: " + str(Math.floor(py)) + " Z: " + str(Math.floor(pz)), 10, 80, 16)
+    Window.drawText("X: " + str(cx) + " Z: " + str(cz) + " Loaded Chunks: " + str(len(loadedCols)), 10, 80, 16)
     
     // Quick Crosshair
     Window.setColor("white")

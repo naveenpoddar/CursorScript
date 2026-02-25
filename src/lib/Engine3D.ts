@@ -161,6 +161,12 @@ class _Engine3D {
     return meshId;
   }
 
+  public deleteMesh(sceneId: any, meshId: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    scene.meshes.delete(requireNumber(meshId));
+  }
+
   public setSolidMode(sceneId: any, meshId: any, isSolid: any) {
     const scene = this.scenes.get(requireNumber(sceneId));
     if (!scene) return;

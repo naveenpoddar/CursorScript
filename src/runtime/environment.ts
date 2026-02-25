@@ -1,5 +1,6 @@
 import { MathL, requireString } from "../lib/MathLib";
 import { GameL } from "../lib/GameLib";
+import { Engine3DL } from "../lib/Engine3D";
 import { createWindowLib } from "../lib/WindowLib";
 import { NetworkL } from "../lib/Network";
 import {
@@ -198,6 +199,7 @@ export function createGlobalEnv() {
 
   env.declareVar("Math", MathL, true);
   env.declareVar("Game", GameL, true);
+  env.declareVar("Engine3D", Engine3DL, true);
   env.declareVar("Window", createWindowLib(), true);
   env.declareVar("Network", NetworkL, true);
 

@@ -1,0 +1,65 @@
+Window.create(800, 600, "CursorScript 3D Engine Test")
+
+// Define a rotating 3D cube
+let cube = [
+    // Front face
+    {x: -1, y: -1, z: -1},
+    {x: 1, y: -1, z: -1},
+    {x: 1, y: 1, z: -1},
+    {x: -1, y: 1, z: -1},
+    // Back face
+    {x: -1, y: -1, z: 1},
+    {x: 1, y: -1, z: 1},
+    {x: 1, y: 1, z: 1},
+    {x: -1, y: 1, z: 1}
+];
+
+// Edges connecting the vertices
+let edges = [
+    // Front
+    [0, 1], [1, 2], [2, 3], [3, 0],
+    // Back
+    [4, 5], [5, 6], [6, 7], [7, 4],
+    // Connecting front and back
+    [0, 4], [1, 5], [2, 6], [3, 7]
+];
+
+let angleParam = 0;
+
+Window.onUpdate(() -> {
+    Window.clear("black")
+    Window.setColor("green")
+    
+    Window.drawText("Engine3D Simple Rotating Cube", 10, 10, 20)
+
+    angleParam = angleParam + 1
+
+    let i = 0;
+    let numEdges = len(edges);
+
+    while (i < numEdges) {
+        let edge = edges[i];
+        let p1 = cube[edge[0]];
+        let p2 = cube[edge[1]];
+
+        // Rotate p1
+        let r1 = Engine3D.rotateX(p1.x, p1.y, p1.z, angleParam);
+        r1 = Engine3D.rotateY(r1.x, r1.y, r1.z, angleParam * 1.5);
+        r1 = Engine3D.rotateZ(r1.x, r1.y, r1.z, angleParam * 0.5);
+
+        // Rotate p2
+        let r2 = Engine3D.rotateX(p2.x, p2.y, p2.z, angleParam);
+        r2 = Engine3D.rotateY(r2.x, r2.y, r2.z, angleParam * 1.5);
+        r2 = Engine3D.rotateZ(r2.x, r2.y, r2.z, angleParam * 0.5);
+
+        // Project p1
+        let proj1 = Engine3D.project(r1.x, r1.y, r1.z, 800, 600, 400, 4);
+        
+        // Project p2
+        let proj2 = Engine3D.project(r2.x, r2.y, r2.z, 800, 600, 400, 4);
+
+        Window.drawLine(proj1.x, proj1.y, proj2.x, proj2.y)
+
+        i = i + 1
+    }
+})

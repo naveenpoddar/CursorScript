@@ -46,6 +46,10 @@ const lib = dlopen(libPath, {
     args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
     returns: FFIType.void,
   },
+  DrawLine: {
+    args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
+    returns: FFIType.void,
+  },
   DrawCircle: {
     args: [FFIType.i32, FFIType.i32, FFIType.f32, FFIType.u32],
     returns: FFIType.void,
@@ -275,6 +279,16 @@ class _WindowL {
       requireNumber(y),
       requireNumber(w),
       requireNumber(h),
+      this.activeColor,
+    );
+  }
+
+  public drawLine(startX: any, startY: any, endX: any, endY: any) {
+    lib.symbols.DrawLine(
+      requireNumber(startX),
+      requireNumber(startY),
+      requireNumber(endX),
+      requireNumber(endY),
       this.activeColor,
     );
   }

@@ -177,6 +177,49 @@ class _GameL {
     t = this.repeat(t, length * 2);
     return length - Math.abs(t - length);
   }
+
+  // --- Color Utilities ---
+  /**
+   * Linearly interpolates between two colors (hex or rgba strings).
+   */
+  public lerpColor(c1: any, c2: any, t: any): string {
+    const parse = (c: any) => {
+      let s = typeof c === "string" ? c : (c as any).value;
+      if (s.startsWith("#")) {
+        let r,
+          g,
+          b,
+          a = 255;
+        if (s.length === 7) {
+          r = parseInt(s.substring(1, 3), 16);
+          g = parseInt(s.substring(3, 5), 16);
+          b = parseInt(s.substring(5, 7), 16);
+        } else {
+          r = parseInt(s[1] + s[1], 16);
+          g = parseInt(s[2] + s[2], 16);
+          b = parseInt(s[3] + s[3], 16);
+        }
+        return [r, g, b, a];
+      } else if (s.startsWith("rgba(")) {
+        return s
+          .substring(5, s.length - 1)
+          .split(",")
+          .map((x: string) => parseFloat(x));
+      }
+      return [0, 0, 0, 1];
+    };
+
+    const v1 = parse(c1);
+    const v2 = parse(c2);
+    const time = requireNumber(t);
+
+    const r = Math.round(v1[0]! + (v2[0]! - v1[0]!) * time);
+    const g = Math.round(v1[1]! + (v2[1]! - v1[1]!) * time);
+    const b = Math.round(v1[2]! + (v2[2]! - v1[2]!) * time);
+    const a = v1[3]! + (v2[3]! - v1[3]!) * time;
+
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
 }
 
 export const GameL = ConvertTOMK_Object(new _GameL());

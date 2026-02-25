@@ -10,6 +10,7 @@ interface Vec3 {
 }
 interface Face {
   v: number[];
+  ao?: number[]; // Occlusion factor per vertex (0 to 1)
 } // Collection of vertex indices
 
 interface Mesh {
@@ -39,6 +40,8 @@ interface Scene {
   lightIntensity: number;
   lightColor: Vec3; // NEW: Light color (r,g,b)
   ambientLight: number;
+  useAO: boolean;
+  aoIntensity: number;
 }
 
 // FFI Helper for Raylib Vector2 struct
@@ -86,6 +89,8 @@ class _Engine3D {
       lightIntensity: 1.0,
       lightColor: { x: 1, y: 1, z: 1 }, // White light
       ambientLight: 0.3,
+      useAO: false,
+      aoIntensity: 0.5,
     });
     return id;
   }
@@ -139,6 +144,13 @@ class _Engine3D {
       z: requireNumber(rz),
     };
     scene.camera.fov = requireNumber(fov);
+  }
+
+  public setSceneAO(sceneId: any, enabled: any, intensity: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    scene.useAO = !!enabled;
+    scene.aoIntensity = requireNumber(intensity);
   }
 
   // ----- Mesh Management -----
@@ -205,6 +217,29 @@ class _Engine3D {
     const mesh = scene.meshes.get(requireNumber(meshId));
     if (!mesh) return;
     mesh.isGlow = !!isGlow;
+  }
+
+  public setFaceAO(
+    sceneId: any,
+    meshId: any,
+    faceIdx: any,
+    ao0: any,
+    ao1: any,
+    ao2: any,
+    ao3: any,
+  ) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+    const face = mesh.faces[requireNumber(faceIdx)];
+    if (!face) return;
+    face.ao = [
+      requireNumber(ao0),
+      requireNumber(ao1),
+      requireNumber(ao2),
+      requireNumber(ao3),
+    ];
   }
 
   public setPosition(sceneId: any, meshId: any, x: any, y: any, z: any) {
@@ -318,10 +353,49 @@ class _Engine3D {
       color: number;
       isSolid: boolean;
       isGlow: boolean;
+      ao?: number[];
     }
     const renderList: ProjectedFace[] = [];
 
     for (const mesh of scene.meshes.values()) {
+      // --- Fully Synchronized Frustum Culling (FOV-Aware) ---
+      // Dist from camera
+      let tx = mesh.pos.x - cam.pos.x;
+      let ty = mesh.pos.y - cam.pos.y;
+      let tz = mesh.pos.z - cam.pos.z;
+
+      // 1. Synchronized Yaw (match lines 418-424)
+      let radY = (-cam.rot.y * Math.PI) / 180;
+      let cy = Math.cos(radY),
+        sy = Math.sin(radY);
+      let x2 = tx * cy + tz * sy;
+      let z2 = -tx * sy + tz * cy;
+
+      // 2. Synchronized Pitch (match lines 427-433)
+      let radX = (-cam.rot.x * Math.PI) / 180;
+      let cx = Math.cos(radX),
+        sx = Math.sin(radX);
+      let y3 = ty * cx - z2 * sx;
+      let z3 = ty * sx + z2 * cx;
+
+      // Camera-space coords: x2, y3, z3
+      const camX = x2;
+      const camY = y3;
+      const camZ = z3;
+
+      // 1. Z-Near and Z-Far Culling
+      if (camZ < 0.1 || camZ > 180) continue;
+
+      // 2. FOV-based Horizontal and Vertical Culling
+      // We use the exact perspective projection math to define the frustum
+      const margin = 5.0;
+      const hThreshold = (sw / 2) * (camZ / cam.fov) + margin;
+      const vThreshold = (sh / 2) * (camZ / cam.fov) + margin;
+
+      if (Math.abs(camX) > hThreshold || Math.abs(camY) > vThreshold) {
+        continue;
+      }
+
       const transformedVerts: Vec3[] = [];
       const worldVerts: Vec3[] = [];
 
@@ -462,6 +536,7 @@ class _Engine3D {
           color: drawColor,
           isSolid: mesh.isSolid,
           isGlow: mesh.isGlow,
+          ao: face.ao,
         });
       }
     }
@@ -476,15 +551,48 @@ class _Engine3D {
       }
 
       if (face.isSolid) {
+        // --- Calculate Universal Face Shading (including AO) ---
+        let drawColor = face.color;
+
+        if (scene.useAO && face.ao && face.ao.length > 0) {
+          // Average AO for the entire face to avoid visible triangle diagonals
+          let totalAO = 0;
+          for (let val of face.ao) totalAO += val;
+          let avgAO = totalAO / face.ao.length;
+
+          // Normalize neighbor count (0-3) to 0.0-1.0 and apply intensity
+          // 0.33 maps the max 3 neighbors to a full intensity shadow
+          let aoFactor = 1.0 - avgAO * scene.aoIntensity * 0.33;
+          if (aoFactor < 0.05) aoFactor = 0.05; // Never go pitch black
+
+          // Extract channels safely using unsigned shifts
+          let r = (face.color & 0xff) * aoFactor;
+          let g = ((face.color >> 8) & 0xff) * aoFactor;
+          let b = ((face.color >> 16) & 0xff) * aoFactor;
+          let a = (face.color >>> 24) & 0xff;
+
+          // Clamp and re-pack
+          if (r > 255) r = 255;
+          if (g > 255) g = 255;
+          if (b > 255) b = 255;
+
+          drawColor =
+            (Math.floor(r) |
+              (Math.floor(g) << 8) |
+              (Math.floor(b) << 16) |
+              (a << 24)) >>>
+            0;
+        }
+
         // Split polygons into triangles and draw
         let p0 = face.v[0]!;
         for (let i = 1; i < face.v.length - 1; i++) {
           let p1 = face.v[i]!;
           let p2 = face.v[i + 1]!;
-          // Solid Fill with DrawTriangleFan
+
           if (raylib.symbols.DrawTriangleFan) {
             const pts = new Float32Array([p2.x, p2.y, p1.x, p1.y, p0.x, p0.y]);
-            raylib.symbols.DrawTriangleFan(ptr(pts), 3, face.color);
+            raylib.symbols.DrawTriangleFan(ptr(pts), 3, drawColor);
           }
         }
       } else {

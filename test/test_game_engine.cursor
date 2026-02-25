@@ -18,6 +18,12 @@ Engine3D.setGlowMode(scene, sunGlow1, true)
 Engine3D.setGlowMode(scene, moonMesh, true)
 Engine3D.setGlowMode(scene, moonGlow, true)
 
+// Enable Ambient Occlusion (explicitly enabled in the scene)
+Engine3D.setSceneAO(scene, true, 0.5)
+
+let selectorMesh = Engine3D.createCube(scene, 1.05, "rgba(255, 255, 255, 0.3)")
+Engine3D.setSolidMode(scene, selectorMesh, false)
+
 // 3. Player Properties
 let px = 0
 let py = 50
@@ -31,8 +37,13 @@ let isGrounded = false
 let breakCooldown = 0
 let sunTime = 1.0 // Start at daytime
 
+// --- Hotbar & Inventory ---
+let selectedSlot = 0
+let hotbar = ["#78e08f", "#d35400", "#7f8c8d", "#86592d", "#228B22"] 
+let hotbarNames = ["Grass", "Dirt", "Stone", "Wood", "Leaf"]
+
 let loadedCols = []
-let viewDist = 3  // Changed view distance from 8 to 2 chunks for performance
+let viewDist = 2 // Optimized for software rendering performance
 
 let getHeight = (x, z) -> {
     let elevation = PerlinNoise.noise2D(x * 0.05, z * 0.05)
@@ -84,8 +95,34 @@ Window.onUpdate(() -> {
     yVel = yVel - 0.015
     let newPy = py + yVel
     
-    // Collision checking (floor only for simplicity)
-    let floorY = getHeight(Math.round(px), Math.round(pz))
+    // --- Improved Collision Loop (Highly optimized for high mesh counts) ---
+    let bpx = Math.round(px)
+    let bpz = Math.round(pz)
+    let floorY = -10
+    
+    let bcx = Math.floor(bpx / 16)
+    let bcz = Math.floor(bpz / 16)
+    let ci = 0
+    while (ci < len(loadedCols)) {
+        let col = loadedCols[ci]
+        if (col.x == bcx && col.z == bcz) {
+            let mj = 0
+            let cm = col.meshes
+            let clen = len(cm)
+            while (mj < clen) {
+                let m = cm[mj]
+                // Quick coordinate check before complex logic
+                if (m.x == bpx && m.z == bpz) {
+                    if (m.y > floorY && m.y <= py - 1.5) {
+                        floorY = m.y
+                    }
+                }
+                mj = mj + 1
+            }
+        }
+        ci = ci + 1
+    }
+
     if (newPy <= floorY + 2.5) {
         newPy = floorY + 2.5
         yVel = 0
@@ -100,44 +137,98 @@ Window.onUpdate(() -> {
     }
     py = newPy
     
-    // --- Block Breaking (Mouse Left Click) ---
-    if (breakCooldown > 0) { breakCooldown = breakCooldown - 1 }
-    // Fallback to getKeyDown if getMouseButtonDown is failing, but WindowLib usually maps getMouseButtonDown
-    if (Window.getMouseButtonDown && Window.getMouseButtonDown(0) && breakCooldown == 0) {
-        breakCooldown = 15 // About 1/4th second cooldown
-        let pitchRad = pitch * (Math.PI / 180)
-        let rx = px
-        let ry = py
-        let rz = pz
-        let hit = false
-        let step = 0
+    // --- Hotbar Switching ---
+    if (Window.getKeyDown("One")) { selectedSlot = 0 }
+    if (Window.getKeyDown("Two")) { selectedSlot = 1 }
+    if (Window.getKeyDown("Three")) { selectedSlot = 2 }
+    if (Window.getKeyDown("Four")) { selectedSlot = 3 }
+    if (Window.getKeyDown("Five")) { selectedSlot = 4 }
+
+    // --- Target Raycast (Every Frame) ---
+    let pitchRad = pitch * (Math.PI / 180)
+    let rx = px
+    let ry = py
+    let rz = pz
+    let hit = false
+    let step = 0
+    let targetX = 0
+    let targetY = 0
+    let targetZ = 0
+    let bx_prev = Math.round(rx)
+    let by_prev = Math.round(ry)
+    let bz_prev = Math.round(rz)
+    
+    let hitBlock = null
+    let hitChunk = null
+    let hj = 0
+
+    while (step < 12 && hit == false) {
+        rx = rx + Math.sin(yawRad) * Math.cos(pitchRad) * 0.4
+        ry = ry - Math.sin(pitchRad) * 0.4
+        rz = rz + Math.cos(yawRad) * Math.cos(pitchRad) * 0.4
         
-        while (step < 15 && hit == false) {
-            rx = rx + Math.sin(yawRad) * Math.cos(pitchRad) * 0.5
-            ry = ry - Math.sin(pitchRad) * 0.5
-            rz = rz + Math.cos(yawRad) * Math.cos(pitchRad) * 0.5
-            
-            let bx = Math.round(rx)
-            let by = Math.round(ry)
-            let bz = Math.round(rz)
-            
-            let ci = 0
-            while (ci < len(loadedCols) && hit == false) {
-                let cm = loadedCols[ci].meshes
+        let bx = Math.round(rx)
+        let by = Math.round(ry)
+        let bz = Math.round(rz)
+        
+        let ci = 0
+        while (ci < len(loadedCols) && hit == false) {
+            let col = loadedCols[ci]
+            if (col.x == Math.floor(bx / 16) && col.z == Math.floor(bz / 16)) {
+                let cm = col.meshes
                 let cj = 0
-                while (cj < len(cm) && hit == false) {
-                    if (cm[cj].x == bx && cm[cj].y == by && cm[cj].z == bz) {
-                        Engine3D.deleteMesh(scene, cm[cj].id)
-                        cm[cj] = cm[len(cm) - 1]
-                        pop(cm)
+                let clen = len(cm)
+                while (cj < clen && hit == false) {
+                    if (cm[cj].x == bx && cm[cj].y == by && cm[cj].z == bz && cm[cj].id != selectorMesh) {
+                        hitBlock = cm[cj]
+                        hitChunk = col
+                        hj = cj
+                        targetX = bx; targetY = by; targetZ = bz
                         hit = true
                     } else {
                         cj = cj + 1
                     }
                 }
-                ci = ci + 1
             }
+            ci = ci + 1
+        }
+        if (hit == false) {
+            bx_prev = bx; by_prev = by; bz_prev = bz
             step = step + 1
+        }
+    }
+
+    if (hit == true) {
+        Engine3D.setPosition(scene, selectorMesh, targetX, targetY, targetZ)
+    } else {
+        Engine3D.setPosition(scene, selectorMesh, 0, -9999, 0)
+    }
+
+    // --- Interaction Logic ---
+    if (breakCooldown > 0) { breakCooldown = breakCooldown - 1 }
+    let isClickL = Window.getMouseButton("left")
+    let isClickR = Window.getMouseButton("right")
+
+    if (hit == true && breakCooldown == 0 && (isClickL || isClickR)) {
+        breakCooldown = 12
+        if (isClickL) {
+            Engine3D.deleteMesh(scene, hitBlock.id)
+            hitChunk.meshes[hj] = hitChunk.meshes[len(hitChunk.meshes) - 1]
+            pop(hitChunk.meshes)
+        } else if (isClickR) {
+            let nColor = hotbar[selectedSlot]
+            let cube = Engine3D.createCube(scene, 1, nColor)
+            Engine3D.setPosition(scene, cube, bx_prev, by_prev, bz_prev)
+            Engine3D.setSolidMode(scene, cube, true)
+            Engine3D.setFaceAO(scene, cube, 5, 0, 0, 0, 0)
+            
+            let findCi = 0
+            while (findCi < len(loadedCols)) {
+                if (loadedCols[findCi].x == Math.floor(bx_prev / 16) && loadedCols[findCi].z == Math.floor(bz_prev / 16)) {
+                    push(loadedCols[findCi].meshes, { id: cube, x: bx_prev, y: by_prev, z: bz_prev })
+                }
+                findCi = findCi + 1
+            }
         }
     }
     
@@ -312,108 +403,104 @@ Window.onUpdate(() -> {
                             let h_px = getHeight(wrldX + 1, wrldZ)
                             let h_nz = getHeight(wrldX, wrldZ - 1)
                             let h_pz = getHeight(wrldX, wrldZ + 1)
+
+                            // --- Vertical Layering (Grass -> Dirt -> Stone) ---
+                            let h_nw = getHeight(wrldX - 1, wrldZ - 1)
+                            let h_ne = getHeight(wrldX + 1, wrldZ - 1)
+                            let h_sw = getHeight(wrldX - 1, wrldZ + 1)
+                            let h_se = getHeight(wrldX + 1, wrldZ + 1)
                             
-                            let min_h = h_nx
-                            if (h_px < min_h) { min_h = h_px }
-                            if (h_nz < min_h) { min_h = h_nz }
-                            if (h_pz < min_h) { min_h = h_pz }
-                            
-                            // Optimization: Perfect Occlusion Culling. Only render visible shell.
-                            let currY = min_h + 1
-                            if (currY > h) { currY = h }
-                            if (currY < 0) { currY = 0 }
+                            let dirtDepth = 3 + Math.floor(Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 3)
+                            let currY = 0
                             
                             while (currY <= h) {
-                                let color = "#78e08f" // grass
-                                if (currY < h) { color = "#d35400" } // dirt
-                                if (currY <= h - 2 && h > 2) { color = "#7f8c8d" } // stone
+                                // Performance Culling (Aggressive):
+                                // Only render top 2 layers (surface + immediate underground) or cliff sides
+                                let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz)
                                 
-                                let cube = Engine3D.createCube(scene, 1, color)
-                                Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
-                                Engine3D.setSolidMode(scene, cube, true)
-                                push(colMeshes, { id: cube, x: wrldX, y: currY, z: wrldZ })
-                                
-                                // Tree Generation
-                                if (currY == h && color == "#78e08f") {
-                                    // Deterministic random pseudo-hash based on x/z
-                                    let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453
-                                    let rand = randVal - Math.floor(randVal)
+                                if (isExposed) {
+                                    let color = "#7f8c8d" // Default: Stone
+                                    if (currY == h) { 
+                                        color = "#78e08f" // Grass Top
+                                    } else if (currY > h - dirtDepth) {
+                                        color = "#d35400" // Dirt Layer
+                                    }
                                     
-                                    // 1% chance to spawn a tree
-                                    if (rand < 0.0075) {
-                                        // Variable heights between 3 and 7
-                                        let treeHeight = 3 + Math.floor(rand * 100) % 5
-                                        
-                                        // Tree Variations
-                                        let leafColor = "#228B22" // Default ForestGreen
-                                        let trunkColor = "#8B4513" // Default SaddleBrown
-                                        
-                                        let varSeed = Math.floor(rand * 1000) % 4
-                                        if (varSeed == 0) { 
-                                            // Pine / Dark Tree
-                                            leafColor = "#006400" // DarkGreen
-                                            treeHeight = treeHeight + 1 // Pines are usually taller
-                                        }
-                                        if (varSeed == 1) {
-                                            // Birch
-                                            trunkColor = "#F5DEB3" // Wheat/Whiteish
-                                            leafColor = "#9ACD32" // YellowGreen
-                                        }
-                                        if (varSeed == 2) {
-                                            // Autumn
-                                            leafColor = "#FF8C00" // DarkOrange
-                                        }
-                                        if (varSeed == 3) {
-                                            // Cherry Blossom
-                                            leafColor = "#FFB7C5" // Cherry Pink
-                                        }
-                                        
-                                        // Trunk
-                                        let ty = 1
-                                        while (ty <= treeHeight) {
-                                            let trunk = Engine3D.createCube(scene, 1, trunkColor)
-                                            Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ)
-                                            Engine3D.setSolidMode(scene, trunk, true)
-                                            push(colMeshes, { id: trunk, x: wrldX, y: h + ty, z: wrldZ })
-                                            ty = ty + 1
-                                        }
-                                        
-                                        // Leaves shape (adjust size based on height)
-                                        let leafSpread = 1
-                                        if (treeHeight > 5) { leafSpread = 2 }
-                                        
-                                        let lx = -leafSpread
-                                        while (lx <= leafSpread) {
-                                            let lz = -leafSpread
-                                            while (lz <= leafSpread) {
-                                                let maxLy = treeHeight + 1
-                                                let minLy = treeHeight - 1
-                                                // If tree is wider, drop the leaves one lower
-                                                if (leafSpread == 2) { minLy = treeHeight - 2 }
-                                                
-                                                let ly = minLy
-                                                while (ly <= maxLy) {
-                                                    // Add randomness to leaves shape to make it organic
-                                                    let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy
-                                                    if (isCorner == false) {
-                                                        // For large leaves, hollow out the corners more
-                                                        let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy
-                                                        if (isOuterCorner == false) {
-                                                            let leaf = Engine3D.createCube(scene, 1, leafColor)
-                                                            Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz)
-                                                            Engine3D.setSolidMode(scene, leaf, true)
-                                                            push(colMeshes, { id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz })
-                                                        }
-                                                    }
-                                                    ly = ly + 1
-                                                }
-                                                lz = lz + 1
+                                    let cube = Engine3D.createCube(scene, 1, color)
+                                    Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
+                                    Engine3D.setSolidMode(scene, cube, true)
+                                    
+                                    // AO Calculation
+                                    let top_v0 = 0 
+                                    if (h_nx > currY) { top_v0 = top_v0 + 1 }
+                                    if (h_nz > currY) { top_v0 = top_v0 + 1 }
+                                    if (h_nw > currY) { top_v0 = top_v0 + 1 }
+                                    let top_v1 = 0
+                                    if (h_px > currY) { top_v1 = top_v1 + 1 }
+                                    if (h_nz > currY) { top_v1 = top_v1 + 1 }
+                                    if (h_ne > currY) { top_v1 = top_v1 + 1 }
+                                    let top_v2 = 0
+                                    if (h_px > currY) { top_v2 = top_v2 + 1 }
+                                    if (h_pz > currY) { top_v2 = top_v2 + 1 }
+                                    if (h_se > currY) { top_v2 = top_v2 + 1 }
+                                    let top_v3 = 0
+                                    if (h_nx > currY) { top_v3 = top_v3 + 1 }
+                                    if (h_pz > currY) { top_v3 = top_v3 + 1 }
+                                    if (h_sw > currY) { top_v3 = top_v3 + 1 }
+                                    Engine3D.setFaceAO(scene, cube, 5, top_v0, top_v3, top_v2, top_v1)
+                                    
+                                    push(colMeshes, { id: cube, x: wrldX, y: currY, z: wrldZ })
+
+                                    // Tree Generation (Only on grass surface)
+                                    if (currY == h && color == "#78e08f") {
+                                        let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453
+                                        let rand = randVal - Math.floor(randVal)
+                                        if (rand < 0.0075) {
+                                            let treeHeight = 3 + Math.floor(rand * 100) % 5
+                                            let leafColor = "#228B22"; let trunkColor = "#8B4513"
+                                            let varSeed = Math.floor(rand * 1000) % 4
+                                            if (varSeed == 0) { leafColor = "#006400"; treeHeight = treeHeight + 1 }
+                                            if (varSeed == 1) { trunkColor = "#F5DEB3"; leafColor = "#9ACD32" }
+                                            if (varSeed == 2) { leafColor = "#FF8C00" }
+                                            if (varSeed == 3) { leafColor = "#FFB7C5" }
+                                            
+                                            let ty = 1
+                                            while (ty <= treeHeight) {
+                                                let trunk = Engine3D.createCube(scene, 1, trunkColor)
+                                                Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ)
+                                                Engine3D.setSolidMode(scene, trunk, true)
+                                                push(colMeshes, { id: trunk, x: wrldX, y: h + ty, z: wrldZ })
+                                                ty = ty + 1
                                             }
-                                            lx = lx + 1
+                                            let leafSpread = 1
+                                            if (treeHeight > 5) { leafSpread = 2 }
+                                            let lx = -leafSpread
+                                            while (lx <= leafSpread) {
+                                                let lz = -leafSpread
+                                                while (lz <= leafSpread) {
+                                                    let maxLy = treeHeight + 1; let minLy = treeHeight - 1
+                                                    if (leafSpread == 2) { minLy = treeHeight - 2 }
+                                                    let ly = minLy
+                                                    while (ly <= maxLy) {
+                                                        let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy
+                                                        if (isCorner == false) {
+                                                            let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy
+                                                            if (isOuterCorner == false) {
+                                                                let leaf = Engine3D.createCube(scene, 1, leafColor)
+                                                                Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz)
+                                                                Engine3D.setSolidMode(scene, leaf, true)
+                                                                push(colMeshes, { id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz })
+                                                            }
+                                                        }
+                                                        ly = ly + 1
+                                                    }
+                                                    lz = lz + 1
+                                                }
+                                                lx = lx + 1
+                                            }
                                         }
                                     }
                                 }
-                                
                                 currY = currY + 1
                             }
                             bz = bz + 1
@@ -431,7 +518,7 @@ Window.onUpdate(() -> {
 
     // Update Camera position in Engine
     // Note: camera FOV is set to 400
-    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 400)
+    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 300)
     
     // --- Rendering ---
     Window.clear(skyColor) // Dynamic Sky Color matching time of day
@@ -448,4 +535,38 @@ Window.onUpdate(() -> {
     Window.setColor("white")
     Window.drawRect(400 - 2, 300 - 10, 4, 20)
     Window.drawRect(400 - 10, 300 - 2, 20, 4)
+
+    // --- Hotbar UI ---
+    let hw = 400
+    let hh = 50
+    let hx = 400 - (hw / 2)
+    let hy = 600 - hh - 20
+    
+    // Background
+    Window.setColor("rgba(0, 0, 0, 0.5)")
+    Window.drawRect(hx, hy, hw, hh)
+    
+    let si = 0
+    while (si < 5) {
+        let slotX = hx + (si * (hw / 5)) + 5
+        let slotY = hy + 5
+        let sw = (hw / 5) - 10
+        let sh = hh - 10
+        
+        // Slot border
+        if (si == selectedSlot) {
+            Window.setColor("white")
+            Window.drawRect(slotX - 2, slotY - 2, sw + 4, sh + 4)
+            Window.drawText(hotbarNames[si], hx + (hw/2) - 30, hy - 25, 18)
+        } else {
+            Window.setColor("gray")
+            Window.drawRect(slotX - 1, slotY - 1, sw + 2, sh + 2)
+        }
+        
+        // Slot Color Icon
+        Window.setColor(hotbar[si])
+        Window.drawRect(slotX, slotY, sw, sh)
+        
+        si = si + 1
+    }
 })

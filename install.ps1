@@ -1,13 +1,29 @@
-$url = "https://github.com/naveenpoddar/cursorscript/releases/latest/download/cursorscript-windows-x64-baseline.zip"
-$installDir = "$HOME\.cursorscript"
-New-Item -ItemType Directory -Force -Path "$installDir\bin"
+$appName = "cursorscript"
+$installDir = "$HOME\.$appName"
+$url = "https://github.com/OWNER/REPO/releases/latest/download/cursorscript-windows-x64-baseline.zip"
 
-Invoke-WebRequest -Uri $url -OutFile "$installDir\temp.zip"
-Expand-Archive -Path "$installDir\temp.zip" -DestinationPath "$installDir\temp_extract" -Force
+# 1. Prepare Directory
+if (!(Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir }
 
-Move-Item "$installDir\temp_extract\*\cursorx.exe" "$installDir\bin\cursorscript.exe" -Force
+# 2. Download and Extract
+Write-Host "📥 Downloading latest build..." -ForegroundColor Cyan
+Invoke-WebRequest -Uri $url -OutFile "$installDir\build.zip"
+
+Write-Host "📦 Extracting all files..." -ForegroundColor Cyan
+Expand-Archive -Path "$installDir\build.zip" -DestinationPath "$installDir\temp" -Force
+
+# Move files from the subfolder (cursorscript-windows-x64-baseline) to the root .cursorscript folder
+Move-Item -Path "$installDir\temp\*\*" -Destination "$installDir" -Force
+Remove-Item -Path "$installDir\temp", "$installDir\build.zip" -Recurse -Force
+
+# 3. Add to Path (User Level)
+Write-Host "⚙️ Adding to Path..." -ForegroundColor Cyan
 $oldPath = [Environment]::GetEnvironmentVariable("Path", "User")
-[Environment]::SetEnvironmentVariable("Path", "$oldPath;$installDir\bin", "User")
+if ($oldPath -notlike "*$installDir*") {
+    $newPath = "$oldPath;$installDir"
+    [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+    $env:Path = $newPath # Update current session
+}
 
-Remove-Item "$installDir\temp.zip", "$installDir\temp_extract" -Recurse
-Write-Host "✨ Installed! Restart PowerShell to use 'cursorscript'" -ForegroundColor Green
+Write-Host "✨ Done! All files are in $installDir" -ForegroundColor Green
+Write-Host "👉 You might need to restart your terminal to use '$appName'"

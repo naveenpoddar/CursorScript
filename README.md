@@ -37,6 +37,27 @@ Experience the full power of CursorScript by running our reference game:
 bun run src/main.ts ./test/test_snakegame.cursor
 ```
 
+## CursorX: Package Management 📦
+
+CursorScript comes with a built-in package manager called **CursorX** to manage external modules and dependencies.
+
+### Commands
+
+| Command                              | Description                                         |
+| :----------------------------------- | :-------------------------------------------------- |
+| `bun run src/main.ts init`           | Initialize a new project with a `cursor.json` file. |
+| `bun run src/main.ts add <repo-url>` | Add a dependency from a GitHub repository.          |
+| `bun run src/main.ts install`        | Install all dependencies listed in `cursor.json`.   |
+| `bun run src/main.ts remove <slug>`  | Remove a dependency.                                |
+
+### Using Packages
+
+External packages are installed in the `.cursorx` directory and can be imported directly:
+
+```cursor
+import { someFunc } from "my-package-name"
+```
+
 ## Syntax At A Glance 📝
 
 ```cursor
@@ -82,18 +103,20 @@ print(len(enemies)); // 1
 
 ## Quick Syntax Guide 📖
 
-| Feature           | Syntax                            |
-| :---------------- | :-------------------------------- |
-| **Variables**     | `let x = 10;` (Required `;`)      |
-| **Constants**     | `const VELOCITY = 5;`             |
-| **Functions**     | `fn add(a, b) { a + b }`          |
-| **If/Else**       | `if (x > 0) { ... } else { ... }` |
-| **While Loop**    | `while (i < 10) { i = i + 1 }`    |
-| **Lambdas**       | `(a, b) -> { a + b }`             |
-| **Modules**       | `import { x } from "./file"`      |
-| **Arrays**        | `let arr = [1, 2, 3];`            |
-| **Logic**         | `&&`, `\|\|`, `!`                 |
-| **Member Access** | `obj.prop` or `arr[0]`            |
+| Feature           | Syntax                                |
+| :---------------- | :------------------------------------ |
+| Feature           | Syntax                                |
+| :---------------- | :------------------------------------ |
+| **Variables**     | `let x = 10;` (Required `;`)          |
+| **Constants**     | `const VELOCITY = 5;`                 |
+| **Functions**     | `fn add(a, b) { a + b }`              |
+| **If/Else**       | `if (x > 0) { ... } else { ... }`     |
+| **While Loop**    | `while (i < 10) { i = i + 1 }`        |
+| **Lambdas**       | `(a, b) -> { a + b }`                 |
+| **Modules**       | `import { x } from "pkg"` or `./file` |
+| **Arrays**        | `let arr = [1, 2, 3];`                |
+| **Logic**         | `&&`, `\|\|`, `!`                     |
+| **Member Access** | `obj.prop` or `arr[0]`                |
 
 ## Project Structure 📂
 

@@ -219,7 +219,19 @@ class _Engine3D {
     if (!scene) return;
     const mesh = scene.meshes.get(requireNumber(meshId));
     if (!mesh) return;
+
+    const wasSolid = mesh.isSolid;
     mesh.isSolid = !!isSolid;
+
+    // Update grid if solidity changed
+    if (wasSolid !== mesh.isSolid) {
+      const key = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
+      if (mesh.isSolid) {
+        scene.meshGrid.set(key, mesh);
+      } else {
+        if (scene.meshGrid.get(key) === mesh) scene.meshGrid.delete(key);
+      }
+    }
   }
 
   public setGlowMode(sceneId: any, meshId: any, isGlow: any) {
@@ -267,7 +279,7 @@ class _Engine3D {
     const mesh = scene.meshes.get(requireNumber(meshId));
     if (!mesh) return;
 
-    // Update grid
+    // Update grid (only for solid meshes)
     const oldKey = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
     if (scene.meshGrid.get(oldKey) === mesh) scene.meshGrid.delete(oldKey);
 
@@ -277,8 +289,10 @@ class _Engine3D {
       z: requireNumber(z),
     };
 
-    const newKey = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
-    scene.meshGrid.set(newKey, mesh);
+    if (mesh.isSolid) {
+      const newKey = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
+      scene.meshGrid.set(newKey, mesh);
+    }
   }
 
   public setRotation(sceneId: any, meshId: any, x: any, y: any, z: any) {
@@ -495,16 +509,19 @@ class _Engine3D {
       const camZ = z3;
 
       // 1. Z-Near and Z-Far Culling
-      if (camZ < 0.01 || camZ > 2000) continue;
+      // Allow objects slightly behind the camera or very close to avoid "disappearing ground"
+      if (camZ < -2.0 || camZ > 2000) continue;
 
       // 2. FOV-based Horizontal and Vertical Culling
-      // We use the exact perspective projection math to define the frustum
-      const margin = 5.0;
-      const hThreshold = (sw / 2) * (camZ / cam.fov) + margin;
-      const vThreshold = (sh / 2) * (camZ / cam.fov) + margin;
+      // Only apply frustum culling for objects meaningfully in front of the camera
+      if (camZ > 0.1) {
+        const margin = 5.0;
+        const hThreshold = (sw / 2) * (camZ / cam.fov) + margin;
+        const vThreshold = (sh / 2) * (camZ / cam.fov) + margin;
 
-      if (Math.abs(camX) > hThreshold || Math.abs(camY) > vThreshold) {
-        continue;
+        if (Math.abs(camX) > hThreshold || Math.abs(camY) > vThreshold) {
+          continue;
+        }
       }
 
       const transformedVerts: Vec3[] = [];

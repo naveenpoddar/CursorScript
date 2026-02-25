@@ -1,0 +1,508 @@
+Window.create(800, 600, "Minecraft Clone (CursorScript)", false)
+let scene = Engine3D.createScene()
+
+// 1. Terrain Generation
+// Seed the random noise engine
+PerlinNoise.seed(rand(111111, 999999))
+
+let getHeight = (x, z) -> {
+    let scale1 = 0.015
+    let scale2 = 0.05
+    let scale3 = 0.1
+    
+    let h1 = PerlinNoise.noise2D(x * scale1, z * scale1) * 35 
+    let h2 = PerlinNoise.noise2D(x * scale2, z * scale2) * 12
+    let h3 = PerlinNoise.noise2D(x * scale3, z * scale3) * 4
+    
+    let combined = h1 + h2 + h3 + 12
+    Math.round(combined)
+}
+
+// 2. Setup Sun/Light
+Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
+let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C") // Sun Core
+let sunGlow1 = Engine3D.createCube(scene, 40, "rgba(255, 232, 124, 0.4)") // Inner Glow
+
+let moonMesh = Engine3D.createCube(scene, 15, "#E0E0FF") // Moon Core (Blueish White)
+let moonGlow = Engine3D.createCube(scene, 30, "rgba(100, 100, 255, 0.2)") // Moon Glow
+
+Engine3D.setGlowMode(scene, sunMesh, true)
+Engine3D.setGlowMode(scene, sunGlow1, true)
+Engine3D.setGlowMode(scene, moonMesh, true)
+Engine3D.setGlowMode(scene, moonGlow, true)
+
+// Enable Ambient Occlusion (explicitly enabled in the scene)
+Engine3D.setSceneAO(scene, true, 0.5)
+
+let selectorMesh = Engine3D.createCube(scene, 1.05, "rgba(255, 255, 255, 0.3)")
+Engine3D.setSolidMode(scene, selectorMesh, false)
+
+// 3. Player Properties
+let px = 0
+let py = 50
+let pz = -8
+
+let yaw = 0
+let pitch = 0
+let speed = 0.1
+let yVel = 0
+let isGrounded = false
+let breakCooldown = 0
+let sunTime = 1.0 // Start at daytime
+
+// --- Hotbar & Inventory ---
+let selectedSlot = 0
+let hotbar = ["#78e08f", "#d35400", "#7f8c8d", "#86592d", "#228B22"] 
+let hotbarNames = ["Grass", "Dirt", "Stone", "Wood", "Leaf"]
+
+let loadedCols = []
+let viewDist = 2 // Optimized for software rendering performance
+
+// --- Global Rendering State ---
+let skyColor = "rgba(135, 206, 235, 1)"
+let skyR = 135
+let skyG = 206
+let skyB = 235
+let dlX = 0; let dlY = 0; let dlZ = 0; let ambient = 0.45; let lr = 1.0; let lg = 1.0; let lb = 0.9
+
+let sunX = 0; let sunY = 0; let sunZ = 0
+let moonX = 0; let moonY = 0; let moonZ = 0
+
+// --- Collision Helper ---
+let checkSolid = (tx, ty, tz) -> {
+    Engine3D.checkSolid(scene, tx, ty, tz)
+}
+
+// Lock cursor for FPS view!
+Window.disableCursor()
+
+// 4. Physics Loop (Fixed step for stability)
+Window.onFixedUpdate(() -> {
+    // Convert degrees to radians for mathematical sin/cos
+    let yawRad = yaw * (Math.PI / 180)
+
+    
+    // --- FPS Movement (WASD with Horizontal Collision) ---
+    let moveX = 0
+    let moveZ = 0
+    if (Window.getKeyDown("W")) {
+        moveX = moveX + Math.sin(yawRad) * speed
+        moveZ = moveZ + Math.cos(yawRad) * speed
+    }
+    if (Window.getKeyDown("S")) {
+        moveX = moveX - Math.sin(yawRad) * speed
+        moveZ = moveZ - Math.cos(yawRad) * speed
+    }
+    if (Window.getKeyDown("A")) {
+        moveX = moveX - Math.cos(yawRad) * speed
+        moveZ = moveZ + Math.sin(yawRad) * speed
+    }
+    if (Window.getKeyDown("D")) {
+        moveX = moveX + Math.cos(yawRad) * speed
+        moveZ = moveZ - Math.sin(yawRad) * speed
+    }
+
+    // Try X Move
+    let testX = px + moveX
+    let colX = false
+    // Check 3 points of player height
+    if (checkSolid(testX, py, pz)) { colX = true }
+    if (checkSolid(testX, py - 1, pz)) { colX = true }
+    if (checkSolid(testX, py - 1.8, pz)) { colX = true }
+    if (colX == false) { px = testX }
+
+    // Try Z Move
+    let testZ = pz + moveZ
+    let colZ = false
+    if (checkSolid(px, py, testZ)) { colZ = true }
+    if (checkSolid(px, py - 1, testZ)) { colZ = true }
+    if (checkSolid(px, py - 1.8, testZ)) { colZ = true }
+    if (colZ == false) { pz = testZ }
+    
+    // --- Vertical Physics ---
+    yVel = yVel - 0.015
+    let newPy = py + yVel
+    
+    // Floor detection
+    let floorY = Engine3D.getTopBlockY(scene, px, pz, py - 1.5)
+
+    if (newPy <= floorY + 2.5) {
+        newPy = floorY + 2.5
+        yVel = 0
+        isGrounded = true
+    } else {
+        isGrounded = false
+    }
+
+    if (Window.getKeyDown("Space") && isGrounded == true) {
+        yVel = 0.3
+        isGrounded = false
+    }
+    py = newPy
+
+    
+    // --- Hotbar Switching ---
+    if (Window.getKeyDown("One")) { selectedSlot = 0 }
+    if (Window.getKeyDown("Two")) { selectedSlot = 1 }
+    if (Window.getKeyDown("Three")) { selectedSlot = 2 }
+    if (Window.getKeyDown("Four")) { selectedSlot = 3 }
+    if (Window.getKeyDown("Five")) { selectedSlot = 4 }
+
+    // --- Target Raycast (Every Frame) ---
+    let pitchRad = pitch * (Math.PI / 180)
+    let dx = Math.sin(yawRad) * Math.cos(pitchRad)
+    let dy = -Math.sin(pitchRad)
+    let dz = Math.cos(yawRad) * Math.cos(pitchRad)
+
+    let ray = Engine3D.raycast(scene, px, py, pz, dx, dy, dz, 6)
+    let hit = ray.hit
+    let targetX = ray.x; let targetY = ray.y; let targetZ = ray.z
+    let bx_prev = ray.px; let by_prev = ray.py; let bz_prev = ray.pz
+    let hitBlockId = ray.meshId
+    
+    if (hit == true) {
+        Engine3D.setPosition(scene, selectorMesh, targetX, targetY, targetZ)
+    } else {
+        Engine3D.setPosition(scene, selectorMesh, 0, -9999, 0)
+    }
+
+    // --- Interaction Logic ---
+    if (breakCooldown > 0) { breakCooldown = breakCooldown - 1 }
+    let isClickL = Window.getMouseButton("left")
+    let isClickR = Window.getMouseButton("right")
+
+    if (hit == true && breakCooldown == 0 && (isClickL || isClickR)) {
+        breakCooldown = 12
+        if (isClickL) {
+            Engine3D.deleteMesh(scene, hitBlockId)
+        } else if (isClickR) {
+            let nColor = hotbar[selectedSlot]
+            let cube = Engine3D.createCube(scene, 1, nColor)
+            Engine3D.setPosition(scene, cube, bx_prev, by_prev, bz_prev)
+            Engine3D.setSolidMode(scene, cube, true)
+            Engine3D.setFaceAO(scene, cube, 5, 0, 0, 0, 0)
+            
+            let findCi = 0
+            while (findCi < len(loadedCols)) {
+                if (loadedCols[findCi].x == Math.floor(bx_prev / 16) && loadedCols[findCi].z == Math.floor(bz_prev / 16)) {
+                    push(loadedCols[findCi].meshes, { id: cube, x: bx_prev, y: by_prev, z: bz_prev })
+                }
+                findCi = findCi + 1
+            }
+        }
+    }
+    
+    // --- Realtime Celestial & Lighting ---
+    sunTime = sunTime + 0.002
+    let sDist = 180
+    let sDistZ = 80 // slight offset
+    
+    sunX = Math.sin(sunTime) * sDist
+    sunY = Math.cos(sunTime) * sDist
+    sunZ = sDistZ
+    
+    // Moon is on the opposite side
+    moonX = -sunX
+    moonY = -sunY
+    moonZ = -sunZ // Pointing back
+    
+    ambient = 0.08 // Night base
+    let sunFactor = (sunY + 20) / 100 // 0 at horizon/night, 1 at peak day
+    if (sunFactor < 0) { sunFactor = 0 }
+    if (sunFactor > 1) { sunFactor = 1 }
+
+    ambient = 0.08 + (sunFactor * 0.37) // Transitions from 0.08 to 0.45
+    
+    // Light Direction: Point to moon at night, sun at day
+    if (sunY < 0) {
+        dlX = moonX; dlY = moonY; dlZ = moonZ
+        // Blueish Moonlight
+        lr = 0.1; lg = 0.1; lb = 0.3
+    } else {
+        dlX = sunX; dlY = sunY; dlZ = sunZ
+        // Warm Sunlight lerping from Orange to White
+        let sunsetFactor = sunY / 40
+        if (sunsetFactor > 1) { sunsetFactor = 1 }
+        let sunColor = Game.lerpColor("rgba(255, 100, 0, 1)", "rgba(255, 255, 230, 1)", sunsetFactor)
+        // Extract components from rgba string for Engine3D.setLightColor
+        // Since our lerpColor returns rgba(r, g, b, a), we can just use the color directly if we update Engine3D
+        // But for now, let's just use manual lerps for light color to keep it simple for the engine
+        lr = 1.0; lg = 0.3 + (sunsetFactor * 0.7); lb = 0.0 + (sunsetFactor * 0.9)
+    }
+
+    // Sky Color using lerpColor
+    skyColor = Game.lerpColor("rgba(8, 12, 26, 1)", "rgba(135, 206, 235, 1)", sunFactor)
+    
+    Engine3D.setLight(scene, dlX, dlY, dlZ, ambient)
+    Engine3D.setLightColor(scene, lr, lg, lb)
+
+    // Keep Sun/Moon in the sky relative to player
+    let renderSunY = sunY
+    if (sunY < -20) { renderSunY = -9999 }
+    let renderMoonY = moonY
+    if (moonY < -20) { renderMoonY = -9999 }
+    
+    Engine3D.setPosition(scene, sunMesh, px + sunX, py + renderSunY, pz + sunZ)
+    Engine3D.setPosition(scene, sunGlow1, px + sunX, py + renderSunY, pz + sunZ)
+    
+    Engine3D.setPosition(scene, moonMesh, px + moonX, py + renderMoonY, pz + moonZ)
+    Engine3D.setPosition(scene, moonGlow, px + moonX, py + renderMoonY, pz + moonZ)
+    
+    // Billboard Celestial objects
+    Engine3D.setRotation(scene, sunMesh, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, sunGlow1, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, moonMesh, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, moonGlow, pitch, -yaw, 0)
+})
+
+// 5. Render & Input Loop
+Window.onUpdate(() -> {
+    // --- FPS Mouselook ---
+    let dx = Window.getMouseDeltaX()
+    let dy = Window.getMouseDeltaY()
+    yaw = yaw + (dx * 0.1)
+    pitch = pitch + (dy * 0.1)
+    if (pitch > 90) { pitch = 90 }
+    if (pitch < -90) { pitch = -90 }
+
+    // --- Mouse Wheel Hotbar Switching ---
+    let wheel = Window.getMouseWheel()
+    if (wheel > 0) { 
+        selectedSlot = selectedSlot - 1 
+        if (selectedSlot < 0) { selectedSlot = 4 }
+    }
+    if (wheel < 0) { 
+        selectedSlot = selectedSlot + 1 
+        if (selectedSlot > 4) { selectedSlot = 0 } 
+    }
+
+    // --- Dynamic Terrain System (Chunk Loading) ---
+    let cx = Math.floor(px)
+    let cz = Math.floor(pz)
+    
+    // Calculate current chunk coordinates
+    let chunkX = Math.floor(cx / 16)
+    let chunkZ = Math.floor(cz / 16)
+
+    // Unload far chunks
+    let i = 0
+    while (i < len(loadedCols)) {
+        let col = loadedCols[i]
+        let dist = Math.abs(col.x - chunkX) + Math.abs(col.z - chunkZ)
+        if (dist > viewDist * 1.6) {
+            let j = 0
+            while (j < len(col.meshes)) {
+                Engine3D.deleteMesh(scene, col.meshes[j].id)
+                j = j + 1
+            }
+            // Array fast remove using pop
+            let lenCols = len(loadedCols)
+            loadedCols[i] = loadedCols[lenCols - 1]
+            pop(loadedCols)
+        } else {
+            i = i + 1
+        }
+    }
+
+    // Load near chunks (16x16 regions)
+    let ox = -viewDist
+    while (ox <= viewDist) {
+        let oz = -viewDist
+        while (oz <= viewDist) {
+            let wrldChunkX = chunkX + ox
+            let wrldChunkZ = chunkZ + oz
+            
+            // Only load within a circle to save perf
+            if (Math.abs(ox) + Math.abs(oz) <= viewDist * 1.5) {
+                let isLoaded = false
+                let k = 0
+                while (k < len(loadedCols)) {
+                    if (loadedCols[k].x == wrldChunkX && loadedCols[k].z == wrldChunkZ) {
+                        isLoaded = true
+                    }
+                    k = k + 1
+                }
+                
+                if (isLoaded == false) {
+                    let colMeshes = []
+                    
+                    // Generate 16x16 blocks for this chunk
+                    let bx = 0
+                    while (bx < 16) {
+                        let bz = 0
+                        while (bz < 16) {
+                            let wrldX = (wrldChunkX * 16) + bx
+                            let wrldZ = (wrldChunkZ * 16) + bz
+                            
+                            let h = getHeight(wrldX, wrldZ)
+                            let h_nx = getHeight(wrldX - 1, wrldZ)
+                            let h_px = getHeight(wrldX + 1, wrldZ)
+                            let h_nz = getHeight(wrldX, wrldZ - 1)
+                            let h_pz = getHeight(wrldX, wrldZ + 1)
+
+                            // --- Vertical Layering (Grass -> Dirt -> Stone) ---
+                            let h_nw = getHeight(wrldX - 1, wrldZ - 1)
+                            let h_ne = getHeight(wrldX + 1, wrldZ - 1)
+                            let h_sw = getHeight(wrldX - 1, wrldZ + 1)
+                            let h_se = getHeight(wrldX + 1, wrldZ + 1)
+                            
+                            let dirtDepth = 3 + Math.floor(Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 3)
+                            let currY = 0
+                            
+                            while (currY <= h) {
+                                // Performance Culling (Aggressive):
+                                // Only render top 2 layers (surface + immediate underground) or cliff sides
+                                let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz)
+                                
+                                if (isExposed) {
+                                    let color = "#7f8c8d" // Default: Stone
+                                    if (currY == h) { 
+                                        color = "#78e08f" // Grass Top
+                                    } else if (currY > h - dirtDepth) {
+                                        color = "#d35400" // Dirt Layer
+                                    }
+                                    
+                                    let cube = Engine3D.createCube(scene, 1, color)
+                                    Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)
+                                    Engine3D.setSolidMode(scene, cube, true)
+                                    
+                                    // AO Calculation
+                                    let top_v0 = 0 
+                                    if (h_nx > currY) { top_v0 = top_v0 + 1 }
+                                    if (h_nz > currY) { top_v0 = top_v0 + 1 }
+                                    if (h_nw > currY) { top_v0 = top_v0 + 1 }
+                                    let top_v1 = 0
+                                    if (h_px > currY) { top_v1 = top_v1 + 1 }
+                                    if (h_nz > currY) { top_v1 = top_v1 + 1 }
+                                    if (h_ne > currY) { top_v1 = top_v1 + 1 }
+                                    let top_v2 = 0
+                                    if (h_px > currY) { top_v2 = top_v2 + 1 }
+                                    if (h_pz > currY) { top_v2 = top_v2 + 1 }
+                                    if (h_se > currY) { top_v2 = top_v2 + 1 }
+                                    let top_v3 = 0
+                                    if (h_nx > currY) { top_v3 = top_v3 + 1 }
+                                    if (h_pz > currY) { top_v3 = top_v3 + 1 }
+                                    if (h_sw > currY) { top_v3 = top_v3 + 1 }
+                                    Engine3D.setFaceAO(scene, cube, 5, top_v0, top_v3, top_v2, top_v1)
+                                    
+                                    push(colMeshes, { id: cube, x: wrldX, y: currY, z: wrldZ })
+
+                                    // Tree Generation (Only on grass surface)
+                                    if (currY == h && color == "#78e08f") {
+                                        let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453
+                                        let rand = randVal - Math.floor(randVal)
+                                        if (rand < 0.0075) {
+                                            let treeHeight = 3 + Math.floor(rand * 100) % 5
+                                            let leafColor = "#228B22"; let trunkColor = "#8B4513"
+                                            let varSeed = Math.floor(rand * 1000) % 4
+                                            if (varSeed == 0) { leafColor = "#006400"; treeHeight = treeHeight + 1 }
+                                            if (varSeed == 1) { trunkColor = "#F5DEB3"; leafColor = "#9ACD32" }
+                                            if (varSeed == 2) { leafColor = "#FF8C00" }
+                                            if (varSeed == 3) { leafColor = "#FFB7C5" }
+                                            
+                                            let ty = 1
+                                            while (ty <= treeHeight) {
+                                                let trunk = Engine3D.createCube(scene, 1, trunkColor)
+                                                Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ)
+                                                Engine3D.setSolidMode(scene, trunk, true)
+                                                push(colMeshes, { id: trunk, x: wrldX, y: h + ty, z: wrldZ })
+                                                ty = ty + 1
+                                            }
+                                            let leafSpread = 1
+                                            if (treeHeight > 5) { leafSpread = 2 }
+                                            let lx = -leafSpread
+                                            while (lx <= leafSpread) {
+                                                let lz = -leafSpread
+                                                while (lz <= leafSpread) {
+                                                    let maxLy = treeHeight + 1; let minLy = treeHeight - 1
+                                                    if (leafSpread == 2) { minLy = treeHeight - 2 }
+                                                    let ly = minLy
+                                                    while (ly <= maxLy) {
+                                                        let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy
+                                                        if (isCorner == false) {
+                                                            let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy
+                                                            if (isOuterCorner == false) {
+                                                                let leaf = Engine3D.createCube(scene, 1, leafColor)
+                                                                Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz)
+                                                                Engine3D.setSolidMode(scene, leaf, true)
+                                                                push(colMeshes, { id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz })
+                                                            }
+                                                        }
+                                                        ly = ly + 1
+                                                    }
+                                                    lz = lz + 1
+                                                }
+                                                lx = lx + 1
+                                            }
+                                        }
+                                    }
+                                }
+                                currY = currY + 1
+                            }
+                            bz = bz + 1
+                        }
+                        bx = bx + 1
+                    }
+                    
+                    push(loadedCols, { x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes })
+                }
+            }
+            oz = oz + 1
+        }
+        ox = ox + 1
+    }
+
+    // Update Camera position in Engine
+    // Note: camera FOV is set to 400
+    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 300)
+    
+    // --- Rendering ---
+    Window.clear(skyColor) // Dynamic Sky Color matching time of day
+    Engine3D.render(scene, 800, 600)
+    
+    // --- UIOverlay ---
+    Window.setColor("black")
+    Window.drawText("Minecraft Infinite Procedural World!", 10, 10, 20)
+    Window.drawText("WASD to move, Mouse to look freely! (ESC to exit)", 10, 35, 16)
+    Window.drawText("Space/Shift to fly up/down", 10, 55, 16)
+    Window.drawText("X: " + str(cx) + " Z: " + str(cz) + " Loaded Chunks: " + str(len(loadedCols)), 10, 80, 16)
+    
+    // Quick Crosshair
+    Window.setColor("white")
+    Window.drawRect(400 - 2, 300 - 10, 4, 20)
+    Window.drawRect(400 - 10, 300 - 2, 20, 4)
+
+    // --- Hotbar UI ---
+    let hw = 300
+    let hh = 40
+    let hx = 400 - (hw / 2)
+    let hy = 600 - hh - 15
+    
+    // Background
+    Window.setColor("rgba(0, 0, 0, 0.5)")
+    Window.drawRect(hx, hy, hw, hh)
+    
+    let si = 0
+    while (si < 5) {
+        let slotX = hx + (si * (hw / 5)) + 5
+        let slotY = hy + 5
+        let sw = (hw / 5) - 10
+        let sh = hh - 10
+        
+        // Slot border
+        if (si == selectedSlot) {
+            Window.setColor("white")
+            Window.drawRect(slotX - 2, slotY - 2, sw + 4, sh + 4)
+            Window.drawText(hotbarNames[si], hx + (hw/2) - 30, hy - 25, 18)
+        } else {
+            Window.setColor("gray")
+            Window.drawRect(slotX - 1, slotY - 1, sw + 2, sh + 2)
+        }
+        
+        // Slot Color Icon
+        Window.setColor(hotbar[si])
+        Window.drawRect(slotX, slotY, sw, sh)
+        
+        si = si + 1
+    }
+})

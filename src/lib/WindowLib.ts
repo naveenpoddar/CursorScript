@@ -78,6 +78,13 @@ const lib = dlopen(libPath, {
   EnableCursor: { args: [], returns: FFIType.void },
   GetMouseDelta: { args: [], returns: FFIType.f64 }, // Packs the 8-byte Vector2 struct
   GetMouseWheelMove: { args: [], returns: FFIType.f32 },
+  ToggleFullscreen: { args: [], returns: FFIType.void },
+  SetConfigFlags: { args: [FFIType.u32], returns: FFIType.void },
+  GetMonitorWidth: { args: [FFIType.i32], returns: FFIType.i32 },
+  GetMonitorHeight: { args: [FFIType.i32], returns: FFIType.i32 },
+  GetCurrentMonitor: { args: [], returns: FFIType.i32 },
+  GetScreenWidth: { args: [], returns: FFIType.i32 },
+  GetScreenHeight: { args: [], returns: FFIType.i32 },
 });
 
 // Color utility (Raylib uses RGBA as a single u32)
@@ -193,17 +200,43 @@ class _WindowL {
   private accumulatedTime: number = 0;
   private readonly fixedTimeStep: number = 0.01666; // ~60Hz fixed update
 
-  public create(width: any, height: any, title: any) {
+  public create(width: any, height: any, title: any, fullscreen: any = false) {
     const w = requireNumber(width);
     const h = requireNumber(height);
     const t = requireString(title);
 
+    lib.symbols.SetConfigFlags(8 | (fullscreen ? 2 : 0));
+
     // C-strings in FFI require a null terminator
     lib.symbols.InitWindow(w, h, Buffer.from(t + "\0"));
-    lib.symbols.SetTargetFPS(60);
+    lib.symbols.SetTargetFPS(144);
 
     // Start the Game Loop
     this.gameLoop();
+  }
+
+  public toggleFullscreen() {
+    lib.symbols.ToggleFullscreen();
+  }
+
+  public getMonitorWidth(monitor: any = 0) {
+    return lib.symbols.GetMonitorWidth(requireNumber(monitor));
+  }
+
+  public getMonitorHeight(monitor: any = 0) {
+    return lib.symbols.GetMonitorHeight(requireNumber(monitor));
+  }
+
+  public getCurrentMonitor() {
+    return lib.symbols.GetCurrentMonitor();
+  }
+
+  public getWidth() {
+    return lib.symbols.GetScreenWidth();
+  }
+
+  public getHeight() {
+    return lib.symbols.GetScreenHeight();
   }
 
   private gameLoop() {

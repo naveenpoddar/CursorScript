@@ -91,6 +91,18 @@ set /p NEW_TAG="Enter new version [default: %SUGGESTED_TAG%]: "
 :: If user pressed Enter, use the suggested tag
 if "!NEW_TAG!"=="" set NEW_TAG=%SUGGESTED_TAG%
 
+:: Strip 'v' for package.json version
+set PLAIN_VERSION=!NEW_TAG!
+if "!PLAIN_VERSION:~0,1!"=="v" set PLAIN_VERSION=!PLAIN_VERSION:~1!
+
+echo 📝 Updating package.json to v!PLAIN_VERSION!...
+powershell -Command "$json = Get-Content package.json | ConvertFrom-Json; $json.version = '!PLAIN_VERSION!'; $json | ConvertTo-Json | Set-Content package.json"
+
+echo 💾 Committing version bump...
+git add package.json
+git commit -m "chore: bump version to !NEW_TAG!"
+git push
+
 echo.
 echo 🚀 Creating tag !NEW_TAG!...
 git tag !NEW_TAG!

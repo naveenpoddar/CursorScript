@@ -1,8 +1,11 @@
 import { existsSync, mkdirSync, rmSync } from "fs";
 import { join, basename } from "path";
 
+import pkg from "../package.json";
+
 const CURSOR_JSON = "cursor.json";
 const DEP_DIR = ".cursorx";
+const CURRENT_VERSION = pkg.version;
 
 interface CursorConfig {
   name: string;
@@ -213,8 +216,62 @@ async function removeModule(slug: string) {
   }
 }
 
+async function checkForUpdates() {
+  try {
+    const response = await fetch(
+      "https://api.github.com/repos/naveenpoddar/cursorscript/releases/latest",
+      {
+        headers: { "User-Agent": "CursorX-CLI" },
+      },
+    );
+    if (!response.ok) return;
+
+    const release: any = await response.json();
+    const latestVersion = release.tag_name.replace(/^v/, "");
+
+    if (latestVersion !== CURRENT_VERSION) {
+      console.warn(
+        `\n🚀 New version available: ${latestVersion} (current: ${CURRENT_VERSION})`,
+      );
+      console.warn(`👉 Run 'cursorx update' to install the latest version.\n`);
+    }
+  } catch (e) {
+    // Silently fail update check
+  }
+}
+
+async function performUpdate() {
+  const isWindows = process.platform === "win32";
+  console.log(`🚀 Updating CursorScript...`);
+
+  const cmd = isWindows
+    ? [
+        "powershell",
+        "-Command",
+        "irm https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.ps1 | iex",
+      ]
+    : [
+        "curl -fsSL https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.sh | bash",
+      ];
+
+  try {
+    const proc = Bun.spawn(isWindows ? cmd : ["bash", "-c", cmd[0]!], {
+      stdout: "inherit",
+      stderr: "inherit",
+    });
+    await proc.exited;
+  } catch (e) {
+    console.error("❌ Update failed:", e);
+  }
+}
+
 export async function handleCursorXCommand(args: string[]) {
   const command = args[0];
+
+  // Background update check (fire and forget, or wait briefly)
+  if (command !== "update") {
+    checkForUpdates(); // Non-blocking
+  }
 
   switch (command) {
     case "init":
@@ -232,6 +289,14 @@ export async function handleCursorXCommand(args: string[]) {
     case "remove":
       await removeModule(args[1]!);
       break;
+    case "update":
+      await performUpdate();
+      break;
+    case "version":
+    case "-v":
+    case "--version":
+      console.log(`CursorX v${CURRENT_VERSION}`);
+      break;
     default:
       console.log("CursorScript Package Manager");
       console.log("Usage:");
@@ -241,6 +306,10 @@ export async function handleCursorXCommand(args: string[]) {
         "  cursorx install        - Install all dependencies from cursor.json",
       );
       console.log("  cursorx remove <slug>  - Remove a dependency");
+      console.log(
+        "  cursorx update         - Update CursorScript to the latest version",
+      );
+      console.log("  cursorx version        - Show version information");
       break;
   }
 }

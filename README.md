@@ -57,19 +57,62 @@ CursorScript comes with a built-in package manager called **CursorX** to manage 
 
 ### Commands
 
-| Command                 | Description                                         |
-| :---------------------- | :-------------------------------------------------- |
-| `cursorx init`          | Initialize a new project with a `cursor.json` file. |
-| `cursorx add <url>`     | Add a dependency from a GitHub repository.          |
-| `cursorx install`       | Install all dependencies listed in `cursor.json`.   |
-| `cursorx remove <slug>` | Remove a dependency.                                |
+| Command                        | Description                                         |
+| :----------------------------- | :-------------------------------------------------- |
+| `cursorx init`                 | Initialize a new project with a `cursor.json` file. |
+| `cursorx install <github-url>` | Install a dependency from a GitHub repository.      |
+| `cursorx install`              | Install all dependencies listed in `cursor.json`.   |
+| `cursorx remove <slug>`        | Remove a dependency.                                |
+
+### Creating a Package 📦
+
+To create a reusable CursorScript package:
+
+1.  **Initialize your project**:
+
+    ```bash
+    cursorx init
+    ```
+
+    This creates a `cursor.json` file in your root directory.
+
+2.  **Configure your package**:
+    Edit `cursor.json` to define your package name and entry point:
+
+    ```json
+    {
+      "name": "my-cool-package",
+      "version": "1.0.0",
+      "main": "src/index.cursor"
+    }
+    ```
+
+3.  **Export your code**:
+    In your `main` file (e.g., `src/index.cursor`), export the functions or variables you want to share:
+
+    ```cursor
+    export fn sayHello(name) {
+        print("Hello, " + name)
+    }
+    ```
+
+4.  **Publish to GitHub**:
+    Push your project to a public GitHub repository.
+
+### Installing a Package 📦
+
+Other users can install your package by using its GitHub repository link:
+
+```bash
+cursorx install https://github.com/username/repo-name
+```
 
 ### Using Packages
 
-External packages are installed in the `.cursorx` directory and can be imported directly:
+External packages are installed in the `.cursorx` directory and can be imported directly using the name defined in their `cursor.json`:
 
 ```cursor
-import { someFunc } from "my-package-name"
+import { sayHello } from "my-cool-package"
 ```
 
 ## Syntax At A Glance 📝

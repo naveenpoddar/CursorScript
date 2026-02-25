@@ -28,7 +28,17 @@ async function main() {
     // No arguments provided -> Start REPL
     await repl();
   } else if (
-    ["init", "add", "install", "i", "remove"].includes(args[0] || "")
+    [
+      "init",
+      "add",
+      "install",
+      "i",
+      "remove",
+      "update",
+      "version",
+      "-v",
+      "--version",
+    ].includes(args[0] || "")
   ) {
     await handleCursorXCommand(args);
   } else {

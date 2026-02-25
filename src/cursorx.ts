@@ -313,3 +313,8 @@ export async function handleCursorXCommand(args: string[]) {
       break;
   }
 }
+
+// Add entry point for direct execution
+if (import.meta.main) {
+  handleCursorXCommand(process.argv.slice(2));
+}

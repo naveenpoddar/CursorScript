@@ -1,0 +1,6 @@
+{
+  "name": "source",
+  "version": "1.0.0",
+  "main": "src/main.cursor",
+  "packages": {}
+}

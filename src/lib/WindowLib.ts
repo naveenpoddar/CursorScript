@@ -4,9 +4,10 @@ import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
 import { requireNumber, requireString } from "./RequireFunctions";
 import ConvertTOMK_Object from "./BaseLibConverter";
+import { join } from "path";
 
 // 1. Dynamic Path Loading (Detects .dll, .so, or .dylib automatically)
-const libPath = `lib/libraylib.${suffix}`;
+const libPath = join(import.meta.dir, "..", "..", `lib/libraylib.${suffix}`);
 
 const lib = dlopen(libPath, {
   InitWindow: {
@@ -145,8 +146,7 @@ const MOUSE: Record<string, number> = {
 };
 
 class _WindowL {
-  private updateCallback: FunctionValue | null = null;
-  private env: Environment | null = null;
+  private updateCallback: any = null;
   private activeColor: number = COLORS.white;
 
   public create(width: any, height: any, title: any) {
@@ -171,8 +171,8 @@ class _WindowL {
 
       lib.symbols.BeginDrawing();
       try {
-        if (this.updateCallback && this.env) {
-          this.executeCallback(this.updateCallback, this.env);
+        if (this.updateCallback) {
+          this.executeCallback(this.updateCallback);
         }
       } catch (e) {
         console.error("Runtime Error in update callback:", e);
@@ -186,9 +186,8 @@ class _WindowL {
     tick();
   }
 
-  public onUpdate(fn: FunctionValue, _: RuntimeValue[], env: Environment) {
+  public onUpdate(fn: any) {
     this.updateCallback = fn;
-    this.env = env;
   }
 
   private parseColor(color: any): number {
@@ -319,10 +318,16 @@ class _WindowL {
     );
   }
 
-  private executeCallback(func: FunctionValue, env: Environment) {
-    const scope = new Environment(func.declarationEnv);
-    for (const stmt of func.body) {
-      evaluate(stmt, scope);
+  private executeCallback(func: any) {
+    if (typeof func === "function") {
+      // If it's a wrapped function from BaseLibConverter, just call it
+      func();
+    } else if (func && func.body) {
+      // If it's a raw FunctionValue (internal call), evaluate it
+      const scope = new Environment(func.declarationEnv);
+      for (const stmt of func.body) {
+        evaluate(stmt, scope);
+      }
     }
   }
 }

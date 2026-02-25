@@ -25,7 +25,9 @@ fn resetGame() {
     spawnFood()
 }
 
-fn update() {
+
+spawnFood()
+Window.onUpdate(() -> {
     if (gameOver == true) {
         Window.clear("black")
         Window.setColor("red")
@@ -150,7 +152,4 @@ fn update() {
         Window.drawText("FPS: " + str(Math.round(fps)), 520, 30, 16)
 
     }
-}
-
-spawnFood()
-Window.onUpdate(update)
+})

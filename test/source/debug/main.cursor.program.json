@@ -1,0 +1,92 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "ImportDeclaration",
+      "source": "./lib/utils",
+      "specifiers": [
+        "add"
+      ],
+      "line": 3,
+      "column": 1
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "main",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 4,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 4,
+                "column": 11,
+                "symbol": "add"
+              },
+              "args": [
+                {
+                  "kind": "NumericLiteral",
+                  "line": 4,
+                  "column": 15,
+                  "value": 1
+                },
+                {
+                  "kind": "NumericLiteral",
+                  "line": 4,
+                  "column": 18,
+                  "value": 2
+                }
+              ],
+              "line": 4,
+              "column": 20
+            }
+          ],
+          "line": 4,
+          "column": 21
+        }
+      ]
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 7,
+        "column": 1,
+        "symbol": "main"
+      },
+      "args": [],
+      "line": 7,
+      "column": 7
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 10,
+        "column": 1,
+        "symbol": "executeJS"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 10,
+          "column": 11,
+          "value": "const a: number = 1;"
+        }
+      ],
+      "line": 10,
+      "column": 34
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

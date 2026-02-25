@@ -1,0 +1,7 @@
+import {add} from "./lib/utils";
+
+fn main() {
+    print(add(1, 2));
+}
+
+main();

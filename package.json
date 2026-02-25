@@ -9,8 +9,12 @@
   },
   "private": true,
   "scripts": {
-    "cursorx": "bun run src/main.ts",
+    "cursorx": "bun run src/cursorx.ts",
+    "run": "bun run src/main.ts",
     "build": "bun run build.ts"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "path": "^0.12.7"
+  }
 }

@@ -7,6 +7,7 @@ Welcome to the CursorScript API documentation. This document covers the built-in
 | Function          | Description                                               | Example                              |
 | :---------------- | :-------------------------------------------------------- | :----------------------------------- |
 | `print(args...)`  | Prints values to the console.                             | `print("Hello", 42);`                |
+| `printError(...)` | Prints values to the error console (red).                 | `printError("Fetch failed!");`       |
 | `time()`          | Returns the current time in milliseconds.                 | `let start = time();`                |
 | `rand(min, max)`  | Returns a random integer between min and max (inclusive). | `let n = rand(1, 10);`               |
 | `len(val)`        | Returns the length of a string or array.                  | `len("hello"); // 5`                 |
@@ -105,6 +106,93 @@ The `Window` library provides native windowing and 2D drawing capabilities using
 - `Window.getKeyDown(key)` - Returns `true` if a specific key is held down (e.g. "ArrowUp", " ").
 - `Window.getMouseX()`, `Window.getMouseY()` - Returns current mouse coordinates.
 - `Window.getMouseButton()` - Returns `true` if mouse is clicked.
+
+---
+
+## Network Library (`Network`) 🌐
+
+The `Network` library provides methods for making HTTP requests. It supports both synchronous-style returns (returning a result object) and asynchronous callbacks using lambda functions.
+
+### Request Methods
+
+- `Network.get(url, [options|callback])` - Performs a GET request.
+- `Network.post(url, body, [options|callback])` - Performs a POST request.
+- `Network.put(url, body, [options|callback])` - Performs a PUT request.
+- `Network.delete(url, [options|callback])` - Performs a DELETE request.
+- `Network.patch(url, body, [options|callback])` - Performs a PATCH request.
+- `Network.head(url, [options])` - Performs a HEAD request.
+
+### Header Management
+
+- `Network.AddHeader(key, value)` - Adds a global header for all subsequent requests.
+- `Network.SetHeaders(obj)` - Sets multiple global headers from an object.
+- `Network.ClearHeaders()` - Clears all global headers.
+
+### Result Structure
+
+Requests return or pass to callbacks an object with:
+
+- `data` - The parsed response body (JSON if `application/json`, otherwise string).
+- `error` - Error message string if failed, otherwise `null`.
+- `ok` - Boolean indicating success.
+- `status` - HTTP status code.
+
+### Example with Callback
+
+```cursor
+Network.get("https://api.example.com", (data, error) -> {
+    if (error) {
+        printError("Failed!", error)
+    } else {
+        print("Response:", data)
+    }
+})
+```
+
+---
+
+## Module System (`import` / `export`) 📦
+
+CursorScript supports a modern ES-style module system to help organize code into multiple files.
+
+### Exporting
+
+Use the `export` keyword before a variable or function declaration to make it available to other files.
+
+```cursor
+export const PI = 3.14;
+export fn greet(name) { print("Hello", name) }
+```
+
+### Importing
+
+Use `import { ... } from "path"` to bring exported values into the current file. Paths are relative to the current file.
+
+```cursor
+import { PI, greet } from "./mathUtils"
+print(PI)
+```
+
+---
+
+## Lambda Functions (Anonymous Functions) λ
+
+Lambdas are values that represent functions. They are defined using the `->` (arrow) operator.
+
+### Syntax
+
+- `(a, b) -> expression` (Single expression return)
+- `(a) -> { ... }` (Multi-statement block)
+
+### Example
+
+```cursor
+let add = (a, b) -> a + b
+let result = add(5, 10)
+
+fn runCallback(cb) { cb() }
+runCallback(() -> { print("Callback executed!") })
+```
 
 ---
 

@@ -1,0 +1,3 @@
+import { add } from "math-pkg";
+
+print(add(1, 2))

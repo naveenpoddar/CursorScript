@@ -16,16 +16,29 @@ declare global {
 global.evaluate = evaluate;
 
 const moduleCache = new Map<string, Map<string, any>>();
+import { handleCursorXCommand } from "./cursorx";
 
 async function main() {
-  const args = Bun.argv.slice(2); // Remove 'bun' and 'script-name'
+  // Check if we are running as a script (bun run src/main.ts) or as a compiled binary (cursorx.exe)
+  const isScript =
+    Bun.argv[1] &&
+    (Bun.argv[1].endsWith(".ts") ||
+      Bun.argv[1].endsWith(".js") ||
+      Bun.argv[1].endsWith(".cursor") ||
+      Bun.argv[1].endsWith(".Cursor"));
+
+  const args = Bun.argv.slice(isScript ? 2 : 1);
 
   if (args.length === 0) {
     // No arguments provided -> Start REPL
     await repl();
+  } else if (
+    ["init", "add", "install", "i", "remove"].includes(args[0] || "")
+  ) {
+    await handleCursorXCommand(args);
   } else {
     // Argument provided -> Execute file
-    const filePath = args[0];
+    const filePath = args[0]!;
     await run(filePath);
   }
 }
@@ -35,17 +48,43 @@ import { join, dirname } from "path";
 
 global.loadModule = (path: string) => {
   let relativePath = path;
-  if (!path.endsWith(".cursor") && !path.endsWith(".Cursor")) {
+  const isRelative = path.startsWith("./") || path.startsWith("../");
+
+  if (isRelative && !path.endsWith(".cursor") && !path.endsWith(".Cursor")) {
     relativePath += ".cursor";
   }
 
   // Resolve relative to current running file
-  const currentEnv = (global as any).currentEnv;
+  const currentEnv = global.currentEnv;
   const currentFile = currentEnv?.currentFile || process.cwd();
 
-  const fullPath = existsSync(relativePath)
-    ? relativePath
-    : join(dirname(currentFile), relativePath);
+  let fullPath = "";
+
+  if (isRelative) {
+    fullPath = existsSync(relativePath)
+      ? relativePath
+      : join(dirname(currentFile), relativePath);
+  } else {
+    // Look in .cursorx
+    const depPath = join(process.cwd(), ".cursorx", path);
+    const configPath = join(depPath, "cursor.json");
+
+    if (existsSync(configPath)) {
+      const configContent = readFileSync(configPath, "utf-8");
+      const config = JSON.parse(configContent);
+      fullPath = join(depPath, config.main || "index.cursor");
+    } else {
+      // Fallback
+      fullPath = join(depPath, "index.cursor");
+      if (!existsSync(fullPath)) {
+        fullPath = join(depPath, path + ".cursor");
+      }
+    }
+  }
+
+  if (!existsSync(fullPath)) {
+    throw `Module not found: ${path} (resolved to ${fullPath})`;
+  }
 
   if (moduleCache.has(fullPath)) {
     return moduleCache.get(fullPath)!;
@@ -56,7 +95,7 @@ global.loadModule = (path: string) => {
 
   const parser = new Parser();
   const env = createGlobalEnv();
-  (env as any).currentFile = fullPath;
+  env.currentFile = fullPath;
 
   const input = readFileSync(fullPath, "utf-8");
   const program = parser.produceAST(input, fullPath);

@@ -249,7 +249,7 @@ export function evaluateCallExpr(
     for (let i = 0; i < func.parameters.length; i++) {
       const varname = func.parameters[i]!;
 
-      scope.declareVar(varname, args[i]!, false);
+      scope.declareVar(varname, args[i] ?? MK_NULL(), false);
     }
 
     let results: RuntimeValue = MK_NULL();

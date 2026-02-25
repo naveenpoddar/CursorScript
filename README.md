@@ -13,6 +13,9 @@ CursorScript is a high-performance, interpreted programming language designed fo
 - **🔄 Control Flow**: Powerful `if`/`else` branches and `while` loops for complex simulation logic.
 - **🛡️ Strict & Clean**: Smart semicolon rules—semicolons are required **only** on `let` and `const` declarations. Expressions and blocks are clean.
 - **🧩 VS Code Integration**: Seamless support with the CursorScript VS Code extension for syntax highlighting and snippets.
+- **λ Lambda Functions**: Higher-order functions with arrow syntax `(a, b) -> { a + b }`.
+- **📦 Module System**: Support for `import` and `export` to organize code into multiple files.
+- **🌐 Network Library**: Built-in HTTP client for fetching data with async callback support.
 
 ## Getting Started 📦
 
@@ -80,14 +83,16 @@ print(len(enemies)); // 1
 ## Quick Syntax Guide 📖
 
 | Feature           | Syntax                            |
-| :---------------- | :-------------------------------- | --- | ------ |
+| :---------------- | :-------------------------------- |
 | **Variables**     | `let x = 10;` (Required `;`)      |
 | **Constants**     | `const VELOCITY = 5;`             |
 | **Functions**     | `fn add(a, b) { a + b }`          |
 | **If/Else**       | `if (x > 0) { ... } else { ... }` |
 | **While Loop**    | `while (i < 10) { i = i + 1 }`    |
+| **Lambdas**       | `(a, b) -> { a + b }`             |
+| **Modules**       | `import { x } from "./file"`      |
 | **Arrays**        | `let arr = [1, 2, 3];`            |
-| **Logic**         | `&&`, `                           |     | `, `!` |
+| **Logic**         | `&&`, `\|\|`, `!`                 |
 | **Member Access** | `obj.prop` or `arr[0]`            |
 
 ## Project Structure 📂

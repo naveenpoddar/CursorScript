@@ -1,4 +1,4 @@
-import { MathL } from "../lib/MathLib";
+import { MathL, requireString } from "../lib/MathLib";
 import { GameL } from "../lib/GameLib";
 import { createWindowLib } from "../lib/WindowLib";
 import { NetworkL } from "../lib/Network";
@@ -200,6 +200,25 @@ export function createGlobalEnv() {
   env.declareVar("Game", GameL, true);
   env.declareVar("Window", createWindowLib(), true);
   env.declareVar("Network", NetworkL, true);
+
+  // Support Running Native TypeScript/JavaScript but runs in a complete different scope than language runtime
+  // env.declareVar(
+  //   "executeJS",
+  //   MK_NATIVE_FN((args, scope) => {
+  //     const codeArg = args[0] as StringValue;
+  //     if (codeArg.type !== "string") {
+  //       throw "executeJS() expects first argument to be a string.";
+  //     }
+  //     const code = codeArg.value;
+  //     try {
+  //       const result = eval(code);
+  //       return MK_STRING(String(result));
+  //     } catch (error: any) {
+  //       throw error.message || error;
+  //     }
+  //   }),
+  //   true,
+  // );
 
   // TODO: readFile, writeFile, deleteFile -> Implment async await
 

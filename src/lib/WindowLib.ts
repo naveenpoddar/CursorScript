@@ -4,10 +4,14 @@ import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
 import { requireNumber, requireString } from "./RequireFunctions";
 import ConvertTOMK_Object from "./BaseLibConverter";
-import { join } from "path";
+import { join, dirname } from "path";
+import { existsSync } from "node:fs";
 
 // 1. Dynamic Path Loading (Detects .dll, .so, or .dylib automatically)
-const libPath = join(import.meta.dir, "..", "..", `lib/libraylib.${suffix}`);
+// Try development path first, then fallback to executable-relative path for built versions
+const devPath = join(import.meta.dir, "..", "..", `lib/libraylib.${suffix}`);
+const buildPath = join(dirname(process.execPath), `lib/libraylib.${suffix}`);
+const libPath = existsSync(devPath) ? devPath : buildPath;
 
 const lib = dlopen(libPath, {
   InitWindow: {

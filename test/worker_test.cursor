@@ -1,0 +1,15 @@
+print("Worker [" + str(id) + "] (Name: Calculator) is online")
+
+onMessage((data) -> {
+    print("Worker received task:", data)
+    Thread.sleep(200) // Simulate processing
+    send("Result is 30")
+})
+
+// Do some initial work
+Thread.sleep(500)
+print("Worker: Initial setup complete.")
+
+// After end of script, if no onMessage is triggered, worker will finish
+// But since we have an onMessage, the event loop might keep it alive.
+// In the bridge, we only send "done" after the main script ends.

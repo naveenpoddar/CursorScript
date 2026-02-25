@@ -1,0 +1,26 @@
+print("Main Thread: Starting...")
+
+let worker = Thread.spawn("./test/worker_test.cursor", { 
+    name: "Calculator",
+    smol: true 
+})
+
+worker.onMessage((data) -> {
+    print("Main Received:", data)
+})
+
+print("Sending task to worker...")
+worker.send("Calculate 10 + 20")
+
+// In CursorScript, we have to wait manually if we want to see messages
+// because the event loop only runs when the script is not blocking.
+// However, since we are just checking time, the event loop can't run.
+// To fix the "thread still alive" issue, we call exit(0) when we are done.
+
+let start = time()
+while (time() - start < 1000) {
+    // Wait for messages to arrive in the background
+}
+
+print("Main Thread: Finished operations. Exiting now...")
+exit(0) // This will kill all background threads and exit cleanly

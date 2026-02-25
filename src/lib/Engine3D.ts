@@ -36,10 +36,11 @@ interface Scene {
   id: number;
   camera: Camera;
   meshes: Map<number, Mesh>;
+  meshGrid: Map<string, Mesh>; // Spatial lookup: "x,y,z"
   nextMeshId: number;
   lightDir: Vec3;
   lightIntensity: number;
-  lightColor: Vec3; // NEW: Light color (r,g,b)
+  lightColor: Vec3;
   ambientLight: number;
   useAO: boolean;
   aoIntensity: number;
@@ -85,10 +86,11 @@ class _Engine3D {
         fov: 400,
       },
       meshes: new Map(),
+      meshGrid: new Map(),
       nextMeshId: 1,
-      lightDir: { x: 0, y: 0, z: 1 }, // Default light pointing forward
+      lightDir: { x: 0, y: 0, z: 1 },
       lightIntensity: 1.0,
-      lightColor: { x: 1, y: 1, z: 1 }, // White light
+      lightColor: { x: 1, y: 1, z: 1 },
       ambientLight: 0.3,
       useAO: false,
       aoIntensity: 0.5,
@@ -184,25 +186,32 @@ class _Engine3D {
     ];
 
     const meshId = scene.nextMeshId++;
-    scene.meshes.set(meshId, {
+    const mesh: Mesh = {
       id: meshId,
       vertices,
       faces,
-      pos: { x: 0, y: 0, z: 0 },
+      pos: { x: 0, y: -999, z: 0 }, // Start somewhere far away
       rot: { x: 0, y: 0, z: 0 },
       scale: { x: 1, y: 1, z: 1 },
       color,
-      isSolid: true, // Default solid
+      isSolid: true,
       isGlow: false,
       isBillboard: false,
-    });
+    };
+    scene.meshes.set(meshId, mesh);
     return meshId;
   }
 
   public deleteMesh(sceneId: any, meshId: any) {
     const scene = this.scenes.get(requireNumber(sceneId));
     if (!scene) return;
-    scene.meshes.delete(requireNumber(meshId));
+    const mid = requireNumber(meshId);
+    const mesh = scene.meshes.get(mid);
+    if (mesh) {
+      const key = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
+      if (scene.meshGrid.get(key) === mesh) scene.meshGrid.delete(key);
+    }
+    scene.meshes.delete(mid);
   }
 
   public setSolidMode(sceneId: any, meshId: any, isSolid: any) {
@@ -257,11 +266,19 @@ class _Engine3D {
     if (!scene) return;
     const mesh = scene.meshes.get(requireNumber(meshId));
     if (!mesh) return;
+
+    // Update grid
+    const oldKey = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
+    if (scene.meshGrid.get(oldKey) === mesh) scene.meshGrid.delete(oldKey);
+
     mesh.pos = {
       x: requireNumber(x),
       y: requireNumber(y),
       z: requireNumber(z),
     };
+
+    const newKey = `${Math.round(mesh.pos.x)},${Math.round(mesh.pos.y)},${Math.round(mesh.pos.z)}`;
+    scene.meshGrid.set(newKey, mesh);
   }
 
   public setRotation(sceneId: any, meshId: any, x: any, y: any, z: any) {
@@ -300,25 +317,13 @@ class _Engine3D {
   public checkSolid(sceneId: any, x: any, y: any, z: any): boolean {
     const scene = this.scenes.get(requireNumber(sceneId));
     if (!scene) return false;
-    const px = requireNumber(x);
-    const py = requireNumber(y);
-    const pz = requireNumber(z);
+    const px = Math.round(requireNumber(x));
+    const py = Math.round(requireNumber(y));
+    const pz = Math.round(requireNumber(z));
 
-    for (const m of scene.meshes.values()) {
-      if (!m.isSolid) continue;
-      // Voxel collision: Check if point is inside the 1x1x1 cube centered at m.pos
-      if (
-        px >= m.pos.x - 0.5 &&
-        px <= m.pos.x + 0.5 &&
-        py >= m.pos.y - 0.5 &&
-        py <= m.pos.y + 0.5 &&
-        pz >= m.pos.z - 0.5 &&
-        pz <= m.pos.z + 0.5
-      ) {
-        return true;
-      }
-    }
-    return false;
+    const key = `${px},${py},${pz}`;
+    const mesh = scene.meshGrid.get(key);
+    return mesh ? mesh.isSolid : false;
   }
 
   public getTopBlockY(sceneId: any, x: any, z: any, maxY: any): number {
@@ -326,19 +331,14 @@ class _Engine3D {
     if (!scene) return -999;
     const ix = Math.round(requireNumber(x));
     const iz = Math.round(requireNumber(z));
-    const my = requireNumber(maxY);
+    let my = Math.round(requireNumber(maxY));
 
-    let floorY = -999;
-    for (const m of scene.meshes.values()) {
-      if (!m.isSolid) continue;
-      if (Math.round(m.pos.x) === ix && Math.round(m.pos.z) === iz) {
-        const by = Math.round(m.pos.y);
-        if (by > floorY && by <= my) {
-          floorY = by;
-        }
-      }
+    for (let y = my; y >= -64; y--) {
+      const key = `${ix},${y},${iz}`;
+      const mesh = scene.meshGrid.get(key);
+      if (mesh && mesh.isSolid) return y;
     }
-    return floorY;
+    return -999;
   }
 
   public raycast(
@@ -362,7 +362,7 @@ class _Engine3D {
     const dz = requireNumber(dirZ);
     const max = requireNumber(maxDist);
 
-    const stepSize = 0.2;
+    const stepSize = 0.1; // Finer steps for accuracy
     const steps = max / stepSize;
 
     for (let i = 0; i < steps; i++) {
@@ -370,25 +370,20 @@ class _Engine3D {
       const by = Math.round(ry);
       const bz = Math.round(rz);
 
-      for (const m of scene.meshes.values()) {
-        if (!m.isSolid) continue;
-        if (
-          Math.round(m.pos.x) === bx &&
-          Math.round(m.pos.y) === by &&
-          Math.round(m.pos.z) === bz
-        ) {
-          return {
-            hit: true,
-            x: bx,
-            y: by,
-            z: bz,
-            meshId: m.id,
-            // Simple prev step for block placement
-            px: Math.round(rx - dx * stepSize),
-            py: Math.round(ry - dy * stepSize),
-            pz: Math.round(rz - dz * stepSize),
-          };
-        }
+      const key = `${bx},${by},${bz}`;
+      const m = scene.meshGrid.get(key);
+
+      if (m && m.isSolid) {
+        return {
+          hit: true,
+          x: bx,
+          y: by,
+          z: bz,
+          meshId: m.id,
+          px: Math.round(rx - dx * stepSize * 2),
+          py: Math.round(ry - dy * stepSize * 2),
+          pz: Math.round(rz - dz * stepSize * 2),
+        };
       }
       rx += dx * stepSize;
       ry += dy * stepSize;
@@ -458,6 +453,17 @@ class _Engine3D {
     const sh = requireNumber(screenHeight);
     const cam = scene.camera;
 
+    // Pre-calculate rotation matrices for the camera
+    const radY = (-cam.rot.y * Math.PI) / 180;
+    const cy_v = Math.cos(radY),
+      sy_v = Math.sin(radY);
+    const radX = (-cam.rot.x * Math.PI) / 180;
+    const cx_v = Math.cos(radX),
+      sx_v = Math.sin(radX);
+    const radZ = (-cam.rot.z * Math.PI) / 180;
+    const cz_v = Math.cos(radZ),
+      sz_v = Math.sin(radZ);
+
     interface ProjectedFace {
       v: { x: number; y: number; z: number }[];
       zDepth: number;
@@ -476,19 +482,12 @@ class _Engine3D {
       let ty = mesh.pos.y - cam.pos.y;
       let tz = mesh.pos.z - cam.pos.z;
 
-      // 1. Synchronized Yaw (match lines 418-424)
-      let radY = (-cam.rot.y * Math.PI) / 180;
-      let cy = Math.cos(radY),
-        sy = Math.sin(radY);
-      let x2 = tx * cy + tz * sy;
-      let z2 = -tx * sy + tz * cy;
-
-      // 2. Synchronized Pitch (match lines 427-433)
-      let radX = (-cam.rot.x * Math.PI) / 180;
-      let cx = Math.cos(radX),
-        sx = Math.sin(radX);
-      let y3 = ty * cx - z2 * sx;
-      let z3 = ty * sx + z2 * cx;
+      // 1. Synchronized Yaw
+      let x2 = tx * cy_v + tz * sy_v;
+      let z2 = -tx * sy_v + tz * cy_v;
+      // 2. Synchronized Pitch
+      let y3 = ty * cx_v - z2 * sx_v;
+      let z3 = ty * sx_v + z2 * cx_v;
 
       // Camera-space coords: x2, y3, z3
       const camX = x2;
@@ -532,29 +531,20 @@ class _Engine3D {
         tv.z -= cam.pos.z;
 
         // Inverse Yaw (Y)
-        let radY = (-cam.rot.y * Math.PI) / 180;
-        let cy = Math.cos(radY),
-          sy = Math.sin(radY);
-        let x2 = tv.x * cy + tv.z * sy;
-        let z2 = -tv.x * sy + tv.z * cy;
+        let x2 = tv.x * cy_v + tv.z * sy_v;
+        let z2 = -tv.x * sy_v + tv.z * cy_v;
         tv.x = x2;
         tv.z = z2;
 
         // Inverse Pitch (X)
-        let radX = (-cam.rot.x * Math.PI) / 180;
-        let cx = Math.cos(radX),
-          sx = Math.sin(radX);
-        let y2 = tv.y * cx - tv.z * sx;
-        let z3 = tv.y * sx + tv.z * cx;
+        let y2 = tv.y * cx_v - tv.z * sx_v;
+        let z3 = tv.y * sx_v + tv.z * cx_v;
         tv.y = y2;
         tv.z = z3;
 
-        // Inverse Roll (Z - usually 0 for FPS)
-        let radZ = (-cam.rot.z * Math.PI) / 180;
-        let cz = Math.cos(radZ),
-          sz = Math.sin(radZ);
-        let x4 = tv.x * cz - tv.y * sz;
-        let y4 = tv.x * sz + tv.y * cz;
+        // Inverse Roll (Z)
+        let x4 = tv.x * cz_v - tv.y * sz_v;
+        let y4 = tv.x * sz_v + tv.y * cz_v;
         tv.x = x4;
         tv.y = y4;
         transformedVerts.push(tv);

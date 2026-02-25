@@ -4,6 +4,7 @@ import { Engine3DL } from "../lib/Engine3D";
 import { PerlinNoiseL } from "../lib/PerlinNoise";
 import { createWindowLib } from "../lib/WindowLib";
 import { NetworkL } from "../lib/Network";
+import { ThreadL } from "../lib/ThreadLib";
 import {
   MK_BOOL,
   MK_NULL,
@@ -53,8 +54,10 @@ export function createGlobalEnv() {
 
   env.declareVar(
     "exit",
-    MK_NATIVE_FN(() => {
-      process.exit(1);
+    MK_NATIVE_FN((args) => {
+      const code =
+        args[0] && args[0].type === "number" ? (args[0] as any).value : 0;
+      process.exit(code);
     }),
     true,
   );
@@ -204,6 +207,7 @@ export function createGlobalEnv() {
   env.declareVar("PerlinNoise", PerlinNoiseL, true);
   env.declareVar("Window", createWindowLib(), true);
   env.declareVar("Network", NetworkL, true);
+  env.declareVar("Thread", ThreadL, true);
 
   // Support Running Native TypeScript/JavaScript but runs in a complete different scope than language runtime
   // env.declareVar(

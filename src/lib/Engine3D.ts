@@ -374,7 +374,9 @@ class _Engine3D {
 
         let drawColor = mesh.color;
         if (mesh.isSolid) {
-          const lum = Math.max(scene.ambientLight, lightIntensity);
+          // Better Lighting Engine: Ambient + Diffuse (Lambertian)
+          let diffuse = Math.max(0, lightIntensity);
+          const lum = scene.ambientLight + diffuse * (1.0 - scene.ambientLight);
           drawColor = this.shadeColor(mesh.color, lum);
         }
 
@@ -384,12 +386,25 @@ class _Engine3D {
           return { x: p.x * f + sw / 2, y: -p.y * f + sh / 2, z: p.z };
         });
 
-        const avgZ =
-          projectedVerts.reduce((acc, curr) => acc + curr.z, 0) /
-          projectedVerts.length;
+        const faceCx =
+          face.v
+            .map((idx) => transformedVerts[idx]!.x)
+            .reduce((a, b) => a + b, 0) / face.v.length;
+        const faceCy =
+          face.v
+            .map((idx) => transformedVerts[idx]!.y)
+            .reduce((a, b) => a + b, 0) / face.v.length;
+        const faceCz =
+          face.v
+            .map((idx) => transformedVerts[idx]!.z)
+            .reduce((a, b) => a + b, 0) / face.v.length;
+
+        // Exact Euclidean distance squared from camera origin
+        const distSq = faceCx * faceCx + faceCy * faceCy + faceCz * faceCz;
+
         renderList.push({
           v: projectedVerts,
-          zDepth: avgZ,
+          zDepth: distSq,
           normal: normal,
           color: drawColor,
           isSolid: mesh.isSolid,
@@ -397,7 +412,7 @@ class _Engine3D {
       }
     }
 
-    // Sort Painter's Algorithm (Furthest Z first)
+    // Sort Painter's Algorithm (Furthest Distance first)
     renderList.sort((a, b) => b.zDepth - a.zDepth);
 
     // Render pass

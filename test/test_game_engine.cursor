@@ -3,7 +3,7 @@ let scene = Engine3D.createScene()
 
 // 1. Terrain Generation
 // Seed the random noise engine
-PerlinNoise.seed(123456)
+PerlinNoise.seed(rand(111111, 999999))
 
 // 2. Setup Sun/Light
 Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
@@ -19,6 +19,14 @@ let speed = 0.25
 
 let loadedCols = []
 let viewDist = 3  // Changed view distance from 8 to 2 chunks for performance
+
+let getHeight = (x, z) -> {
+    let elevation = PerlinNoise.noise2D(x * 0.05, z * 0.05)
+    let h = 32 + Math.round(elevation * 16)
+    if (h > 64) { h = 64 }
+    if (h < 0) { h = 0 }
+    h
+}
 
 // Lock cursor for FPS view!
 Window.disableCursor()
@@ -118,20 +126,26 @@ Window.onUpdate(() -> {
                             let wrldX = (wrldChunkX * 16) + bx
                             let wrldZ = (wrldChunkZ * 16) + bz
                             
-                            let elevation = PerlinNoise.noise2D(wrldX * 0.05, wrldZ * 0.05)
-                            // Base height at 32, max height 64.
-                            let h = 32 + Math.round(elevation * 16)
-                            if (h > 64) { h = 64 }
-                            if (h < 0) { h = 0 }
+                            let h = getHeight(wrldX, wrldZ)
+                            let h_nx = getHeight(wrldX - 1, wrldZ)
+                            let h_px = getHeight(wrldX + 1, wrldZ)
+                            let h_nz = getHeight(wrldX, wrldZ - 1)
+                            let h_pz = getHeight(wrldX, wrldZ + 1)
                             
-                            // Optimization: Instead of 64 vertical blocks, just render the top 3 surface blocks
-                            let currY = h - 2
+                            let min_h = h_nx
+                            if (h_px < min_h) { min_h = h_px }
+                            if (h_nz < min_h) { min_h = h_nz }
+                            if (h_pz < min_h) { min_h = h_pz }
+                            
+                            // Optimization: Perfect Occlusion Culling. Only render visible shell.
+                            let currY = min_h + 1
+                            if (currY > h) { currY = h }
                             if (currY < 0) { currY = 0 }
                             
                             while (currY <= h) {
                                 let color = "#78e08f" // grass
                                 if (currY < h) { color = "#d35400" } // dirt
-                                if (currY == h - 2 && h > 2) { color = "#7f8c8d" } // stone
+                                if (currY <= h - 2 && h > 2) { color = "#7f8c8d" } // stone
                                 
                                 let cube = Engine3D.createCube(scene, 1, color)
                                 Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ)

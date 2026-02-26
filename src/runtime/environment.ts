@@ -20,6 +20,9 @@ import {
 import { CryptoLib } from "../lib/Crypto";
 import { JsonLib } from "../lib/JSONLib";
 import { FileLib } from "../lib/FileLib";
+import { AudioLib } from "../lib/AudioLib";
+import { DateTimeLib } from "../lib/DateTimeLib";
+import { StringLib } from "../lib/StringLib";
 
 export function createGlobalEnv() {
   const env = new Environment();
@@ -203,6 +206,7 @@ export function createGlobalEnv() {
     true,
   );
 
+  env.declareVar("String", StringLib, true);
   env.declareVar("Math", MathL, true);
   env.declareVar("Game", GameL, true);
   env.declareVar("Engine3D", Engine3DL, true);
@@ -213,6 +217,8 @@ export function createGlobalEnv() {
   env.declareVar("Crypto", CryptoLib, true);
   env.declareVar("Json", JsonLib, true);
   env.declareVar("File", FileLib, true);
+  env.declareVar("Audio", AudioLib, true);
+  env.declareVar("DateTime", DateTimeLib, true);
 
   env.declareVar(
     "env",

@@ -1,0 +1,29 @@
+import {sleep} from "./test/util.cursor"
+
+const audioId = Audio.load("C:\Users\podda\Downloads\song.mp3")
+
+Audio.play(audioId, {
+    volume: 1,  // 0.0 to 1.0
+    loop: true,   // true or false
+    pitch: 2    // acts as a frequency multiplier
+})
+
+sleep(5000)
+
+Audio.pause(audioId)
+sleep(1000)
+
+Audio.resume(audioId)
+
+sleep(1000)
+
+Audio.setOptions(audioId, {
+    volume: 0.5,
+    loop: false,
+    pitch: 10
+})
+
+sleep(5000)
+
+// Stop audio playback
+Audio.stop(audioId);

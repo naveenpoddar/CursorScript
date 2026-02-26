@@ -1,0 +1,6 @@
+export fn sleep(ms){
+    let start = time()
+    while (time() - start < ms) {
+        // Wait for messages to arrive in the background
+    }
+}

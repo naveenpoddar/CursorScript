@@ -15,3 +15,18 @@ const list = File.list(".")
 print(list)
 
 print(env("USER"))
+
+print(DateTime.now())
+print(DateTime.parse("2026-02-26T11:57:38.886Z"))
+print(DateTime.format(DateTime.now()))
+print(DateTime.parse("2027-02-26T11:57:38.884Z"))
+
+print(DateTime.info(DateTime.now()))
+
+print(DateTime.getDay())
+print(DateTime.getMonth(DateTime.now()))
+print(DateTime.getYear(DateTime.now()))
+print(DateTime.getHour(DateTime.now()))
+print(DateTime.getMinute(DateTime.now()))
+print(DateTime.getSecond(DateTime.now()))
+print(DateTime.getMillisecond(DateTime.now()))

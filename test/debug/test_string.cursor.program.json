@@ -1,0 +1,894 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 2,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 2,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 2,
+              "column": 14,
+              "symbol": "reverse"
+            },
+            "computed": false,
+            "line": 2,
+            "column": 21
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 2,
+              "column": 22,
+              "value": "Hello World"
+            }
+          ],
+          "line": 2,
+          "column": 36
+        }
+      ],
+      "line": 2,
+      "column": 37
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 3,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 3,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 3,
+              "column": 14,
+              "symbol": "split"
+            },
+            "computed": false,
+            "line": 3,
+            "column": 19
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 3,
+              "column": 20,
+              "value": "Hello World"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 3,
+              "column": 35,
+              "value": " "
+            }
+          ],
+          "line": 3,
+          "column": 39
+        }
+      ],
+      "line": 3,
+      "column": 40
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 4,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 4,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 4,
+              "column": 14,
+              "symbol": "join"
+            },
+            "computed": false,
+            "line": 4,
+            "column": 18
+          },
+          "args": [
+            {
+              "kind": "ArrayLiteral",
+              "elements": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 4,
+                  "column": 20,
+                  "value": "Hello"
+                },
+                {
+                  "kind": "StringLiteral",
+                  "line": 4,
+                  "column": 29,
+                  "value": "World"
+                },
+                {
+                  "kind": "StringLiteral",
+                  "line": 4,
+                  "column": 38,
+                  "value": "Naveen"
+                }
+              ]
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 4,
+              "column": 49,
+              "value": ","
+            }
+          ],
+          "line": 4,
+          "column": 53
+        }
+      ],
+      "line": 4,
+      "column": 54
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 5,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 5,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 5,
+              "column": 14,
+              "symbol": "length"
+            },
+            "computed": false,
+            "line": 5,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 5,
+              "column": 21,
+              "value": "Hello World"
+            }
+          ],
+          "line": 5,
+          "column": 35
+        }
+      ],
+      "line": 5,
+      "column": 36
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 6,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 6,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 6,
+              "column": 14,
+              "symbol": "charAt"
+            },
+            "computed": false,
+            "line": 6,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 6,
+              "column": 21,
+              "value": "Hello World"
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 6,
+              "column": 36,
+              "value": 0
+            }
+          ],
+          "line": 6,
+          "column": 38
+        }
+      ],
+      "line": 6,
+      "column": 39
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 7,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 7,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 7,
+              "column": 14,
+              "symbol": "charCodeAt"
+            },
+            "computed": false,
+            "line": 7,
+            "column": 24
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 7,
+              "column": 25,
+              "value": "Hello World"
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 7,
+              "column": 40,
+              "value": 0
+            }
+          ],
+          "line": 7,
+          "column": 42
+        }
+      ],
+      "line": 7,
+      "column": 43
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 8,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 8,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 8,
+              "column": 14,
+              "symbol": "toLowerCase"
+            },
+            "computed": false,
+            "line": 8,
+            "column": 25
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 8,
+              "column": 26,
+              "value": "Hello World"
+            }
+          ],
+          "line": 8,
+          "column": 40
+        }
+      ],
+      "line": 8,
+      "column": 41
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 9,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 9,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 9,
+              "column": 14,
+              "symbol": "toUpperCase"
+            },
+            "computed": false,
+            "line": 9,
+            "column": 25
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 9,
+              "column": 26,
+              "value": "Hello World"
+            }
+          ],
+          "line": 9,
+          "column": 40
+        }
+      ],
+      "line": 9,
+      "column": 41
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 10,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 10,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 10,
+              "column": 14,
+              "symbol": "trim"
+            },
+            "computed": false,
+            "line": 10,
+            "column": 18
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 10,
+              "column": 19,
+              "value": "Hello World"
+            }
+          ],
+          "line": 10,
+          "column": 33
+        }
+      ],
+      "line": 10,
+      "column": 34
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 11,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 11,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 11,
+              "column": 14,
+              "symbol": "trimStart"
+            },
+            "computed": false,
+            "line": 11,
+            "column": 23
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 11,
+              "column": 24,
+              "value": "Hello World"
+            }
+          ],
+          "line": 11,
+          "column": 38
+        }
+      ],
+      "line": 11,
+      "column": 39
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 12,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 12,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 12,
+              "column": 14,
+              "symbol": "trimEnd"
+            },
+            "computed": false,
+            "line": 12,
+            "column": 21
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 12,
+              "column": 22,
+              "value": "Hello World"
+            }
+          ],
+          "line": 12,
+          "column": 36
+        }
+      ],
+      "line": 12,
+      "column": 37
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 13,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 13,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 13,
+              "column": 14,
+              "symbol": "startsWith"
+            },
+            "computed": false,
+            "line": 13,
+            "column": 24
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 13,
+              "column": 25,
+              "value": "Hello World"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 13,
+              "column": 40,
+              "value": "Hello"
+            }
+          ],
+          "line": 13,
+          "column": 48
+        }
+      ],
+      "line": 13,
+      "column": 49
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 14,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 14,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 14,
+              "column": 14,
+              "symbol": "endsWith"
+            },
+            "computed": false,
+            "line": 14,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 14,
+              "column": 23,
+              "value": "Hello World"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 14,
+              "column": 38,
+              "value": "World"
+            }
+          ],
+          "line": 14,
+          "column": 46
+        }
+      ],
+      "line": 14,
+      "column": 47
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 15,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 15,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 15,
+              "column": 14,
+              "symbol": "contains"
+            },
+            "computed": false,
+            "line": 15,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 15,
+              "column": 23,
+              "value": "Hello World"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 15,
+              "column": 38,
+              "value": "Hello"
+            }
+          ],
+          "line": 15,
+          "column": 46
+        }
+      ],
+      "line": 15,
+      "column": 47
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 16,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 16,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 16,
+              "column": 14,
+              "symbol": "replace"
+            },
+            "computed": false,
+            "line": 16,
+            "column": 21
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 16,
+              "column": 22,
+              "value": "Hello World"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 16,
+              "column": 37,
+              "value": "Hello"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 16,
+              "column": 46,
+              "value": "Hi"
+            }
+          ],
+          "line": 16,
+          "column": 51
+        }
+      ],
+      "line": 16,
+      "column": 52
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 17,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 17,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 17,
+              "column": 14,
+              "symbol": "take"
+            },
+            "computed": false,
+            "line": 17,
+            "column": 18
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 17,
+              "column": 19,
+              "value": "Hello World"
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 17,
+              "column": 34,
+              "value": 5
+            }
+          ],
+          "line": 17,
+          "column": 36
+        }
+      ],
+      "line": 17,
+      "column": 37
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 18,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 18,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 18,
+              "column": 14,
+              "symbol": "skip"
+            },
+            "computed": false,
+            "line": 18,
+            "column": 18
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 18,
+              "column": 19,
+              "value": "Hello World"
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 18,
+              "column": 34,
+              "value": 5
+            }
+          ],
+          "line": 18,
+          "column": 36
+        }
+      ],
+      "line": 18,
+      "column": 37
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 19,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 19,
+              "column": 7,
+              "symbol": "String"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 19,
+              "column": 14,
+              "symbol": "substr"
+            },
+            "computed": false,
+            "line": 19,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 19,
+              "column": 21,
+              "value": "Hello World"
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 19,
+              "column": 36,
+              "value": 0
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 19,
+              "column": 39,
+              "value": 5
+            }
+          ],
+          "line": 19,
+          "column": 41
+        }
+      ],
+      "line": 19,
+      "column": 42
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

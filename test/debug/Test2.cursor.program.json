@@ -300,10 +300,28 @@
       },
       "args": [
         {
-          "kind": "Identifier",
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 19,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 19,
+              "column": 16,
+              "symbol": "now"
+            },
+            "computed": false,
+            "line": 19,
+            "column": 19
+          },
+          "args": [],
           "line": 19,
-          "column": 7,
-          "symbol": "test1"
+          "column": 21
         }
       ],
       "line": 20,
@@ -319,10 +337,35 @@
       },
       "args": [
         {
-          "kind": "Identifier",
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 20,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 20,
+              "column": 16,
+              "symbol": "parse"
+            },
+            "computed": false,
+            "line": 20,
+            "column": 21
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 20,
+              "column": 22,
+              "value": "2026-02-26T11:57:38.886Z"
+            }
+          ],
           "line": 20,
-          "column": 7,
-          "symbol": "test2"
+          "column": 49
         }
       ],
       "line": 21,
@@ -338,14 +381,572 @@
       },
       "args": [
         {
-          "kind": "Identifier",
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 21,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 21,
+              "column": 16,
+              "symbol": "format"
+            },
+            "computed": false,
+            "line": 21,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 21,
+                  "column": 23,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 21,
+                  "column": 32,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 21,
+                "column": 35
+              },
+              "args": [],
+              "line": 21,
+              "column": 37
+            }
+          ],
           "line": 21,
-          "column": 7,
-          "symbol": "test3"
+          "column": 38
         }
       ],
-      "line": 21,
-      "column": 13
+      "line": 22,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 22,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 22,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 22,
+              "column": 16,
+              "symbol": "parse"
+            },
+            "computed": false,
+            "line": 22,
+            "column": 21
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 22,
+              "column": 22,
+              "value": "2027-02-26T11:57:38.884Z"
+            }
+          ],
+          "line": 22,
+          "column": 49
+        }
+      ],
+      "line": 24,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 24,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 24,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 24,
+              "column": 16,
+              "symbol": "info"
+            },
+            "computed": false,
+            "line": 24,
+            "column": 20
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 24,
+                  "column": 21,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 24,
+                  "column": 30,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 24,
+                "column": 33
+              },
+              "args": [],
+              "line": 24,
+              "column": 35
+            }
+          ],
+          "line": 24,
+          "column": 36
+        }
+      ],
+      "line": 26,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 26,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 26,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 26,
+              "column": 16,
+              "symbol": "getDay"
+            },
+            "computed": false,
+            "line": 26,
+            "column": 22
+          },
+          "args": [],
+          "line": 26,
+          "column": 24
+        }
+      ],
+      "line": 27,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 27,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 27,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 27,
+              "column": 16,
+              "symbol": "getMonth"
+            },
+            "computed": false,
+            "line": 27,
+            "column": 24
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 27,
+                  "column": 25,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 27,
+                  "column": 34,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 27,
+                "column": 37
+              },
+              "args": [],
+              "line": 27,
+              "column": 39
+            }
+          ],
+          "line": 27,
+          "column": 40
+        }
+      ],
+      "line": 28,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 28,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 28,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 28,
+              "column": 16,
+              "symbol": "getYear"
+            },
+            "computed": false,
+            "line": 28,
+            "column": 23
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 28,
+                  "column": 24,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 28,
+                  "column": 33,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 28,
+                "column": 36
+              },
+              "args": [],
+              "line": 28,
+              "column": 38
+            }
+          ],
+          "line": 28,
+          "column": 39
+        }
+      ],
+      "line": 29,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 29,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 29,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 29,
+              "column": 16,
+              "symbol": "getHour"
+            },
+            "computed": false,
+            "line": 29,
+            "column": 23
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 29,
+                  "column": 24,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 29,
+                  "column": 33,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 29,
+                "column": 36
+              },
+              "args": [],
+              "line": 29,
+              "column": 38
+            }
+          ],
+          "line": 29,
+          "column": 39
+        }
+      ],
+      "line": 30,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 30,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 30,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 30,
+              "column": 16,
+              "symbol": "getMinute"
+            },
+            "computed": false,
+            "line": 30,
+            "column": 25
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 30,
+                  "column": 26,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 30,
+                  "column": 35,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 30,
+                "column": 38
+              },
+              "args": [],
+              "line": 30,
+              "column": 40
+            }
+          ],
+          "line": 30,
+          "column": 41
+        }
+      ],
+      "line": 31,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 31,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 31,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 31,
+              "column": 16,
+              "symbol": "getSecond"
+            },
+            "computed": false,
+            "line": 31,
+            "column": 25
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 31,
+                  "column": 26,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 31,
+                  "column": 35,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 31,
+                "column": 38
+              },
+              "args": [],
+              "line": 31,
+              "column": 40
+            }
+          ],
+          "line": 31,
+          "column": 41
+        }
+      ],
+      "line": 32,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 32,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 32,
+              "column": 7,
+              "symbol": "DateTime"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 32,
+              "column": 16,
+              "symbol": "getMillisecond"
+            },
+            "computed": false,
+            "line": 32,
+            "column": 30
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 32,
+                  "column": 31,
+                  "symbol": "DateTime"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 32,
+                  "column": 40,
+                  "symbol": "now"
+                },
+                "computed": false,
+                "line": 32,
+                "column": 43
+              },
+              "args": [],
+              "line": 32,
+              "column": 45
+            }
+          ],
+          "line": 32,
+          "column": 46
+        }
+      ],
+      "line": 33,
+      "column": 1
     }
   ],
   "line": 0,

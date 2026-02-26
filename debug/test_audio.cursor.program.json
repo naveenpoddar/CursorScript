@@ -1,0 +1,353 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "ImportDeclaration",
+      "source": "./test/util.cursor",
+      "specifiers": [
+        "sleep"
+      ],
+      "line": 3,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "audioId",
+      "constant": true,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 3,
+            "column": 17,
+            "symbol": "Audio"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 3,
+            "column": 23,
+            "symbol": "load"
+          },
+          "computed": false,
+          "line": 3,
+          "column": 27
+        },
+        "args": [
+          {
+            "kind": "StringLiteral",
+            "line": 3,
+            "column": 28,
+            "value": "C:\\Users\\podda\\Downloads\\song.mp3"
+          }
+        ],
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 5,
+          "column": 1,
+          "symbol": "Audio"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 5,
+          "column": 7,
+          "symbol": "play"
+        },
+        "computed": false,
+        "line": 5,
+        "column": 11
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 5,
+          "column": 12,
+          "symbol": "audioId"
+        },
+        {
+          "kind": "ObjectLiteral",
+          "properties": [
+            {
+              "kind": "Property",
+              "key": "volume",
+              "value": {
+                "kind": "NumericLiteral",
+                "line": 6,
+                "column": 13,
+                "value": 1
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "loop",
+              "value": {
+                "kind": "Identifier",
+                "line": 7,
+                "column": 11,
+                "symbol": "true"
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "pitch",
+              "value": {
+                "kind": "NumericLiteral",
+                "line": 8,
+                "column": 12,
+                "value": 2
+              }
+            }
+          ]
+        }
+      ],
+      "line": 11,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 11,
+        "column": 1,
+        "symbol": "sleep"
+      },
+      "args": [
+        {
+          "kind": "NumericLiteral",
+          "line": 11,
+          "column": 7,
+          "value": 5000
+        }
+      ],
+      "line": 13,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 13,
+          "column": 1,
+          "symbol": "Audio"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 13,
+          "column": 7,
+          "symbol": "pause"
+        },
+        "computed": false,
+        "line": 13,
+        "column": 12
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 13,
+          "column": 13,
+          "symbol": "audioId"
+        }
+      ],
+      "line": 14,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 14,
+        "column": 1,
+        "symbol": "sleep"
+      },
+      "args": [
+        {
+          "kind": "NumericLiteral",
+          "line": 14,
+          "column": 7,
+          "value": 1000
+        }
+      ],
+      "line": 16,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 16,
+          "column": 1,
+          "symbol": "Audio"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 16,
+          "column": 7,
+          "symbol": "resume"
+        },
+        "computed": false,
+        "line": 16,
+        "column": 13
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 16,
+          "column": 14,
+          "symbol": "audioId"
+        }
+      ],
+      "line": 18,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 18,
+        "column": 1,
+        "symbol": "sleep"
+      },
+      "args": [
+        {
+          "kind": "NumericLiteral",
+          "line": 18,
+          "column": 7,
+          "value": 1000
+        }
+      ],
+      "line": 20,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 20,
+          "column": 1,
+          "symbol": "Audio"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 20,
+          "column": 7,
+          "symbol": "setOptions"
+        },
+        "computed": false,
+        "line": 20,
+        "column": 17
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 20,
+          "column": 18,
+          "symbol": "audioId"
+        },
+        {
+          "kind": "ObjectLiteral",
+          "properties": [
+            {
+              "kind": "Property",
+              "key": "volume",
+              "value": {
+                "kind": "NumericLiteral",
+                "line": 21,
+                "column": 13,
+                "value": 0.5
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "loop",
+              "value": {
+                "kind": "Identifier",
+                "line": 22,
+                "column": 11,
+                "symbol": "false"
+              }
+            },
+            {
+              "kind": "Property",
+              "key": "pitch",
+              "value": {
+                "kind": "NumericLiteral",
+                "line": 23,
+                "column": 12,
+                "value": 10
+              }
+            }
+          ]
+        }
+      ],
+      "line": 26,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 26,
+        "column": 1,
+        "symbol": "sleep"
+      },
+      "args": [
+        {
+          "kind": "NumericLiteral",
+          "line": 26,
+          "column": 7,
+          "value": 5000
+        }
+      ],
+      "line": 29,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 29,
+          "column": 1,
+          "symbol": "Audio"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 29,
+          "column": 7,
+          "symbol": "stop"
+        },
+        "computed": false,
+        "line": 29,
+        "column": 11
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 29,
+          "column": 12,
+          "symbol": "audioId"
+        }
+      ],
+      "line": 29,
+      "column": 20
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

@@ -1,0 +1,19 @@
+
+print(String.reverse("Hello World"));
+print(String.split("Hello World", " "));
+print(String.join(["Hello", "World", "Naveen"], ","));
+print(String.length("Hello World"));
+print(String.charAt("Hello World", 0));
+print(String.charCodeAt("Hello World", 0));
+print(String.toLowerCase("Hello World"));
+print(String.toUpperCase("Hello World"));
+print(String.trim("Hello World"));
+print(String.trimStart("Hello World"));
+print(String.trimEnd("Hello World"));
+print(String.startsWith("Hello World", "Hello"));
+print(String.endsWith("Hello World", "World"));
+print(String.contains("Hello World", "Hello"));
+print(String.replace("Hello World", "Hello", "Hi"));
+print(String.take("Hello World", 5));
+print(String.skip("Hello World", 5));
+print(String.substr("Hello World", 0, 5));

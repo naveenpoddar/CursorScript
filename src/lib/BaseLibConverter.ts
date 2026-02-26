@@ -70,6 +70,10 @@ export default function ConvertTOMK_Object(obj: any) {
 
             return arg;
           });
+          // Pad rawArgs with undefined up to the method's parameter count
+          while (rawArgs.length < method.length) {
+            rawArgs.push(undefined);
+          }
           const result = method.apply(obj, [...rawArgs, args, env]);
 
           // 2. Convert result to CursorScript type

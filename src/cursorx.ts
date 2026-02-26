@@ -264,8 +264,6 @@ async function performUpdate() {
 
   const cmd = isWindows
     ? [
-        "powershell",
-        "-Command",
         "irm https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.ps1 | iex",
       ]
     : [

@@ -1,30 +1,29 @@
-# Modules 📦
+# Modules & Imports 📦
 
-CursorScript supports a modern ES-style module system to help organize code into multiple files.
+Organize your code across multiple files using the module system.
 
 ## Exporting
 
-Use the `export` keyword before a variable or function declaration to make it available to other files.
+Use the `export` keyword before variables, constants, or functions to make them available to other files.
 
 ```cursor
+// math_utils.cursor
 export const PI = 3.14;
-export fn greet(name) {
-    print("Hello", name)
+export fn add(a, b) {
+    return a + b;
 }
 ```
 
+---
+
 ## Importing
 
-Use `import { ... } from "path"` to bring exported values into the current file. Paths are relative to the current file.
+Use the `import` keyword to bring in values from other files.
 
 ```cursor
-import { PI, greet } from "./mathUtils"
+import { PI, add } from "./math_utils";
 
-print(PI)
-greet("Developer")
+print(add(PI, 2));
 ```
 
-## Module Resolution
-
-- Paths starting with `./` or `../` are resolved relative to the current file.
-- Names without a path prefix are resolved via the `cursorx` package manager in the `.cursorx` directory.
+- **Path Rules**: Paths must be relative (starting with `./` or `../`) and do not require the `.cursor` extension.

@@ -108,10 +108,10 @@ class _CursorThread {
     return MK_OBJECT(info);
   }
 
-  private executeCallback(func: any, args: any[] = []) {
+  private async executeCallback(func: any, args: any[] = []) {
     if (typeof func === "function") {
       // If it's a wrapped function from BaseLibConverter
-      func(...args);
+      await func(...args);
     } else if (func && func.type === "function") {
       // Internal FunctionValue
       const fn = func as FunctionValue;
@@ -123,7 +123,7 @@ class _CursorThread {
       }
 
       for (const stmt of fn.body) {
-        global.evaluate(stmt, scope);
+        await global.evaluate(stmt, scope);
       }
     }
   }

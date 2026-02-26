@@ -1,20 +1,45 @@
 # Crypto Library (`Crypto`) 🔒
 
-The `Crypto` library provides utility functions for cryptography and unique ID generation.
+## Methods Index
 
-## ID Generation
+- [hash](#await-cryptohashpayload) | [verifyHash](#await-cryptoverifyhashpayload-hash)
+- [uuid](#cryptouuid) | [uuid7](#cryptouuid7) | [sha256](#cryptosha256payload)
+- [hmacSha256](#cryptohmac256payload-key) | [base64Encode](#cryptobase64encodepayload) | [base64Decode](#cryptobase64decodepayload)
 
-- `Crypto.uuid()` - Returns a standard random UUID v4 string.
-- `Crypto.uuid7()` - Returns a time-ordered UUID v7 string.
+## Asynchronous Methods
 
-## Hashing & Verification
+### `await Crypto.hash(payload)`
 
-- `Crypto.hash(data, callback)` - Asynchronously hashes a string using bcrypt. The callback receives `(hash, error)`.
-- `Crypto.verifyHash(data, hash, callback)` - Asynchronously verifies a string against a hash. The callback receives `(isMatch, error)`.
-- `Crypto.sha256(data)` - Synchronously returns the SHA-256 hash of the string, formatted in hex.
-- `Crypto.hmacSha256(data, key)` - Synchronously returns the HMAC-SHA-256 hash for the given data and secret key, formatted in hex.
+- **Example**: `let hash = await Crypto.hash("myPassword123");`
 
-## Base64 Encoding
+### `await Crypto.verifyHash(payload, hash)`
 
-- `Crypto.base64Encode(data)` - Encodes a string or array of bytes into a Base64 string.
-- `Crypto.base64Decode(string)` - Decodes a Base64 string back into a standard string.
+- **Example**: `let ok = await Crypto.verifyHash("myPassword123", storedHash);`
+
+---
+
+## Synchronous Methods
+
+### `Crypto.uuid()`
+
+- **Example**: `let id = Crypto.uuid(); // v4`
+
+### `Crypto.uuid7()`
+
+- **Example**: `let id = Crypto.uuid7(); // v7 (time-ordered)`
+
+### `Crypto.sha256(payload)`
+
+- **Example**: `let digest = Crypto.sha256("data");`
+
+### `Crypto.hmac256(payload, key)`
+
+- **Example**: `let sig = Crypto.hmac256("message", "secret-key");`
+
+### `Crypto.base64Encode(payload)`
+
+- **Example**: `let b64 = Crypto.base64Encode("hello");`
+
+### `Crypto.base64Decode(payload)`
+
+- **Example**: `let raw = Crypto.base64Decode("aGVsbG8=");`

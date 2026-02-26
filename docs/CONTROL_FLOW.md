@@ -1,49 +1,53 @@
-# Control Flow & Operators
+# Control Flow & Operators ⚡
 
-## Comparison Operators
+CursorScript supports standard procedural control flow with some modern additions like `async/await` and tuple destructuring.
 
-- `==` - Equals
-- `!=` - Not Equals
-- `<` - Less Than
-- `>` - Greater Than
-- `<=` - Less Than or Equals
-- `>=` - Greater Than or Equals
+## Conditionals
 
-## Logical Operators (Gates) ⚡
-
-CursorScript uses logical gates with short-circuiting:
-
-- `&&` - AND
-- `||` - OR
-- `!` - NOT (Unary)
-
-## If Statements
+### `if` / `else if` / `else`
 
 ```cursor
-if (score > 10 && gameOver == false) {
-    print("Keep playing!");
+if (score > 100) {
+    print("Win!");
 } else {
-    print("Game Over");
+    print("Keep playing.");
 }
 ```
 
-## While Loops
+---
+
+## Loops
+
+### `while`
 
 ```cursor
 let i = 0;
-while (i < 10) {
-    print(i)
-    i = i + 1
+while (i < 5) {
+    print(i);
+    i = i + 1;
 }
 ```
 
-## Async/Await
+---
 
-Asynchronous operations are handled using `async` functions and the `await` keyword.
+## Modern Async Features
+
+### `async` / `await`
+
+Functions marked as `async` can use the `await` keyword to pause execution for promises.
 
 ```cursor
-async fn main() {
-    const (res, err) = await someAsyncTask();
-    if (!err) print(res);
+async fn loadData() {
+    print("Loading...");
+    await wait(1000); // Pauses for 1 second
+    print("Done!");
 }
+```
+
+### Tuple Destructuring
+
+When awaiting functions that returns multiple values (like Network requests), you can destructure them directly.
+
+```cursor
+const (data, err) = await Network.get(url);
 ```

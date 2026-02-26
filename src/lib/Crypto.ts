@@ -10,30 +10,24 @@ class CryptoL {
     return Bun.randomUUIDv7();
   }
 
-  hash(data: string, onComplete: any) {
-    (async () => {
-      try {
-        const argonHash = await Bun.password.hash(data, {
-          algorithm: "bcrypt",
-          cost: 4,
-        });
-
-        executeCallback(onComplete, argonHash, null);
-      } catch (error: any) {
-        executeCallback(onComplete, null, error.message);
-      }
-    })();
+  async hash(data: string) {
+    try {
+      const argonHash = await Bun.password.hash(data, {
+        algorithm: "bcrypt",
+        cost: 4,
+      });
+      return argonHash;
+    } catch (error: any) {
+      throw `Hashing failed: ${error.message}`;
+    }
   }
 
-  verifyHash(data: string, hash: string, onComplete: any) {
-    (async () => {
-      try {
-        const isMatch = await Bun.password.verify(data, hash);
-        executeCallback(onComplete, isMatch, null);
-      } catch (error: any) {
-        executeCallback(onComplete, null, error.message);
-      }
-    })();
+  async verifyHash(data: string, hash: string) {
+    try {
+      return await Bun.password.verify(data, hash);
+    } catch (error: any) {
+      throw `Verification failed: ${error.message}`;
+    }
   }
 
   sha256(data: string) {

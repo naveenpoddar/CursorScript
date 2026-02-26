@@ -1,134 +1,53 @@
 # Network Library (`Network`) 🌐
 
-The `Network` library provides a powerful interface for making asynchronous HTTP requests using the `async/await` pattern. It supports all standard HTTP methods and global header management.
+## Methods Index
 
-## Installation / Import
+- [get](#await-networkgeturl-options) | [post](#await-networkposturl-body-options) | [put](#await-networkputurl-body-options)
+- [patch](#await-networkpatchurl-body-options) | [delete](#await-networkdeleteurl-options) | [head](#await-networkheadurl-options)
+- [SetHeaders](#networksetheadersheadersobject) | [AddHeader](#networkaddheaderkey-value) | [ClearHeaders](#networkclearheaders)
 
-The `Network` library is built-in and globally available as `Network`.
+## Asynchronous Methods
 
-## Async/Await Pattern
+All methods return a tuple `(data, error)`.
 
-CursorScript's `await` operator automatically handles both the success and failure cases of an asynchronous operation by returning a **tuple**: `(data, error)`.
+### `await Network.get(url, [options])`
 
-```cursor
-const (data, error) = await Network.get("https://api.example.com/data");
+- **Example**: `const (data, err) = await Network.get("https://api.example.com/items");`
 
-if (error) {
-    printError("Request failed:", error);
-} else {
-    print("Received data:", data);
-}
-```
+### `await Network.post(url, body, [options])`
 
----
+- **Example**: `const (res, err) = await Network.post("https://api.example.com/items", { name: "New Item" });`
 
-## API Reference
+### `await Network.put(url, body, [options])`
 
-### Global Configuration
+- **Example**: `const (res, err) = await Network.put("https://api.example.com/items/1", { name: "Updated" });`
 
-#### `Network.AddHeader(key, value)`
+### `await Network.patch(url, body, [options])`
 
-Adds a single global header that will be sent with all subsequent requests.
+- **Example**: `const (res, err) = await Network.patch("https://api.example.com/items/1", { status: "sold" });`
 
-- **key**: String - The header name (e.g., "Authorization").
-- **value**: String - The header value.
+### `await Network.delete(url, [options])`
 
-#### `Network.SetHeaders(headersObj)`
+- **Example**: `const (res, err) = await Network.delete("https://api.example.com/items/1");`
 
-Sets multiple global headers at once.
+### `await Network.head(url, [options])`
 
-- **headersObj**: Object - A map of key-value pairs.
+Returns response headers.
 
-#### `Network.ClearHeaders()`
-
-Removes all previously set global headers.
+- **Example**: `const (headers, err) = await Network.head("https://example.com");`
 
 ---
 
-### Request Methods
+## Global Configuration
 
-All request methods are **asynchronous** and should be used with `await`.
+### `Network.SetHeaders(headersObject)`
 
-#### `Network.get(url, [options])`
+- **Example**: `Network.SetHeaders({ "Authorization": "Bearer token" });`
 
-Performs an HTTP GET request.
+### `Network.AddHeader(key, value)`
 
-- **url**: String - The destination URL.
-- **options**: Object (Optional) - Request options such as custom headers.
-- **Returns**: Promise resolving to the parsed response body.
+- **Example**: `Network.AddHeader("X-Custom", "Value");`
 
-#### `Network.post(url, body, [options])`
+### `Network.ClearHeaders()`
 
-Performs an HTTP POST request.
-
-- **url**: String - The destination URL.
-- **body**: Any - Data to be sent in the request body (will be JSON stringified).
-- **options**: Object (Optional) - Request options.
-
-#### `Network.put(url, body, [options])`
-
-Performs an HTTP PUT request.
-
-#### `Network.patch(url, body, [options])`
-
-Performs an HTTP PATCH request.
-
-#### `Network.delete(url, [options])`
-
-Performs an HTTP DELETE request.
-
-#### `Network.head(url, [options])`
-
-Performs an HTTP HEAD request.
-
-- **Returns**: Promise resolving to an object containing the response headers.
-
----
-
-### Response Handling
-
-- **Automatic JSON Parsing**: If the response header `Content-Type` contains `application/json`, the `data` will be automatically parsed into a CursorScript Object or Array. Otherwise, it returns a String.
-- **Error Handling**: On network failure or non-OK HTTP status codes (4xx, 5xx), the `error` part of the `await` tuple will contain a descriptive error string, and `data` will be `null`.
-
----
-
-## Advanced Examples
-
-### Sending Authorized POST Requests
-
-```cursor
-Network.AddHeader("Authorization", "Bearer my-token-123");
-
-const payload = {
-    title: "Awesome Post",
-    content: "This was sent using CursorScript!"
-};
-
-const (response, error) = await Network.post("https://api.example.com/posts", payload);
-
-if (error) {
-    printError("Post failed:", error);
-} else {
-    print("Post created successfully:", response.id);
-}
-```
-
-### Custom Per-Request Headers
-
-```cursor
-const (data, err) = await Network.get("https://api.myData.org", {
-    headers: {
-        "X-Custom-ID": "9988"
-    }
-});
-```
-
-### Checking Response Headers (HEAD)
-
-```cursor
-const (headers, err) = await Network.head("https://example.com/file.zip");
-if (!err) {
-    print("File size:", headers["content-length"]);
-    print("Content Type:", headers["content-type"]);
-}
-```
+- **Example**: `Network.ClearHeaders();`

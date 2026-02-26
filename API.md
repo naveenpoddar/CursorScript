@@ -19,6 +19,11 @@ Welcome to the CursorScript API documentation. This index provides links to deta
 - [Crypto Library](./docs/CRYPTO.md) - Hashing, encryption, and UUIDs.
 - [JSON Library](./docs/JSON.md) - Serializing and deserializing data.
 - [File Library](./docs/FILE.md) - Filesystem read/write operations.
+- [Audio Library](./docs/AUDIO.md) - Loading and playing sounds.
+- [Engine3D Library](./docs/ENGINE3D.md) - High-performance 3D rendering.
+- [String Library](./docs/STRING.md) - String manipulation utilities.
+- [DateTime Library](./docs/DATE_TIME.md) - Date and time utilities.
+- [Perlin Noise Library](./docs/PERLIN_NOISE.md) - Procedural noise generation.
 
 ---
 

@@ -1,11 +1,52 @@
 # File Library (`File`) 📁
 
-The `File` library provides methods for reading, writing, and traversing the filesystem.
+## Methods Index
 
-## Methods
+- [readAsync](#await-filereadasyncpath) | [writeAsync](#await-filewriteasyncpath-data) | [readBytesAsync](#await-filereadbytesasyncpath) | [listAsync](#await-filelistasyncdirectory)
+- [read](#filereadpath) | [write](#filewritepath-data) | [exists](#fileexistspath) | [delete](#filedeletepath) | [list](#filelistdirectory) | [info](#fileinfopath)
 
-- `File.read(path)` - Synchronously reads and returns a text file's contents as a string.
-- `File.write(path, data)` - Synchronously writes a string `data` to the requested text file path. Returns `true` on success.
-- `File.readBytes(path)` - Synchronously reads a file containing binary data (like images or audio) and returns it as an array of bytes.
-- `File.exists(path)` - Checks if a file or directory exists. Returns a boolean.
-- `File.list(directory)` - Returns an array of file and directory names contained within the requested folder path.
+## Asynchronous Methods (Recommended)
+
+### `await File.readAsync(path)`
+
+- **Example**: `const (data, err) = await File.readAsync("./data.txt");`
+
+### `await File.writeAsync(path, data)`
+
+- **Example**: `const (ok, err) = await File.writeAsync("./log.txt", "Hello");`
+
+### `await File.readBytesAsync(path)`
+
+- **Example**: `const (bytes, err) = await File.readBytesAsync("./image.png");`
+
+### `await File.listAsync(directory)`
+
+- **Example**: `const (files, err) = await File.listAsync("./docs");`
+
+---
+
+## Synchronous Methods
+
+### `File.read(path)`
+
+- **Example**: `let content = File.read("./config.json");`
+
+### `File.write(path, data)`
+
+- **Example**: `File.write("./save.txt", "Score: 100");`
+
+### `File.exists(path)`
+
+- **Example**: `if (File.exists("./data.txt")) { /* ... */ }`
+
+### `File.delete(path)`
+
+- **Example**: `File.delete("./temp.tmp");`
+
+### `File.list(directory)`
+
+- **Example**: `let list = File.list("./assets");`
+
+### `File.info(path)`
+
+- **Example**: `let stats = File.info("./file.txt");`

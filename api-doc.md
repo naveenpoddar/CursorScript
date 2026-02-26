@@ -1,31 +1,31 @@
-# CursorScript API Documentation 📖
+# CursorScript API
 
 Welcome to the CursorScript API documentation. This index provides links to detailed documentation for each library and core language feature.
 
 ## Core Language Features
 
-- [Global Functions](./docs/GLOBAL_FUNCTIONS.md)
-- [Modules & Imports](./docs/MODULES.md)
-- [Lambda Functions](./docs/LAMBDAS.md)
-- [Control Flow & Operators](./docs/CONTROL_FLOW.md)
+* [Global Functions](api/global_functions.md)
+* [Modules & Imports](api/modules.md)
+* [Lambda Functions](api/lambdas.md)
+* [Control Flow & Operators](api/control_flow.md)
 
 ## Built-in Libraries
 
-- [Math Library](./docs/MATH.md) - Mathematical constants and functions.
-- [Game Library](./docs/GAME.md) - Physics, collisions, and gameplay utilities.
-- [Window Library](./docs/WINDOW.md) - Native windowing and 2D drawing.
-- [Network Library](./docs/NETWORK.md) - Asynchronous HTTP requests.
-- [Thread Library](./docs/THREAD.md) - Multi-threading and background tasks.
-- [Crypto Library](./docs/CRYPTO.md) - Hashing, encryption, and UUIDs.
-- [JSON Library](./docs/JSON.md) - Serializing and deserializing data.
-- [File Library](./docs/FILE.md) - Filesystem read/write operations.
+* [Math Library](api/math.md) - Mathematical constants and functions.
+* [Game Library](api/game.md) - Physics, collisions, and gameplay utilities.
+* [Window Library](api/window.md) - Native windowing and 2D drawing.
+* [Network Library](api/network.md) - Asynchronous HTTP requests.
+* [Thread Library](api/thread.md) - Multi-threading and background tasks.
+* [Crypto Library](api/crypto.md) - Hashing, encryption, and UUIDs.
+* [JSON Library](api/json.md) - Serializing and deserializing data.
+* [File Library](api/file.md) - Filesystem read/write operations.
 
----
+***
 
 ## Global Functions Quick Reference
 
 | Function          | Description                                               | Example                              |
-| :---------------- | :-------------------------------------------------------- | :----------------------------------- |
+| ----------------- | --------------------------------------------------------- | ------------------------------------ |
 | `print(args...)`  | Prints values to the console.                             | `print("Hello", 42);`                |
 | `printError(...)` | Prints values to the error console (red).                 | `printError("Fetch failed!");`       |
 | `time()`          | Returns the current time in milliseconds.                 | `let start = time();`                |

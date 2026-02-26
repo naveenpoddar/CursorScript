@@ -239,7 +239,7 @@ export async function evaluateCallExpr(
   expr: CallExpr,
   env: Environment,
 ): Promise<RuntimeValue> {
-  const args = [];
+  const args: any[] = [];
   for (const arg of expr.args) {
     args.push(await evaluate(arg, env));
   }

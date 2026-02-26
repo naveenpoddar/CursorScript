@@ -1,12 +1,12 @@
 Window.create(800, 600, "Minecraft Clone (CursorScript)", false);
 let scene = Engine3D.createScene();
 
-const audioId = Audio.load("C: \Users\podda\Downloads\song.mp3");
+const audioId = Audio.load("C:\Users\podda\Downloads\song.mp3");
 
 Audio.play(audioId, {
     volume: 1, // 0.0 to 1.0
     loop: true, // true or false
-    pitch: rand(1, 2) // acts as a frequency multiplier
+    pitch: rand(1, 1.1) // acts as a frequency multiplier
 })
 
 // 1. Terrain Generation

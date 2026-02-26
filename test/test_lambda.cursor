@@ -1,21 +1,21 @@
 let add = (a, b) -> {
-    a + b
+    a + b;
 }
 
-let result = add(5, 10)
-print("Result of lambda add:", result)
+let result = add(5, 10);
+print("Result of lambda add:", result);
 
 let sayHello = () -> {
-    print("Hello from lambda!")
+    print("Hello from lambda!");
 }
 
-sayHello()
+sayHello();
 
 fn executeCallback(callback) {
-    print("Executing callback...")
-    callback()
+    print("Executing callback...");
+    callback();
 }
 
 executeCallback(() -> {
-    print("Lambda callback executed!")
+    print("Lambda callback executed!");
 })

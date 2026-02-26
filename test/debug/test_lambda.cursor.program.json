@@ -1,0 +1,228 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "VarDeclaration",
+      "identifier": "add",
+      "constant": false,
+      "value": {
+        "kind": "LambdaExpr",
+        "parameters": [
+          "a",
+          "b"
+        ],
+        "body": [
+          {
+            "kind": "BinaryExpr",
+            "operator": "+",
+            "left": {
+              "kind": "Identifier",
+              "line": 2,
+              "column": 5,
+              "symbol": "a"
+            },
+            "right": {
+              "kind": "Identifier",
+              "line": 2,
+              "column": 9,
+              "symbol": "b"
+            },
+            "line": 2,
+            "column": 10
+          }
+        ],
+        "line": 5,
+        "column": 1
+      },
+      "line": 1,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "result",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "Identifier",
+          "line": 5,
+          "column": 14,
+          "symbol": "add"
+        },
+        "args": [
+          {
+            "kind": "NumericLiteral",
+            "line": 5,
+            "column": 18,
+            "value": 5
+          },
+          {
+            "kind": "NumericLiteral",
+            "line": 5,
+            "column": 21,
+            "value": 10
+          }
+        ],
+        "line": 5,
+        "column": 24
+      },
+      "line": 5,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 6,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 6,
+          "column": 7,
+          "value": "Result of lambda add:"
+        },
+        {
+          "kind": "Identifier",
+          "line": 6,
+          "column": 32,
+          "symbol": "result"
+        }
+      ],
+      "line": 6,
+      "column": 39
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "sayHello",
+      "constant": false,
+      "value": {
+        "kind": "LambdaExpr",
+        "parameters": [],
+        "body": [
+          {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "Identifier",
+              "line": 9,
+              "column": 5,
+              "symbol": "print"
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 9,
+                "column": 11,
+                "value": "Hello from lambda!"
+              }
+            ],
+            "line": 9,
+            "column": 32
+          }
+        ],
+        "line": 12,
+        "column": 1
+      },
+      "line": 8,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 12,
+        "column": 1,
+        "symbol": "sayHello"
+      },
+      "args": [],
+      "line": 12,
+      "column": 11
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "executeCallback",
+      "parameters": [
+        "callback"
+      ],
+      "body": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 15,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 15,
+              "column": 11,
+              "value": "Executing callback..."
+            }
+          ],
+          "line": 15,
+          "column": 35
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 16,
+            "column": 5,
+            "symbol": "callback"
+          },
+          "args": [],
+          "line": 16,
+          "column": 15
+        }
+      ],
+      "line": 14,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 19,
+        "column": 1,
+        "symbol": "executeCallback"
+      },
+      "args": [
+        {
+          "kind": "LambdaExpr",
+          "parameters": [],
+          "body": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 20,
+                "column": 5,
+                "symbol": "print"
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 20,
+                  "column": 11,
+                  "value": "Lambda callback executed!"
+                }
+              ],
+              "line": 20,
+              "column": 39
+            }
+          ],
+          "line": 21,
+          "column": 2
+        }
+      ],
+      "line": 22,
+      "column": 1
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

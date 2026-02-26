@@ -1,117 +1,157 @@
-Window.create(800, 600, "2D Primitives to 3D Cube")
+Window.create(800, 600, "2D Primitives to 3D Cube");
 
 // Let's create our own mini projection since we are testing primitives!
-let angleX = 0
-let angleY = 0
+let angleX = 0;
+let angleY = 0;
 
 // Vertices of a unit cube
 let cubeVerts = [
-    {x: -1, y: -1, z: -1}, {x: 1, y: -1, z: -1},
-    {x: 1, y: 1, z: -1}, {x: -1, y: 1, z: -1},
-    {x: -1, y: -1, z: 1}, {x: 1, y: -1, z: 1},
-    {x: 1, y: 1, z: 1}, {x: -1, y: 1, z: 1}
+    {
+        x: -1, y: -1, z: -1
+    }, {
+        x: 1, y: -1, z: -1
+    },
+    {
+        x: 1, y: 1, z: -1
+    }, {
+        x: -1, y: 1, z: -1
+    },
+    {
+        x: -1, y: -1, z: 1
+    }, {
+        x: 1, y: -1, z: 1
+    },
+    {
+        x: 1, y: 1, z: 1
+    }, {
+        x: -1, y: 1, z: 1
+    }
 ]
 
 // 6 Faces composed of quads
 let faces = [
-    {v: [0, 3, 2, 1], c: "#ff4757"}, // Front
-    {v: [5, 6, 7, 4], c: "#2ed573"}, // Back
-    {v: [1, 2, 6, 5], c: "#1e90ff"}, // Right
-    {v: [4, 7, 3, 0], c: "#ffa502"}, // Left
-    {v: [4, 0, 1, 5], c: "#a4b0be"}, // Bottom
-    {v: [3, 7, 6, 2], c: "#3742fa"}  // Top
+    {
+        v: [0, 3, 2, 1], c: "#ff4757"
+    }, // Front
+    {
+        v: [5, 6, 7, 4], c: "#2ed573"
+    }, // Back
+    {
+        v: [1, 2, 6, 5], c: "#1e90ff"
+    }, // Right
+    {
+        v: [4, 7, 3, 0], c: "#ffa502"
+    }, // Left
+    {
+        v: [4, 0, 1, 5], c: "#a4b0be"
+    }, // Bottom
+    {
+        v: [3, 7, 6, 2], c: "#3742fa"
+    } // Top
 ]
 
 Window.onUpdate(() -> {
-    Window.clear("#2f3542") // Dark gray
-    
-    Window.setColor("white")
-    Window.drawText("Drawing 3D Cube using solid 2D Quads!", 10, 10, 24)
-    Window.drawText("Use Arrow Keys to rotate", 10, 40, 20)
+    Window.clear("#2f3542"); // Dark gray
 
-    if (Window.getKeyDown("ArrowLeft")) { angleY = angleY - 0.05 }
-    if (Window.getKeyDown("ArrowRight")) { angleY = angleY + 0.05 }
-    if (Window.getKeyDown("ArrowUp")) { angleX = angleX - 0.05 }
-    if (Window.getKeyDown("ArrowDown")) { angleX = angleX + 0.05 }
+    Window.setColor("white");
+    Window.drawText("Drawing 3D Cube using solid 2D Quads!", 10, 10, 24);
+    Window.drawText("Use Arrow Keys to rotate", 10, 40, 20);
+
+    if (Window.getKeyDown("ArrowLeft")) {
+        angleY = angleY - 0.05;
+    }
+    if (Window.getKeyDown("ArrowRight")) {
+        angleY = angleY + 0.05;
+    }
+    if (Window.getKeyDown("ArrowUp")) {
+        angleX = angleX - 0.05;
+    }
+    if (Window.getKeyDown("ArrowDown")) {
+        angleX = angleX + 0.05;
+    }
 
     // Auto rotate a bit
-    angleY = angleY + 0.01
+    angleY = angleY + 0.01;
 
     // Store projected points
-    let projected = []
-    
+    let projected = [];
+
     // 1. Transform vertices
-    let i = 0
-    let lenV = len(cubeVerts)
-    let sinesAndCosines = { 
+    let i = 0;
+    let lenV = len(cubeVerts);
+    let sinesAndCosines = {
         cx: Math.cos(angleX), sx: Math.sin(angleX),
-        cy: Math.cos(angleY), sy: Math.sin(angleY) 
+        cy: Math.cos(angleY), sy: Math.sin(angleY)
     }
 
     while (i < lenV) {
-        let v = cubeVerts[i]
-        
+        let v = cubeVerts[i];
+
         // Rotate X
-        let y1 = v.y * sinesAndCosines.cx - v.z * sinesAndCosines.sx
-        let z1 = v.y * sinesAndCosines.sx + v.z * sinesAndCosines.cx
-        
+        let y1 = v.y * sinesAndCosines.cx - v.z * sinesAndCosines.sx;
+        let z1 = v.y * sinesAndCosines.sx + v.z * sinesAndCosines.cx;
+
         // Rotate Y
-        let x2 = v.x * sinesAndCosines.cy + z1 * sinesAndCosines.sy
-        let z2 = -v.x * sinesAndCosines.sy + z1 * sinesAndCosines.cy
-        
+        let x2 = v.x * sinesAndCosines.cy + z1 * sinesAndCosines.sy;
+        let z2 = -v.x * sinesAndCosines.sy + z1 * sinesAndCosines.cy;
+
         // Project (Move away by shifting Z)
-        let zPush = z2 + 4
-        let fov = 400
-        let f = fov / zPush
-        
+        let zPush = z2 + 4;
+        let fov = 400;
+        let f = fov / zPush;
+
         push(projected, {
             x: x2 * f + 400,
             y: y1 * f + 300,
             z: zPush // Store Z for sorting
         })
-        
-        i = i + 1
+
+        i = i + 1;
     }
 
     // 2. Sort faces (Painter's algorithm mapping)
     // Actually, CursorScript loops are simpler, let's just do a manual bubble sort or simple rendering:
     // For simplicity, we can calculate dot products for backface culling instead!
-    
-    i = 0
-    let numFaces = len(faces)
+
+    i = 0;
+    let numFaces = len(faces);
     while (i < numFaces) {
-        let face = faces[i]
-        let p0 = projected[face.v[0]]
-        let p1 = projected[face.v[1]]
-        let p2 = projected[face.v[2]]
-        let p3 = projected[face.v[3]]
-        
+        let face = faces[i];
+        let p0 = projected[face.v[0]];
+        let p1 = projected[face.v[1]];
+        let p2 = projected[face.v[2]];
+        let p3 = projected[face.v[3]];
+
         // Backface Culling (2D Cross Product of screen coordinates)
-        let edge1X = p1.x - p0.x
-        let edge1Y = p1.y - p0.y
-        let edge2X = p2.x - p1.x
-        let edge2Y = p2.y - p1.y
-        
-        let cross = edge1X * edge2Y - edge1Y * edge2X
-        
+        let edge1X = p1.x - p0.x;
+        let edge1Y = p1.y - p0.y;
+        let edge2X = p2.x - p1.x;
+        let edge2Y = p2.y - p1.y;
+
+        let cross = edge1X * edge2Y - edge1Y * edge2X;
+
         // If cross > 0, the face is pointing towards us!
         if (cross > 0) {
-            Window.setColor(face.c)
+            Window.setColor(face.c);
             Window.drawQuad(
-                p0.x, p0.y,
-                p1.x, p1.y,
-                p2.x, p2.y,
-                p3.x, p3.y
+                p0.x,
+                p0.y,
+                p1.x,
+                p1.y,
+                p2.x,
+                p2.y,
+                p3.x,
+                p3.y
             )
-            
+
             // Draw Wireframe borders nicely
-            Window.setColor("white")
-            Window.drawLine(p0.x, p0.y, p1.x, p1.y)
-            Window.drawLine(p1.x, p1.y, p2.x, p2.y)
-            Window.drawLine(p2.x, p2.y, p3.x, p3.y)
-            Window.drawLine(p3.x, p3.y, p0.x, p0.y)
+            Window.setColor("white");
+            Window.drawLine(p0.x, p0.y, p1.x, p1.y);
+            Window.drawLine(p1.x, p1.y, p2.x, p2.y);
+            Window.drawLine(p2.x, p2.y, p3.x, p3.y);
+            Window.drawLine(p3.x, p3.y, p0.x, p0.y);
         }
-        
-        i = i + 1
+
+        i = i + 1;
     }
 })

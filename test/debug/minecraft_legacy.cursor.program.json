@@ -110,11 +110,11 @@
             "kind": "StringLiteral",
             "line": 4,
             "column": 28,
-            "value": "C: \\Users\\podda\\Downloads\\song.mp3"
+            "value": "C:\\Users\\podda\\Downloads\\song.mp3"
           }
         ],
-        "line": 6,
-        "column": 1
+        "line": 4,
+        "column": 64
       },
       "line": 4,
       "column": 1
@@ -191,7 +191,7 @@
                     "kind": "NumericLiteral",
                     "line": 9,
                     "column": 20,
-                    "value": 2
+                    "value": 1.1
                   }
                 ],
                 "line": 10,
@@ -730,8 +730,8 @@
             "value": "#FFE87C"
           }
         ],
-        "line": 32,
-        "column": 1
+        "line": 31,
+        "column": 56
       },
       "line": 31,
       "column": 1
@@ -780,8 +780,8 @@
             "value": "rgba(255, 232, 124, 0.4)"
           }
         ],
-        "line": 34,
-        "column": 1
+        "line": 32,
+        "column": 74
       },
       "line": 32,
       "column": 1
@@ -830,8 +830,8 @@
             "value": "#E0E0FF"
           }
         ],
-        "line": 35,
-        "column": 1
+        "line": 34,
+        "column": 57
       },
       "line": 34,
       "column": 1
@@ -880,8 +880,8 @@
             "value": "rgba(100, 100, 255, 0.2)"
           }
         ],
-        "line": 37,
-        "column": 1
+        "line": 35,
+        "column": 74
       },
       "line": 35,
       "column": 1
@@ -5470,8 +5470,8 @@
                   "column": 14,
                   "symbol": "sunZ"
                 },
-                "line": 245,
-                "column": 5
+                "line": 243,
+                "column": 18
               },
               "line": 243,
               "column": 11
@@ -5524,8 +5524,8 @@
                   "column": 35,
                   "value": 100
                 },
-                "line": 247,
-                "column": 5
+                "line": 246,
+                "column": 38
               },
               "line": 246,
               "column": 5
@@ -5649,8 +5649,8 @@
                   "line": 254,
                   "column": 39
                 },
-                "line": 257,
-                "column": 5
+                "line": 254,
+                "column": 40
               },
               "line": 254,
               "column": 13
@@ -12743,8 +12743,8 @@
                   "symbol": "skyColor"
                 }
               ],
-              "line": 559,
-              "column": 5
+              "line": 558,
+              "column": 27
             },
             {
               "kind": "CallExpr",
@@ -13125,8 +13125,8 @@
                   "value": 16
                 }
               ],
-              "line": 569,
-              "column": 5
+              "line": 566,
+              "column": 112
             },
             {
               "kind": "CallExpr",

@@ -96,7 +96,7 @@ export default function ConvertTOMK_Object(obj: any) {
   return MK_OBJECT(propertiesMap);
 }
 
-function GetCursorXType(value: any): RuntimeValue | null {
+export function GetCursorXType(value: any): RuntimeValue | null {
   if (value === null || typeof value === "undefined") {
     return MK_NULL();
   }

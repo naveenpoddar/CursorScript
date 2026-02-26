@@ -18,6 +18,8 @@ import {
   type ArrayValue,
   MK_ARRAY,
 } from "./values";
+import { CryptoLib } from "../lib/Crypto";
+import { JsonLib } from "../lib/JSONLib";
 
 export function createGlobalEnv() {
   const env = new Environment();
@@ -208,6 +210,8 @@ export function createGlobalEnv() {
   env.declareVar("Window", createWindowLib(), true);
   env.declareVar("Network", NetworkL, true);
   env.declareVar("Thread", ThreadL, true);
+  env.declareVar("Crypto", CryptoLib, true);
+  env.declareVar("Json", JsonLib, true);
 
   // Support Running Native TypeScript/JavaScript but runs in a complete different scope than language runtime
   // env.declareVar(

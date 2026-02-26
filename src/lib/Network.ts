@@ -1,5 +1,6 @@
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { requireString } from "./RequireFunctions";
+import { toNative } from "./Utils";
 
 class Network {
   private defaultHeaders: Record<string, string> = {};
@@ -9,7 +10,7 @@ class Network {
    * @param headers An object containing header key-value pairs.
    */
   public SetHeaders(headers: any) {
-    const nativeHeaders = this.toNative(headers);
+    const nativeHeaders = toNative(headers);
     if (typeof nativeHeaders === "object" && nativeHeaders !== null) {
       this.defaultHeaders = { ...this.defaultHeaders, ...nativeHeaders };
     }
@@ -22,7 +23,7 @@ class Network {
    */
   public AddHeader(key: any, value: any) {
     const k = requireString(key);
-    const v = String(this.toNative(value));
+    const v = String(toNative(value));
     this.defaultHeaders[k] = v;
   }
 
@@ -99,7 +100,7 @@ class Network {
       const response = await fetch(u, {
         ...parsedOptions,
         method: "POST",
-        body: bodyData ? JSON.stringify(this.toNative(bodyData)) : null,
+        body: bodyData ? JSON.stringify(toNative(bodyData)) : null,
         headers: {
           "Content-Type": "application/json",
           ...this.defaultHeaders,
@@ -148,7 +149,7 @@ class Network {
       const response = await fetch(u, {
         ...parsedOptions,
         method: "PUT",
-        body: bodyData ? JSON.stringify(this.toNative(bodyData)) : null,
+        body: bodyData ? JSON.stringify(toNative(bodyData)) : null,
         headers: {
           "Content-Type": "application/json",
           ...this.defaultHeaders,
@@ -238,7 +239,7 @@ class Network {
       const response = await fetch(u, {
         ...parsedOptions,
         method: "PATCH",
-        body: bodyData ? JSON.stringify(this.toNative(bodyData)) : null,
+        body: bodyData ? JSON.stringify(toNative(bodyData)) : null,
         headers: {
           "Content-Type": "application/json",
           ...this.defaultHeaders,
@@ -286,7 +287,7 @@ class Network {
 
   private parseOptions(options: any) {
     if (!options) return {};
-    const native = this.toNative(options);
+    const native = toNative(options);
     return typeof native === "object" && native !== null ? native : {};
   }
 
@@ -300,50 +301,6 @@ class Network {
     } catch (e) {
       return null;
     }
-  }
-
-  /**
-   * Converts a CursorScript RuntimeValue to a native JavaScript value.
-   */
-  private toNative(val: any): any {
-    if (val === null || val === undefined) return null;
-
-    // Handle primitives that have been extracted by BaseLibConverter
-    if (
-      typeof val === "string" ||
-      typeof val === "number" ||
-      typeof val === "boolean" ||
-      typeof val === "function"
-    ) {
-      return val;
-    }
-
-    // Handle RuntimeValues
-    if (
-      val.type === "number" ||
-      val.type === "string" ||
-      val.type === "boolean"
-    ) {
-      return val.value;
-    }
-
-    if (val.type === "null") {
-      return null;
-    }
-
-    if (val.type === "array") {
-      return val.elements.map((el: any) => this.toNative(el));
-    }
-
-    if (val.type === "object") {
-      const obj: any = {};
-      for (const [key, value] of val.properties) {
-        obj[key] = this.toNative(value);
-      }
-      return obj;
-    }
-
-    return val;
   }
 }
 

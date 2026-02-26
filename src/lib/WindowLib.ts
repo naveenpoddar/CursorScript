@@ -1,8 +1,7 @@
 import { dlopen, FFIType, suffix, ptr } from "bun:ffi";
 import type { FunctionValue, RuntimeValue } from "../runtime/values";
-import Environment from "../runtime/environment";
-import { evaluate } from "../runtime/interpreter";
 import { requireNumber, requireString } from "./RequireFunctions";
+import { executeCallback } from "./Utils";
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { join, dirname } from "path";
 import { existsSync } from "node:fs";
@@ -257,7 +256,7 @@ class _WindowL {
       while (this.accumulatedTime >= this.fixedTimeStep) {
         try {
           if (this.fixedUpdateCallback) {
-            this.executeCallback(this.fixedUpdateCallback);
+            executeCallback(this.fixedUpdateCallback);
           }
         } catch (e) {
           console.error("Runtime Error in fixedUpdate callback:", e);
@@ -269,7 +268,7 @@ class _WindowL {
       lib.symbols.BeginDrawing();
       try {
         if (this.updateCallback) {
-          this.executeCallback(this.updateCallback);
+          executeCallback(this.updateCallback);
         }
       } catch (e) {
         console.error("Runtime Error in update callback:", e);
@@ -488,19 +487,6 @@ class _WindowL {
       Buffer.from(requireString(text) + "\0"),
       requireNumber(size),
     );
-  }
-
-  private executeCallback(func: any) {
-    if (typeof func === "function") {
-      // If it's a wrapped function from BaseLibConverter, just call it
-      func();
-    } else if (func && func.body) {
-      // If it's a raw FunctionValue (internal call), evaluate it
-      const scope = new Environment(func.declarationEnv);
-      for (const stmt of func.body) {
-        evaluate(stmt, scope);
-      }
-    }
   }
 }
 

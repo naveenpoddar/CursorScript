@@ -1,3 +1,36 @@
 let x = "Hello World";
 
 print(x)
+
+print(Crypto.uuid())
+
+print(Crypto.uuid7())
+
+Crypto.hash("Hello World", (hash, error) -> {
+    if(error){
+        printError(error)
+    }else{
+        Crypto.verifyHash("Hello World", hash, (isMatch, error) -> {
+            if(error){
+                printError(error)
+            }else{
+                print("isMatch", isMatch)
+            }
+        })
+    }
+})
+
+print(Crypto.sha256("Hello World"))
+print(Crypto.hmacSha256("Hello World", "secret-key"))
+
+const json = Json.serialize({
+    name: "John",
+    age: 30,
+    city: "New York"
+})
+
+print(json)
+
+const obj = Json.deserialize(json)
+
+print(obj)

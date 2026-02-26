@@ -11,8 +11,6 @@ Welcome to the CursorScript API documentation. This index provides links to deta
 
 ## Built-in Libraries
 
-<<<<<<< HEAD:API.md
-
 - [Math Library](./docs/MATH.md) - Mathematical constants and functions.
 - [Game Library](./docs/GAME.md) - Physics, collisions, and gameplay utilities.
 - [Window Library](./docs/WINDOW.md) - Native windowing and 2D drawing.
@@ -35,7 +33,6 @@ Welcome to the CursorScript API documentation. This index provides links to deta
 * [Crypto Library](api/crypto.md) - Hashing, encryption, and UUIDs.
 * [JSON Library](api/json.md) - Serializing and deserializing data.
 * [File Library](api/file.md) - Filesystem read/write operations.
-  > > > > > > > 6c7cf7fc000666532716b02331cf3afdf331089a:api-doc.md
 
 ---
 

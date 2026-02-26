@@ -216,7 +216,7 @@ async function removeModule(slug: string) {
   }
 }
 
-async function checkForUpdates() {
+async function checkForUpdates(dontLog: boolean = false) {
   try {
     const response = await fetch(
       "https://api.github.com/repos/naveenpoddar/cursorscript/releases/latest",
@@ -224,25 +224,43 @@ async function checkForUpdates() {
         headers: { "User-Agent": "CursorX-CLI" },
       },
     );
-    if (!response.ok) return;
+    if (!response.ok) return null;
 
     const release: any = await response.json();
-    const latestVersion = release.tag_name.replace(/^v/, "");
+    const latestVersion = release.tag_name.replace(/^v/, "") as string;
 
     if (latestVersion !== CURRENT_VERSION) {
-      console.warn(
-        `\n🚀 New version available: ${latestVersion} (current: ${CURRENT_VERSION})`,
-      );
-      console.warn(`👉 Run 'cursorx update' to install the latest version.\n`);
+      if (!dontLog) {
+        console.warn(
+          `\n🚀 New version available: ${latestVersion} (current: ${CURRENT_VERSION})`,
+        );
+        console.warn(
+          `👉 Run 'cursorx update' to install the latest version.\n`,
+        );
+      }
+
+      return latestVersion;
     }
+
+    return null;
   } catch (e) {
     // Silently fail update check
+    return null;
   }
 }
 
 async function performUpdate() {
   const isWindows = process.platform === "win32";
-  console.log(`🚀 Updating CursorScript...`);
+  console.log(`🚀 Checking for Updates...`);
+
+  const hasUpdate = await checkForUpdates();
+
+  if (hasUpdate == null) {
+    console.log(
+      `✅ You are using the latest version of CursorScript ${CURRENT_VERSION}.`,
+    );
+    return;
+  }
 
   const cmd = isWindows
     ? [
@@ -254,15 +272,17 @@ async function performUpdate() {
         "curl -fsSL https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.sh | bash",
       ];
 
-  try {
-    const proc = Bun.spawn(isWindows ? cmd : ["bash", "-c", cmd[0]!], {
-      stdout: "inherit",
-      stderr: "inherit",
-    });
-    await proc.exited;
-  } catch (e) {
-    console.error("❌ Update failed:", e);
-  }
+  console.log("🚀 An update is available for CursorScript!\n");
+  console.log(
+    "Please copy and run the following command in your terminal to update:\n",
+  );
+
+  // \x1b[32m sets the text to green, \x1b[0m resets it back to normal
+  console.log(`\x1b[32m${cmd}\x1b[0m\n`);
+
+  console.log(
+    "👉 Note: Make sure to fully exit this application before running the command so the files can be overwritten.",
+  );
 }
 
 export async function handleCursorXCommand(args: string[]) {

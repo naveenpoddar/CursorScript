@@ -1,0 +1,17 @@
+# Table of contents
+
+* [CursorScript 🚀](README.md)
+* [CursorScript API](api-doc.md)
+* [API Documentation](api/README.md)
+  * [Control Flow & Operators](api/control_flow.md)
+  * [Crypto Library (Crypto) 🔒](api/crypto.md)
+  * [File Library (File) 📁](api/file.md)
+  * [Game Library (Game) 🎮](api/game.md)
+  * [Global Functions](api/global_functions.md)
+  * [JSON Library (Json) 📄](api/json.md)
+  * [Lambda Functions (Anonymous Functions) λ](api/lambdas.md)
+  * [Math Library (Math)](api/math.md)
+  * [Modules 📦](api/modules.md)
+  * [Network Library (Network) 🌐](api/network.md)
+  * [Thread Library (Thread) 🧵](api/thread.md)
+  * [Window Library (Window) 🖼️](api/window.md)

@@ -37,7 +37,11 @@ export function MakePrintable(
   if (value.type === "function") {
     // Make pretty Print e.g: fn add(x, y) { ... }
     const fn = value as FunctionValue;
-    return `fn ${fn.name}(${fn.parameters.join(", ")}) { ... }`;
+    return `${fn.async ? "async " : ""}fn ${fn.name}(${fn.parameters.join(", ")}) { ... }`;
+  }
+
+  if (value.type === "promise") {
+    return `promise { ... }`;
   }
 
   return String((value as any).value).toString();
@@ -51,7 +55,8 @@ export type ValueType =
   | "object"
   | "array"
   | "native-fn"
-  | "function";
+  | "function"
+  | "promise";
 
 export interface RuntimeValue {
   type: ValueType;
@@ -152,4 +157,17 @@ export interface FunctionValue extends RuntimeValue {
   parameters: string[];
   declarationEnv: Environment;
   body: Stmt[];
+  async: boolean;
+}
+
+export interface PromiseValue extends RuntimeValue {
+  type: "promise";
+  promise: Promise<RuntimeValue>;
+}
+
+export function MK_PROMISE(promise: Promise<RuntimeValue>): PromiseValue {
+  return {
+    type: "promise",
+    promise,
+  } as PromiseValue;
 }

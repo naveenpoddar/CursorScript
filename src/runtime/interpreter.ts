@@ -26,6 +26,7 @@ import type {
   LambdaExpr,
   ImportDeclaration,
   ExportDeclaration,
+  AwaitExpr,
 } from "../frontend/ast";
 import type Environment from "./environment";
 import {
@@ -48,9 +49,13 @@ import {
   evaluateMemberExpr,
   evaluateUnaryExpr,
   evaluateLambdaExpr,
+  evaluateAwaitExpr,
 } from "./eval/expressions";
 
-export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
+export async function evaluate(
+  astNode: Stmt,
+  env: Environment,
+): Promise<RuntimeValue> {
   global.lastStmt = astNode;
   try {
     switch (astNode.kind) {
@@ -70,46 +75,55 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
         return evaluateIdentifier(astNode as Identifier, env);
 
       case "MemberExpr":
-        return evaluateMemberExpr(astNode as MemberExpr, env);
+        return await evaluateMemberExpr(astNode as MemberExpr, env);
 
       case "ObjectLiteral":
-        return evalObjectExpr(astNode as ObjectLiteral, env);
+        return await evalObjectExpr(astNode as ObjectLiteral, env);
 
       case "ArrayLiteral":
-        return evaluateArrayLiteral(astNode as ArrayLiteral, env);
+        return await evaluateArrayLiteral(astNode as ArrayLiteral, env);
 
       case "CallExpr":
-        return evaluateCallExpr(astNode as CallExpr, env);
+        return await evaluateCallExpr(astNode as CallExpr, env);
 
       case "AssignmentExpr":
-        return evaluateAssignment(astNode as AssignmentExpr, env);
+        return await evaluateAssignment(astNode as AssignmentExpr, env);
 
       case "BinaryExpr":
-        return evaluateBinaryExpr(astNode as BinaryExpr, env);
+        return await evaluateBinaryExpr(astNode as BinaryExpr, env);
 
       case "UnaryExpr":
-        return evaluateUnaryExpr(astNode as UnaryExpr, env);
+        return await evaluateUnaryExpr(astNode as UnaryExpr, env);
+
+      case "AwaitExpr":
+        return await evaluateAwaitExpr(astNode as AwaitExpr, env);
 
       case "Program":
-        return evaluateProgram(astNode as Program, env);
+        return await evaluateProgram(astNode as Program, env);
 
       case "VarDeclaration":
-        return evaluateVarDeclaration(astNode as VarDeclaration, env);
+        return await evaluateVarDeclaration(astNode as VarDeclaration, env);
 
       case "FunctionDeclaration":
         return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
 
       case "IfStmt":
-        return evaluateIfStmt(astNode as IfStmt, env);
+        return await evaluateIfStmt(astNode as IfStmt, env);
 
       case "WhileStmt":
-        return evaluateWhileStmt(astNode as WhileStmt, env);
+        return await evaluateWhileStmt(astNode as WhileStmt, env);
 
       case "ImportDeclaration":
-        return evaluateImportDeclaration(astNode as ImportDeclaration, env);
+        return await evaluateImportDeclaration(
+          astNode as ImportDeclaration,
+          env,
+        );
 
       case "ExportDeclaration":
-        return evaluateExportDeclaration(astNode as ExportDeclaration, env);
+        return await evaluateExportDeclaration(
+          astNode as ExportDeclaration,
+          env,
+        );
 
       case "LambdaExpr":
         return evaluateLambdaExpr(astNode as LambdaExpr, env);

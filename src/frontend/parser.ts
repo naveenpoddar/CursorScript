@@ -18,6 +18,7 @@ import {
   type LambdaExpr,
   type ImportDeclaration,
   type ExportDeclaration,
+  type AwaitExpr,
 } from "./ast";
 import { tokenise, type Token, TokenType } from "./lexer";
 
@@ -30,6 +31,10 @@ export default class Parser {
 
   private at(): Token {
     return this.tokens[0] as Token;
+  }
+
+  private peek(): Token {
+    return this.tokens[1] as Token;
   }
 
   private eat(): Token {
@@ -67,37 +72,55 @@ export default class Parser {
       case TokenType.Const:
         return this.parse_var_declaration();
 
-      case TokenType.Fn:
-        const fn = this.parse_function_declaration();
+      case TokenType.Fn: {
+        const fn = this.parse_function_declaration(false);
         if (this.at().type === TokenType.Semicolon) this.eat();
         return fn;
+      }
 
-      case TokenType.If:
+      case TokenType.Async: {
+        if (this.peek().type === TokenType.Fn) {
+          const fn = this.parse_function_declaration(true);
+          if (this.at().type === TokenType.Semicolon) this.eat();
+          return fn;
+        }
+        // Fall back to expr (for async lambdas)
+        const expr = this.parse_expr();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return expr;
+      }
+
+      case TokenType.If: {
         const ifStmt = this.parse_if_stmt();
         if (this.at().type === TokenType.Semicolon) this.eat();
         return ifStmt;
+      }
 
-      case TokenType.While:
+      case TokenType.While: {
         const whileStmt = this.parse_while_stmt();
         if (this.at().type === TokenType.Semicolon) this.eat();
         return whileStmt;
+      }
 
-      case TokenType.Import:
+      case TokenType.Import: {
         const importStmt = this.parse_import_declaration();
         if (this.at().type === TokenType.Semicolon) this.eat();
         return importStmt;
+      }
 
-      case TokenType.Export:
+      case TokenType.Export: {
         const exportStmt = this.parse_export_declaration();
         if (this.at().type === TokenType.Semicolon) this.eat();
         return exportStmt;
+      }
 
-      default:
+      default: {
         const expr = this.parse_expr();
         if (this.at().type === TokenType.Semicolon) {
           this.eat();
         }
         return expr;
+      }
     }
   }
 
@@ -159,9 +182,10 @@ export default class Parser {
     } as any;
   }
 
-  private parse_function_declaration(): Stmt {
+  private parse_function_declaration(isAsync: boolean): Stmt {
     const line = this.at().line;
     const column = this.at().column;
+    if (isAsync) this.eat(); // consume async
     this.eat(); // consume fn
 
     const name = this.expect(
@@ -198,6 +222,7 @@ export default class Parser {
       name,
       parameters: params,
       body,
+      async: isAsync,
       line,
       column,
     } as FunctionDeclaration;
@@ -210,10 +235,30 @@ export default class Parser {
     const column = this.at().column;
     const isConst = this.eat().type === TokenType.Const;
 
-    const identifier = this.expect(
-      TokenType.Identifier,
-      "Expected identifier name following let | const keywords",
-    ).value;
+    let identifier = "";
+    let identifiers: string[] | undefined;
+
+    if (this.at().type === TokenType.OpenParen) {
+      this.eat(); // consume (
+      identifiers = [];
+      while (this.notEOF() && this.at().type !== TokenType.CloseParen) {
+        identifiers.push(
+          this.expect(
+            TokenType.Identifier,
+            "Expected identifier in destructuring",
+          ).value,
+        );
+        if (this.at().type === TokenType.Comma) {
+          this.eat();
+        }
+      }
+      this.expect(TokenType.CloseParen, "Expected ')' after destructuring");
+    } else {
+      identifier = this.expect(
+        TokenType.Identifier,
+        "Expected identifier name following let | const keywords",
+      ).value;
+    }
 
     if (this.at().type === TokenType.Semicolon) {
       this.eat();
@@ -224,6 +269,7 @@ export default class Parser {
       return {
         kind: "VarDeclaration",
         identifier,
+        identifiers,
         constant: isConst,
         line,
         column,
@@ -240,6 +286,7 @@ export default class Parser {
     return {
       kind: "VarDeclaration",
       identifier,
+      identifiers,
       constant: isConst,
       value,
       line,
@@ -498,10 +545,22 @@ export default class Parser {
   private parse_unary_expr(): Expr {
     if (
       this.at().type === TokenType.Bang ||
+      this.at().type === TokenType.Await ||
       (this.at().type === TokenType.BinaryOperator && this.at().value === "-")
     ) {
-      const operator = this.eat().value;
+      const token = this.eat();
+      const operator = token.value;
       const argument = this.parse_unary_expr();
+
+      if (token.type === TokenType.Await) {
+        return {
+          kind: "AwaitExpr",
+          argument,
+          line: token.line,
+          column: token.column,
+        } as AwaitExpr;
+      }
+
       return {
         kind: "UnaryExpr",
         operator,
@@ -663,6 +722,7 @@ export default class Parser {
       kind: "LambdaExpr",
       parameters: params,
       body,
+      async: false, // TODO: support async lambdas if needed
       line: this.at().line,
       column: this.at().column,
     } as LambdaExpr;

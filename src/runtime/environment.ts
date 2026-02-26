@@ -58,6 +58,19 @@ export function createGlobalEnv() {
   env.declareVar("time", MK_NATIVE_FN(timeFunc), true);
 
   env.declareVar(
+    "wait",
+    MK_NATIVE_FN((args) => {
+      const ms =
+        args[0] && args[0].type === "number" ? (args[0] as any).value : 1000;
+      const promise = new Promise<RuntimeValue>((resolve) => {
+        setTimeout(() => resolve(MK_NULL()), ms);
+      });
+      return { type: "promise", promise } as any;
+    }),
+    true,
+  );
+
+  env.declareVar(
     "exit",
     MK_NATIVE_FN((args) => {
       const code =
@@ -302,12 +315,14 @@ export default class Environment {
   private constants: Set<string>;
   public exports: Set<string>;
   public currentFile?: string;
+  public isAsyncContext: boolean;
 
-  constructor(parentENV?: Environment) {
+  constructor(parentENV?: Environment, isAsyncContext: boolean = false) {
     this.parent = parentENV;
     this.variables = new Map();
     this.constants = new Set();
     this.exports = new Set();
+    this.isAsyncContext = isAsyncContext || parentENV?.isAsyncContext || false;
   }
 
   public declareVar(

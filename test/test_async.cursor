@@ -1,0 +1,20 @@
+async fn testAsync(val) {
+    print("Starting async task for", val);
+    await wait(500);
+    print("Finished async task for", val);
+    val + "!";
+}
+
+async fn main() {
+    print("Main started");
+    const (res1, err1) = await testAsync("Hello");
+    print("Result 1:", res1, "Error 1:", err1);
+
+    const (res2, err2) = await testAsync("World");
+    print("Result 2:", res2, "Error 2:", err2);
+    print("Main finished");
+}
+
+print("Program starting");
+main();
+print("Program continues at global scope (should not see 'Main finished' yet if await worked correctly in main)");

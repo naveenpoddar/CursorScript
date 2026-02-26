@@ -22,12 +22,19 @@ export type NodeType =
   | "BinaryExpr"
   | "UnaryExpr"
   | "ArrayLiteral"
-  | "LambdaExpr";
+  | "LambdaExpr"
+  | "AwaitExpr";
 
 export interface LambdaExpr extends Expr {
   kind: "LambdaExpr";
   parameters: string[];
   body: Stmt[];
+  async: boolean;
+}
+
+export interface AwaitExpr extends Expr {
+  kind: "AwaitExpr";
+  argument: Expr;
 }
 
 // ...
@@ -57,6 +64,7 @@ export interface Program extends Stmt {
 export interface VarDeclaration extends Stmt {
   kind: "VarDeclaration";
   identifier: string;
+  identifiers?: string[]; // Support for destructuring like (a, b)
   constant: boolean;
   value?: Expr;
 }
@@ -66,6 +74,7 @@ export interface FunctionDeclaration extends Stmt {
   parameters: string[];
   name: string;
   body: Stmt[];
+  async: boolean;
 }
 
 export interface ImportDeclaration extends Stmt {

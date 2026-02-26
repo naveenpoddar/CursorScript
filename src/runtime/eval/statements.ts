@@ -15,6 +15,8 @@ import {
   type FunctionValue,
   type NumberValue,
   type RuntimeValue,
+  MK_ARRAY,
+  type ArrayValue,
 } from "../values";
 
 function isTruthy(val: RuntimeValue): boolean {
@@ -24,21 +26,24 @@ function isTruthy(val: RuntimeValue): boolean {
   return true;
 }
 
-export function evaluateIfStmt(stmt: IfStmt, env: Environment): RuntimeValue {
-  const condition = evaluate(stmt.condition, env);
+export async function evaluateIfStmt(
+  stmt: IfStmt,
+  env: Environment,
+): Promise<RuntimeValue> {
+  const condition = await evaluate(stmt.condition, env);
 
   if (isTruthy(condition)) {
     const scope = new Environment(env);
     let lastEvaluatedValue: RuntimeValue = MK_NULL();
     for (const child of stmt.thenBranch) {
-      lastEvaluatedValue = evaluate(child, scope);
+      lastEvaluatedValue = await evaluate(child, scope);
     }
     return lastEvaluatedValue;
   } else if (stmt.elseBranch) {
     const scope = new Environment(env);
     let lastEvaluatedValue: RuntimeValue = MK_NULL();
     for (const child of stmt.elseBranch) {
-      lastEvaluatedValue = evaluate(child, scope);
+      lastEvaluatedValue = await evaluate(child, scope);
     }
     return lastEvaluatedValue;
   }
@@ -46,40 +51,65 @@ export function evaluateIfStmt(stmt: IfStmt, env: Environment): RuntimeValue {
   return MK_NULL();
 }
 
-export function evaluateWhileStmt(
+export async function evaluateWhileStmt(
   stmt: WhileStmt,
   env: Environment,
-): RuntimeValue {
+): Promise<RuntimeValue> {
   let lastEvaluatedValue: RuntimeValue = MK_NULL();
 
-  while (isTruthy(evaluate(stmt.condition, env))) {
+  while (isTruthy(await evaluate(stmt.condition, env))) {
     const scope = new Environment(env);
     for (const child of stmt.body) {
-      lastEvaluatedValue = evaluate(child, scope);
+      lastEvaluatedValue = await evaluate(child, scope);
     }
   }
 
   return lastEvaluatedValue;
 }
 
-export function evaluateProgram(
+export async function evaluateProgram(
   program: Program,
   env: Environment,
-): RuntimeValue {
+): Promise<RuntimeValue> {
   let lastEvaluatedValue: RuntimeValue = MK_NULL();
 
   for (const child of program.body) {
-    lastEvaluatedValue = evaluate(child, env);
+    lastEvaluatedValue = await evaluate(child, env);
+  }
+
+  // Ensure all background tasks are promised
+  if (
+    (global as any).pendingPromises &&
+    (global as any).pendingPromises.length > 0
+  ) {
+    await Promise.all((global as any).pendingPromises);
   }
 
   return lastEvaluatedValue;
 }
 
-export function evaluateVarDeclaration(
+export async function evaluateVarDeclaration(
   varDecl: VarDeclaration,
   env: Environment,
-): RuntimeValue {
-  const value = varDecl.value ? evaluate(varDecl.value, env) : MK_NULL();
+): Promise<RuntimeValue> {
+  const value = varDecl.value ? await evaluate(varDecl.value, env) : MK_NULL();
+
+  if (varDecl.identifiers) {
+    // Destructuring (a, b) = value
+    if (value.type !== "array") {
+      throw `Cannot destructure non-array value. Got ${value.type}`;
+    }
+    const arr = value as ArrayValue;
+    for (let i = 0; i < varDecl.identifiers.length; i++) {
+      env.declareVar(
+        varDecl.identifiers[i]!,
+        arr.elements[i] || MK_NULL(),
+        varDecl.constant,
+      );
+    }
+    return value;
+  }
+
   return env.declareVar(varDecl.identifier, value, varDecl.constant);
 }
 
@@ -92,17 +122,18 @@ export function evaluateFunctionDeclaration(
     name: fnDecl.name,
     parameters: fnDecl.parameters,
     body: fnDecl.body,
+    async: fnDecl.async,
     declarationEnv: env,
   } as FunctionValue;
 
   return env.declareVar(fnDecl.name, fn, true);
 }
 
-export function evaluateImportDeclaration(
+export async function evaluateImportDeclaration(
   stmt: ImportDeclaration,
   env: Environment,
-): RuntimeValue {
-  const exports = global.loadModule(stmt.source);
+): Promise<RuntimeValue> {
+  const exports = await global.loadModule(stmt.source);
 
   for (const name of stmt.specifiers) {
     if (!exports.has(name)) {
@@ -114,17 +145,17 @@ export function evaluateImportDeclaration(
   return MK_NULL();
 }
 
-export function evaluateExportDeclaration(
+export async function evaluateExportDeclaration(
   stmt: ExportDeclaration,
   env: Environment,
-): RuntimeValue {
+): Promise<RuntimeValue> {
   const decl = stmt.declaration;
   let name = "";
 
   if (decl.kind === "VarDeclaration") {
     const varDecl = decl as VarDeclaration;
     name = varDecl.identifier;
-    evaluateVarDeclaration(varDecl, env);
+    await evaluateVarDeclaration(varDecl, env);
   } else if (decl.kind === "FunctionDeclaration") {
     const fnDecl = decl as FunctionDeclaration;
     name = fnDecl.name;

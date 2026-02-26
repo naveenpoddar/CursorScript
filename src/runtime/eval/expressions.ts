@@ -8,6 +8,7 @@ import type {
   ObjectLiteral,
   UnaryExpr,
   LambdaExpr,
+  AwaitExpr,
 } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
@@ -23,6 +24,8 @@ import {
   type ObjectValue,
   type RuntimeValue,
   type StringValue,
+  MK_PROMISE,
+  type PromiseValue,
 } from "../values";
 
 function isTruthy(val: RuntimeValue): boolean {
@@ -32,11 +35,11 @@ function isTruthy(val: RuntimeValue): boolean {
   return true;
 }
 
-export function evaluateUnaryExpr(
+export async function evaluateUnaryExpr(
   unary: UnaryExpr,
   env: Environment,
-): RuntimeValue {
-  const arg = evaluate(unary.argument, env);
+): Promise<RuntimeValue> {
+  const arg = await evaluate(unary.argument, env);
 
   if (unary.operator === "!") {
     return { type: "boolean", value: !isTruthy(arg) } as any;
@@ -85,23 +88,23 @@ function eval_numeric_binary_expr(
   } as NumberValue;
 }
 
-export function evaluateBinaryExpr(
+export async function evaluateBinaryExpr(
   binop: BinaryExpr,
   env: Environment,
-): RuntimeValue {
-  const LHS = evaluate(binop.left, env);
+): Promise<RuntimeValue> {
+  const LHS = await evaluate(binop.left, env);
 
   // Short-circuiting for logical operators
   if (binop.operator === "&&") {
     if (!isTruthy(LHS)) return LHS;
-    return evaluate(binop.right, env);
+    return await evaluate(binop.right, env);
   }
   if (binop.operator === "||") {
     if (isTruthy(LHS)) return LHS;
-    return evaluate(binop.right, env);
+    return await evaluate(binop.right, env);
   }
 
-  const RHS = evaluate(binop.right, env);
+  const RHS = await evaluate(binop.right, env);
 
   // 1. Numeric Binary Expressions
   if (LHS.type == "number" && RHS.type == "number") {
@@ -163,24 +166,27 @@ export function evaluateIdentifier(
   return env.lookupVar(ident.symbol);
 }
 
-export function evaluateArrayLiteral(
+export async function evaluateArrayLiteral(
   arr: ArrayLiteral,
   env: Environment,
-): RuntimeValue {
-  const elements = arr.elements.map((el) => evaluate(el, env));
+): Promise<RuntimeValue> {
+  const elements = [];
+  for (const el of arr.elements) {
+    elements.push(await evaluate(el, env));
+  }
   return MK_ARRAY(elements);
 }
 
-export function evaluateMemberExpr(
+export async function evaluateMemberExpr(
   member: MemberExpr,
   env: Environment,
-): RuntimeValue {
-  const object = evaluate(member.object, env);
+): Promise<RuntimeValue> {
+  const object = await evaluate(member.object, env);
 
   if (object.type === "object") {
     const obj = object as ObjectValue;
     const property = member.computed
-      ? evaluate(member.property, env)
+      ? await evaluate(member.property, env)
       : ({
           type: "string",
           value: (member.property as Identifier).symbol,
@@ -198,7 +204,7 @@ export function evaluateMemberExpr(
       throw `Array does not have property: ${prop}`;
     }
 
-    const index = evaluate(member.property, env);
+    const index = await evaluate(member.property, env);
     if (index.type !== "number") {
       throw `Array index must be a number, got ${index.type}`;
     }
@@ -210,10 +216,10 @@ export function evaluateMemberExpr(
   throw `Cannot use member expression on type: ${object.type}`;
 }
 
-export function evalObjectExpr(
+export async function evalObjectExpr(
   obj: ObjectLiteral,
   env: Environment,
-): RuntimeValue {
+): Promise<RuntimeValue> {
   const object: ObjectValue = {
     type: "object",
     properties: new Map<string, RuntimeValue>(),
@@ -221,7 +227,7 @@ export function evalObjectExpr(
 
   for (const { key, value } of obj.properties) {
     const runtimeValue =
-      value == null ? env.lookupVar(key) : evaluate(value, env);
+      value == null ? env.lookupVar(key) : await evaluate(value, env);
 
     object.properties.set(key, runtimeValue);
   }
@@ -229,63 +235,79 @@ export function evalObjectExpr(
   return object;
 }
 
-export function evaluateCallExpr(
+export async function evaluateCallExpr(
   expr: CallExpr,
   env: Environment,
-): RuntimeValue {
-  const args = expr.args.map((arg) => evaluate(arg, env));
+): Promise<RuntimeValue> {
+  const args = [];
+  for (const arg of expr.args) {
+    args.push(await evaluate(arg, env));
+  }
 
-  const caller = evaluate(expr.caller, env);
+  const caller = await evaluate(expr.caller, env);
 
   if (caller.type === "native-fn") {
+    // Native functions might be async or sync
     return (caller as NativeFnValue).call(args, env);
   }
 
   if (caller.type === "function") {
     const func = caller as FunctionValue;
-    const scope = new Environment(func.declarationEnv);
 
-    // Create the variables for the parameters
-    for (let i = 0; i < func.parameters.length; i++) {
-      const varname = func.parameters[i]!;
+    const executeFunction = async () => {
+      const scope = new Environment(func.declarationEnv, func.async);
 
-      scope.declareVar(varname, args[i] ?? MK_NULL(), false);
+      // Create the variables for the parameters
+      for (let i = 0; i < func.parameters.length; i++) {
+        const varname = func.parameters[i]!;
+        scope.declareVar(varname, args[i] ?? MK_NULL(), false);
+      }
+
+      let results: RuntimeValue = MK_NULL();
+      for (const stmt of func.body) {
+        results = await evaluate(stmt, scope);
+      }
+      return results;
+    };
+
+    if (func.async) {
+      const promise = executeFunction();
+      // Track pending promises to ensure program waits for them
+      if (!(global as any).pendingPromises)
+        (global as any).pendingPromises = [];
+      (global as any).pendingPromises.push(promise);
+      return MK_PROMISE(promise);
+    } else {
+      return await executeFunction();
     }
-
-    let results: RuntimeValue = MK_NULL();
-    for (const stmt of func.body) {
-      results = evaluate(stmt, scope);
-    }
-
-    return results;
   }
 
   throw `Cannot call value that is not a function: ${JSON.stringify(caller)}`;
 }
 
-export function evaluateAssignment(
+export async function evaluateAssignment(
   node: AssignmentExpr,
   env: Environment,
-): RuntimeValue {
+): Promise<RuntimeValue> {
   if (node.assignee.kind === "Identifier") {
     const varname = (node.assignee as Identifier).symbol;
-    return env.assignVar(varname, evaluate(node.value, env));
+    return env.assignVar(varname, await evaluate(node.value, env));
   }
 
   if (node.assignee.kind === "MemberExpr") {
     const member = node.assignee as MemberExpr;
-    const object = evaluate(member.object, env);
+    const object = await evaluate(member.object, env);
 
     if (object.type === "object") {
       const obj = object as ObjectValue;
       const property = member.computed
-        ? evaluate(member.property, env)
+        ? await evaluate(member.property, env)
         : ({
             type: "string",
             value: (member.property as Identifier).symbol,
           } as any);
 
-      const val = evaluate(node.value, env);
+      const val = await evaluate(node.value, env);
       obj.properties.set((property as any).value, val);
       return val;
     }
@@ -296,12 +318,12 @@ export function evaluateAssignment(
         throw "Cannot assign to a non-computed property of an array.";
       }
 
-      const index = evaluate(member.property, env);
+      const index = await evaluate(member.property, env);
       if (index.type !== "number") {
         throw `Array index must be a number, got ${index.type}`;
       }
 
-      const val = evaluate(node.value, env);
+      const val = await evaluate(node.value, env);
       arr.elements[(index as NumberValue).value] = val;
       return val;
     }
@@ -321,8 +343,35 @@ export function evaluateLambdaExpr(
     name: "anonymous",
     parameters: lambda.parameters,
     body: lambda.body,
+    async: lambda.async,
     declarationEnv: env,
   };
 
   return func;
+}
+
+export async function evaluateAwaitExpr(
+  node: AwaitExpr,
+  env: Environment,
+): Promise<RuntimeValue> {
+  if (!env.isAsyncContext) {
+    throw "await can only be used inside an async function.";
+  }
+  const val = await evaluate(node.argument, env);
+
+  if (val.type !== "promise") {
+    // If it's not a promise, we return it in a success tuple (val, null)
+    return MK_ARRAY([val, MK_NULL()]);
+  }
+
+  const promiseVal = val as PromiseValue;
+  try {
+    const result = await promiseVal.promise;
+    return MK_ARRAY([result, MK_NULL()]);
+  } catch (error) {
+    return MK_ARRAY([
+      MK_NULL(),
+      { type: "string", value: String(error) } as any,
+    ]);
+  }
 }

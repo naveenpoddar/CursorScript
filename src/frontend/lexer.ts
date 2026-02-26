@@ -45,6 +45,9 @@ export enum TokenType {
   Export, // export
   From, // from
 
+  Async, // async
+  Await, // await
+
   EOF, // End of File
 }
 
@@ -61,6 +64,8 @@ const KEYWORDS: Record<string, TokenType> = {
   import: TokenType.Import,
   export: TokenType.Export,
   from: TokenType.From,
+  async: TokenType.Async,
+  await: TokenType.Await,
 };
 
 /**

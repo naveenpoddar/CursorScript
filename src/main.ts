@@ -8,8 +8,8 @@ main();
 
 declare global {
   var lastStmt: Stmt | null;
-  var evaluate: (astNode: Stmt, env: any) => any;
-  var loadModule: (path: string) => Map<string, any>;
+  var evaluate: (astNode: Stmt, env: any) => Promise<any>;
+  var loadModule: (path: string) => Promise<Map<string, any>>;
   var currentEnv: Environment | null;
 }
 
@@ -51,7 +51,7 @@ async function main() {
 import { readFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname, basename, resolve } from "path";
 
-global.loadModule = (path: string) => {
+global.loadModule = async (path: string) => {
   let relativePath = path;
   const isRelative = path.startsWith("./") || path.startsWith("../");
 
@@ -108,7 +108,8 @@ global.loadModule = (path: string) => {
   // Switch global env context for the duration of evaluation
   const oldEnv = (global as any).currentEnv;
   (global as any).currentEnv = env;
-  evaluate(program, env);
+  (global as any).pendingPromises = [];
+  await evaluate(program, env);
   (global as any).currentEnv = oldEnv;
 
   const exports = env.getExportedValues();
@@ -121,6 +122,7 @@ async function run(filePath: string = "./test/Main.Cursor") {
   const env = createGlobalEnv();
   env.currentFile = resolve(filePath);
   global.currentEnv = env;
+  (global as any).pendingPromises = [];
 
   try {
     const input = await Bun.file(filePath).text();
@@ -141,7 +143,7 @@ async function run(filePath: string = "./test/Main.Cursor") {
       JSON.stringify(program, null, 2),
     );
 
-    const result = evaluate(program, env);
+    const result = await evaluate(program, env);
     await Bun.write(
       `${newFilePath}.result.json`,
       JSON.stringify(result, null, 2),
@@ -173,7 +175,7 @@ async function repl() {
     try {
       const program = parser.produceAST(input, "<repl>");
 
-      console.log(MakePrintable(evaluate(program, env)));
+      console.log(MakePrintable(await evaluate(program, env)));
     } catch (e) {
       console.error("[Error]", e);
     }

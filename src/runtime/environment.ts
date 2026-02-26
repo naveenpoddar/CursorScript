@@ -198,7 +198,7 @@ export function createGlobalEnv() {
         return strValue !== null ? String(strValue) : "";
       });
 
-      return MK_STRING(strings.join(" "));
+      return MK_STRING(strings.join());
     }),
     true,
   );

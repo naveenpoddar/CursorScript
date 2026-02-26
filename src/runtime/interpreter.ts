@@ -52,74 +52,86 @@ import {
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeValue {
   global.lastStmt = astNode;
-  switch (astNode.kind) {
-    case "NumericLiteral":
-      return {
-        type: "number",
-        value: (astNode as NumericLiteral).value,
-      } as NumberValue;
+  try {
+    switch (astNode.kind) {
+      case "NumericLiteral":
+        return {
+          type: "number",
+          value: (astNode as NumericLiteral).value,
+        } as NumberValue;
 
-    case "StringLiteral":
-      return {
-        type: "string",
-        value: (astNode as StringLiteral).value,
-      } as StringValue;
+      case "StringLiteral":
+        return {
+          type: "string",
+          value: (astNode as StringLiteral).value,
+        } as StringValue;
 
-    case "Identifier":
-      return evaluateIdentifier(astNode as Identifier, env);
+      case "Identifier":
+        return evaluateIdentifier(astNode as Identifier, env);
 
-    case "MemberExpr":
-      return evaluateMemberExpr(astNode as MemberExpr, env);
+      case "MemberExpr":
+        return evaluateMemberExpr(astNode as MemberExpr, env);
 
-    case "ObjectLiteral":
-      return evalObjectExpr(astNode as ObjectLiteral, env);
+      case "ObjectLiteral":
+        return evalObjectExpr(astNode as ObjectLiteral, env);
 
-    case "ArrayLiteral":
-      return evaluateArrayLiteral(astNode as ArrayLiteral, env);
+      case "ArrayLiteral":
+        return evaluateArrayLiteral(astNode as ArrayLiteral, env);
 
-    case "CallExpr":
-      return evaluateCallExpr(astNode as CallExpr, env);
+      case "CallExpr":
+        return evaluateCallExpr(astNode as CallExpr, env);
 
-    case "AssignmentExpr":
-      return evaluateAssignment(astNode as AssignmentExpr, env);
+      case "AssignmentExpr":
+        return evaluateAssignment(astNode as AssignmentExpr, env);
 
-    case "BinaryExpr":
-      return evaluateBinaryExpr(astNode as BinaryExpr, env);
+      case "BinaryExpr":
+        return evaluateBinaryExpr(astNode as BinaryExpr, env);
 
-    case "UnaryExpr":
-      return evaluateUnaryExpr(astNode as UnaryExpr, env);
+      case "UnaryExpr":
+        return evaluateUnaryExpr(astNode as UnaryExpr, env);
 
-    case "Program":
-      return evaluateProgram(astNode as Program, env);
+      case "Program":
+        return evaluateProgram(astNode as Program, env);
 
-    case "VarDeclaration":
-      return evaluateVarDeclaration(astNode as VarDeclaration, env);
+      case "VarDeclaration":
+        return evaluateVarDeclaration(astNode as VarDeclaration, env);
 
-    case "FunctionDeclaration":
-      return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
+      case "FunctionDeclaration":
+        return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
 
-    case "IfStmt":
-      return evaluateIfStmt(astNode as IfStmt, env);
+      case "IfStmt":
+        return evaluateIfStmt(astNode as IfStmt, env);
 
-    case "WhileStmt":
-      return evaluateWhileStmt(astNode as WhileStmt, env);
+      case "WhileStmt":
+        return evaluateWhileStmt(astNode as WhileStmt, env);
 
-    case "ImportDeclaration":
-      return evaluateImportDeclaration(astNode as ImportDeclaration, env);
+      case "ImportDeclaration":
+        return evaluateImportDeclaration(astNode as ImportDeclaration, env);
 
-    case "ExportDeclaration":
-      return evaluateExportDeclaration(astNode as ExportDeclaration, env);
+      case "ExportDeclaration":
+        return evaluateExportDeclaration(astNode as ExportDeclaration, env);
 
-    case "LambdaExpr":
-      return evaluateLambdaExpr(astNode as LambdaExpr, env);
+      case "LambdaExpr":
+        return evaluateLambdaExpr(astNode as LambdaExpr, env);
 
-    default:
-      console.error(
-        "This AST Node has not yet been setup for interpretation",
-        astNode,
-        astNode.line,
-        astNode.column,
-      );
-      process.exit(0);
+      default:
+        console.error(
+          "This AST Node has not yet been setup for interpretation",
+          astNode,
+          astNode.line,
+          astNode.column,
+        );
+        process.exit(0);
+    }
+  } catch (e: any) {
+    if (e && e.hasLineInfo) throw e;
+
+    // Convert to standard error with line numbers
+    const errorMsg = e instanceof Error ? e.message : String(e);
+    const err = new Error(
+      `${errorMsg} at line ${astNode.line ?? 0}, column ${astNode.column ?? 0}`,
+    );
+    (err as any).hasLineInfo = true;
+    throw err;
   }
 }

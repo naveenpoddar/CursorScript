@@ -1,43 +1,37 @@
 # Global Functions
 
-## Functions Index
+These functions are built into the global scope of CursorScript and are available everywhere.
 
-- [print](#printargs) | [printError](#printerrorargs) | [len](#lenval) | [typeof](#typeofval) | [wait](#waitms)
+## Console & Output
 
-These functions are built-in and available in every CursorScript program.
+- `print(args...)` - Prints values to the standard output.
+- `printError(args...)` - Prints values to the error output (usually in red).
+- `clear()` - Clears the console screen.
 
-## Output
+## Math & Random
 
-### `print(args...)`
+- `rand(min, max)` - Returns a random integer between `min` and `max` (inclusive).
+- `time()` - Returns the current system time in milliseconds.
 
-Prints values to the console, separated by spaces.
+## Data Structures
 
-- **Example**: `print("Health:", player.hp);`
+- `len(val)` - Returns the length of a string or array.
+- `push(arr, value)` - Appends a value to the end of an array.
+- `pop(arr)` - Removes and returns the last value of an array.
+- `shift(arr)` - Removes and returns the first value of an array.
+- `unshift(arr, value)` - Prepends a value to the start of an array.
 
-### `printError(args...)`
+## Type Conversion & Info
 
-Prints values to the console with error formatting (red text).
+- `str(val)` - Converts any value to a string string.
+- `typeof(val)` - Returns the type of the value as a string (e.g., "number", "object", "array", "function", "promise").
+- `concat(args...)` - Joins multiple values into a single string separated by spaces.
 
----
+## Asynchronous
 
-## Utility Functions
+- `wait(ms)` - Returns a promise that resolves after `ms` milliseconds. Must be used with `await`. (Alias: `sleep(ms)`)
 
-### `len(val)`
+## System
 
-Returns the length of a string or array.
-
-- **Parameters**: `val` (string | array).
-- **Returns**: `number`.
-
-### `typeof(val)`
-
-Returns the internal type name of a value.
-
-- **Returns**: "number", "string", "array", "object", "function", "promise", "null".
-
-### `wait(ms)`
-
-Returns a promise that resolves after the specified time. **Must be awaited.**
-
-- **Parameters**: `ms` (number).
-- **Example**: `await wait(2000); // Wait 2 seconds`
+- `exit()` - Terminates the program immediately.
+- `help()` - Prints basic language help and version info.

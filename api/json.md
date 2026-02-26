@@ -1,15 +1,8 @@
 # JSON Library (`Json`) 📄
 
-## Methods Index
-
-- [serialize](#jsonserializevalue) | [deserialize](#jsondeserializejsonstring)
+The `Json` library provides utilities for parsing and stringifying serialized data.
 
 ## Methods
 
-### `Json.serialize(value)`
-
-- **Example**: `let json = Json.serialize({ score: 100 });`
-
-### `Json.deserialize(jsonString)`
-
-- **Example**: `let obj = Json.deserialize(json);`
+- `Json.serialize(value)` - Converts a CursorScript object, array, or primitive into a formatted JSON string.
+- `Json.deserialize(jsonString)` - Parses a JSON string back into native objects and arrays.

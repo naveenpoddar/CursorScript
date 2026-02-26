@@ -1,60 +1,44 @@
 # Thread Library (`Thread`) 🧵
 
-## Methods Index
-
-- [spawn](#threadspawnpath-options) | [spawnSmol](#threadspawnsmolpath) | [sleep](#threadsleepms) | [terminateAll](#threadterminateall) | [list](#threadlist)
-- [send](#workersenddata) | [onMessage](#workeronmessagecallback) | [onError](#workeronerrorcallback) | [isAlive](#workerisalive) | [getStatus](#workergetstatus) | [terminate](#workerterminate) | [getInfo](#workergetinfo)
+The `Thread` library provides high-level concurrent execution using Bun.js Workers. It allows you to run heavy logic or background tasks without blocking the main thread.
 
 ## Methods
 
-### `Thread.spawn(path, [options])`
-
-- **Example**: `let worker = Thread.spawn("./worker.cursor", { smol: true });`
-
-### `Thread.spawnSmol(path)`
-
-- **Example**: `let worker = Thread.spawnSmol("./tiny.cursor");`
-
-### `Thread.sleep(ms)`
-
-- **Example**: `Thread.sleep(1000);`
-
-### `Thread.terminateAll()`
-
-- **Example**: `Thread.terminateAll();`
-
-### `Thread.list()`
-
-- **Example**: `let threads = Thread.list();`
-
----
+- `Thread.spawn(path, [options])` - Spawns a new background thread running the specified script. Options can be `{ smol: boolean, name: string }` or just a boolean for `smol` mode.
+- `Thread.spawnSmol(path)` - Convenience method to spawn a thread in "smol" mode (reduced memory usage).
+- `Thread.list()` - Returns an array of information for all active threads.
+- `Thread.sleep(ms)` - Synchronously pauses the current thread for the specified duration (useful in workers).
+- `Thread.terminateAll()` - Forcefully closes all active background threads.
 
 ## Thread Object Methods
 
-### `worker.send(data)`
+When you spawn a thread, it returns a Thread object with:
 
-- **Example**: `worker.send({ task: "compute" });`
+- `id` - The numeric unique ID of the thread.
+- `name` - The name of the thread.
+- `status` - Current state ("running", "finished", "error", "terminated").
+- `send(data)` - Sends data to the thread.
+- `onMessage(callback)` - Registers a callback `(data) -> { ... }` that triggers when the thread sends a reply.
+- `onError(callback)` - Registers a callback triggered if the thread crashes.
+- `terminate()` - Forcefully closes this specific thread.
+- `isAlive()` - Returns `true` if the thread is currently running.
 
-### `worker.onMessage(callback)`
+## Global Worker Functions
 
-- **Example**: `worker.onMessage((msg) -> print("Got:", msg));`
+Inside a background thread, the following global functions are available:
 
-### `worker.onError(callback)`
+- `send(data)` - Sends data back to the main thread.
+- `onMessage(callback)` - Listens for data sent from the main thread.
+- `id` - The ID of the current thread.
 
-- **Example**: `worker.onError((err) -> print("Error:", err));`
+## Example
 
-### `worker.isAlive()`
+```cursor
+let worker = Thread.spawn("./logic.cursor", { smol: true })
 
-- **Example**: `if (worker.isAlive()) { /* ... */ }`
+worker.onMessage((result) -> {
+    print("Background Result:", result)
+})
 
-### `worker.getStatus()`
-
-- **Example**: `let s = worker.getStatus();`
-
-### `worker.terminate()`
-
-- **Example**: `worker.terminate();`
-
-### `worker.getInfo()`
-
-- **Example**: `let info = worker.getInfo();`
+worker.send("Start Task")
+```

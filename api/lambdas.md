@@ -1,38 +1,39 @@
-# Lambda Functions ƛ
+# Lambda Functions (Anonymous Functions) λ
 
-Lambdas (or Arrow Functions) allow you to write anonymous functions concisely.
+Lambdas are values that represent functions. They are defined using the `->` (arrow) operator.
 
-## Basic Syntax
+## Syntax
 
-`(parameters) -> expression`
+- `(a, b) -> expression` (Single expression return)
+- `(a) -> { ... }` (Multi-statement block)
+- `async (a, b) -> { ... }` (Asynchronous lambda)
+
+## Examples
+
+### Basic Lambda
 
 ```cursor
-let double = (n) -> n * 2;
-print(double(5)); // 10
+let add = (a, b) -> a + b
+let result = add(5, 10)
 ```
 
----
-
-## Block Body Lambdas
-
-If you need multi-line logic, use curly braces. You must use an explicit `return` if you want to return a value (defaults to `null` otherwise).
+### Passing to Functions
 
 ```cursor
-let greet = (name) -> {
-    print("Hello", name);
-    return true;
-};
+fn runCallback(cb) {
+    cb()
+}
+
+runCallback(() -> {
+    print("Callback executed!")
+})
 ```
 
----
-
-## Async Lambdas
-
-You can create asynchronous lambdas by adding the `async` prefix.
+### Async Lambda
 
 ```cursor
-let fetchData = async (url) -> {
-    const (res, err) = await Network.get(url);
-    return res;
-};
+let fetchData = async () -> {
+    const (data, err) = await Network.get("https://api.example.com");
+    return data;
+}
 ```

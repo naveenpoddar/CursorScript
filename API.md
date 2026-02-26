@@ -1,8 +1,28 @@
 # CursorScript API Documentation 📖
 
-Welcome to the CursorScript API documentation. This document covers the built-in libraries and global functions available in the language.
+Welcome to the CursorScript API documentation. This index provides links to detailed documentation for each library and core language feature.
 
-## Global Functions
+## Core Language Features
+
+- [Global Functions](./docs/GLOBAL_FUNCTIONS.md)
+- [Modules & Imports](./docs/MODULES.md)
+- [Lambda Functions](./docs/LAMBDAS.md)
+- [Control Flow & Operators](./docs/CONTROL_FLOW.md)
+
+## Built-in Libraries
+
+- [Math Library](./docs/MATH.md) - Mathematical constants and functions.
+- [Game Library](./docs/GAME.md) - Physics, collisions, and gameplay utilities.
+- [Window Library](./docs/WINDOW.md) - Native windowing and 2D drawing.
+- [Network Library](./docs/NETWORK.md) - Asynchronous HTTP requests.
+- [Thread Library](./docs/THREAD.md) - Multi-threading and background tasks.
+- [Crypto Library](./docs/CRYPTO.md) - Hashing, encryption, and UUIDs.
+- [JSON Library](./docs/JSON.md) - Serializing and deserializing data.
+- [File Library](./docs/FILE.md) - Filesystem read/write operations.
+
+---
+
+## Global Functions Quick Reference
 
 | Function          | Description                                               | Example                              |
 | :---------------- | :-------------------------------------------------------- | :----------------------------------- |
@@ -21,305 +41,4 @@ Welcome to the CursorScript API documentation. This document covers the built-in
 | `exit()`          | Exits the program with code 1.                            | `exit();`                            |
 | `clear()`         | Clears the console.                                       | `clear();`                           |
 | `help()`          | Prints help information to the console.                   | `help();`                            |
-
----
-
-## Math Library (`Math`)
-
-The `Math` library provides standard mathematical constants and functions.
-
-### Constants
-
-- `Math.PI` - 3.14159...
-- `Math.E` - 2.71828...
-- `Math.TAU` - 2 \* PI
-- `Math.PHI` - 1.618... (Golden Ratio)
-- `Math.SQRT2` - Square root of 2
-
-### Functions
-
-- `Math.abs(n)` - Absolute value.
-- `Math.floor(n)`, `Math.ceil(n)`, `Math.round(n)` - Rounding.
-- `Math.pow(base, exp)`, `Math.sqrt(n)`, `Math.cbrt(n)` - Powers and roots.
-- `Math.sin(rad)`, `Math.cos(rad)`, `Math.tan(rad)` - Trigonometry (Radians).
-- `Math.sinDeg(deg)`, `Math.cosDeg(deg)`, `Math.tanDeg(deg)` - Trigonometry (Degrees).
-- `Math.clamp(n, min, max)` - Clamps a value.
-- `Math.lerp(a, b, t)` - Linear interpolation.
-- `Math.randomInt(min, max)` - Random integer.
-
----
-
-## Game Library (`Game`) 🎮
-
-The `Game` library provides essential utilities for game development, physics, and gameplay logic.
-
-### Collision Detection
-
-- `Game.intersectRect(x1, y1, w1, h1, x2, y2, w2, h2)` - Returns `true` if two rectangles overlap.
-- `Game.pointInRect(px, py, rx, ry, rw, rh)` - Returns `true` if a point is inside a rectangle.
-
-### Movement & Math
-
-- `Game.moveTowards(current, target, maxDelta)` - Moves `current` towards `target` without overshooting.
-- `Game.lerp(a, b, t)` - Linearly interpolates between `a` and `b`.
-- `Game.smoothstep(edge0, edge1, x)` - Smooth interpolation between 0 and 1.
-- `Game.angleTo(x1, y1, x2, y2)` - Returns the angle (radians) from point 1 to point 2.
-- `Game.deltaAngle(a, b)` - Shortest distance between two angles (radians).
-
-### Gameplay Utilities
-
-- `Game.chance(p)` - Returns `true` with probability `p` (0.0 to 1.0).
-- `Game.shake(mag)` - Returns a random value between `-mag` and `+mag`.
-- `Game.choose(args...)` - Returns a random element from the provided arguments.
-- `Game.deadzone(val, threshold)` - Returns 0 if `abs(val) < threshold`.
-- `Game.repeat(t, length)` - Loops `t` so it is never larger than `length` and never smaller than 0.
-- `Game.pingPong(t, length)` - Returns a value that oscillates between 0 and `length`.
-
-### Conversion
-
-- `Game.degToRad(deg)` - Converts degrees to radians.
-- `Game.radToDeg(rad)` - Converts radians to degrees.
-
----
-
-## Window Library (`Window`) 🖼️
-
-The `Window` library provides native windowing and 2D drawing capabilities using `skia-canvas`.
-
-### Window Management
-
-- `Window.create(width, height, title)` - Opens a new native window.
-- `Window.onUpdate(callback)` - Registers a function to be called every frame for drawing/logic.
-- `Window.close()` - Closes the window.
-
-### Drawing Commands
-
-- `Window.clear(color)` - Fills the entire window with a color (e.g., "black", "#ff0000").
-- `Window.setColor(color)` - Sets the current fill and stroke color.
-- `Window.drawRect(x, y, w, h)` - Draws a filled rectangle.
-- `Window.strokeRect(x, y, w, h)` - Draws a rectangle outline.
-- `Window.drawCircle(x, y, r)` - Draws a filled circle.
-- Window.drawText(text, x, y, size) - Draws text at the specified position.
-
-### Input Handling
-
-- `Window.getKeyDown(key)` - Returns `true` if a specific key is held down (e.g. "ArrowUp", " ").
-- `Window.getMouseX()`, `Window.getMouseY()` - Returns current mouse coordinates.
-- `Window.getMouseButton()` - Returns `true` if mouse is clicked.
-
----
-
-## Network Library (`Network`) 🌐
-
-The `Network` library provides methods for making HTTP requests. It supports both synchronous-style returns (returning a result object) and asynchronous callbacks using lambda functions.
-
-### Request Methods
-
-- `Network.get(url, [options|callback])` - Performs a GET request.
-- `Network.post(url, body, [options|callback])` - Performs a POST request.
-- `Network.put(url, body, [options|callback])` - Performs a PUT request.
-- `Network.delete(url, [options|callback])` - Performs a DELETE request.
-- `Network.patch(url, body, [options|callback])` - Performs a PATCH request.
-- `Network.head(url, [options])` - Performs a HEAD request.
-
-### Header Management
-
-- `Network.AddHeader(key, value)` - Adds a global header for all subsequent requests.
-- `Network.SetHeaders(obj)` - Sets multiple global headers from an object.
-- `Network.ClearHeaders()` - Clears all global headers.
-
-### Result Structure
-
-Requests return or pass to callbacks an object with:
-
-- `data` - The parsed response body (JSON if `application/json`, otherwise string).
-- `error` - Error message string if failed, otherwise `null`.
-- `ok` - Boolean indicating success.
-- `status` - HTTP status code.
-
-### Example with Callback
-
-```cursor
-Network.get("https://api.example.com", (data, error) -> {
-    if (error) {
-        printError("Failed!", error)
-    } else {
-        print("Response:", data)
-    }
-})
-```
-
----
-
-## Thread Library (`Thread`) 🧵
-
-The `Thread` library provides high-level concurrent execution using Bun.js Workers. It allows you to run heavy logic or background tasks without blocking the main thread.
-
-### Methods
-
-- `Thread.spawn(path, [options])` - Spawns a new background thread running the specified script. Options can be `{ smol: boolean, name: string }` or just a boolean for `smol` mode.
-- `Thread.spawnSmol(path)` - Convenience method to spawn a thread in "smol" mode (reduced memory usage).
-- `Thread.list()` - Returns an array of information for all active threads.
-- `Thread.sleep(ms)` - Synchronously pauses the current thread for the specified duration (useful in workers).
-- `Thread.terminateAll()` - Forcefully closes all active background threads.
-
-### Thread Object Methods
-
-When you spawn a thread, it returns a Thread object with:
-
-- `id` - The numeric unique ID of the thread.
-- `name` - The name of the thread.
-- `status` - Current state ("running", "finished", "error", "terminated").
-- `send(data)` - Sends data to the thread.
-- `onMessage(callback)` - Registers a callback `(data) -> { ... }` that triggers when the thread sends a reply.
-- `onError(callback)` - Registers a callback triggered if the thread crashes.
-- `terminate()` - Forcefully closes this specific thread.
-- `isAlive()` - Returns `true` if the thread is currently running.
-
-### Global Worker Functions
-
-Inside a background thread, the following global functions are available:
-
-- `send(data)` - Sends data back to the main thread.
-- `onMessage(callback)` - Listens for data sent from the main thread.
-- `id` - The ID of the current thread.
-
-### Example
-
-```cursor
-let worker = Thread.spawn("./logic.cursor", { smol: true })
-
-worker.onMessage((result) -> {
-    print("Background Result:", result)
-})
-
-worker.send("Start Task")
-```
-
----
-
-## Crypto Library (`Crypto`) 🔒
-
-The `Crypto` library provides utility functions for cryptography and unique ID generation.
-
-### ID Generation
-
-- `Crypto.uuid()` - Returns a standard random UUID v4 string.
-- `Crypto.uuid7()` - Returns a time-ordered UUID v7 string.
-
-### Hashing & Verification
-
-- `Crypto.hash(data, callback)` - Asynchronously hashes a string using bcrypt. The callback receives `(hash, error)`.
-- `Crypto.verifyHash(data, hash, callback)` - Asynchronously verifies a string against a hash. The callback receives `(isMatch, error)`.
-- `Crypto.sha256(data)` - Synchronously returns the SHA-256 hash of the string, formatted in hex.
-- `Crypto.hmacSha256(data, key)` - Synchronously returns the HMAC-SHA-256 hash for the given data and secret key, formatted in hex.
-
-### Base64 Encoding
-
-- `Crypto.base64Encode(data)` - Encodes a string or array of bytes into a Base64 string.
-- `Crypto.base64Decode(string)` - Decodes a Base64 string back into a standard string.
-
----
-
-## JSON Library (`Json`) 📄
-
-The `Json` library provides utilities for parsing and stringifying serialized data.
-
-### Methods
-
-- `Json.serialize(value)` - Converts a CursorScript object, array, or primitive into a formatted JSON string.
-- `Json.deserialize(jsonString)` - Parses a JSON string back into native objects and arrays.
-
----
-
-## File Library (`File`) 📁
-
-The `File` library provides methods for reading, writing, and traversing the filesystem.
-
-### Methods
-
-- `File.read(path)` - Synchronously reads and returns a text file's contents as a string.
-- `File.write(path, data)` - Synchronously writes a string `data` to the requested text file path. Returns `true` on success.
-- `File.readBytes(path)` - Synchronously reads a file containing binary data (like images or audio) and returns it as an array of bytes.
-- `File.exists(path)` - Checks if a file or directory exists. Returns a boolean.
-- `File.list(directory)` - Returns an array of file and directory names contained within the requested folder path.
-
----
-
-CursorScript supports a modern ES-style module system to help organize code into multiple files.
-
-### Exporting
-
-Use the `export` keyword before a variable or function declaration to make it available to other files.
-
-```cursor
-export const PI = 3.14;
-export fn greet(name) { print("Hello", name) }
-```
-
-### Importing
-
-Use `import { ... } from "path"` to bring exported values into the current file. Paths are relative to the current file.
-
-```cursor
-import { PI, greet } from "./mathUtils"
-print(PI)
-```
-
----
-
-## Lambda Functions (Anonymous Functions) λ
-
-Lambdas are values that represent functions. They are defined using the `->` (arrow) operator.
-
-### Syntax
-
-- `(a, b) -> expression` (Single expression return)
-- `(a) -> { ... }` (Multi-statement block)
-
-### Example
-
-```cursor
-let add = (a, b) -> a + b
-let result = add(5, 10)
-
-fn runCallback(cb) { cb() }
-runCallback(() -> { print("Callback executed!") })
-```
-
----
-
-## Control Flow & Operators
-
-### Comparison Operators
-
-- `==` - Equals
-- `!=` - Not Equals
-- `<` - Less Than
-- `>` - Greater Than
-
-### Logical Operators (Gates) ⚡
-
-- `&&` - AND
-- `||` - OR
-- `!` - NOT (Unary)
-
-### If Statements
-
-```cursor
-if (score > 10 && gameOver == false) {
-    print("Keep playing!");
-}
-```
-
-### While Loops
-
-```cursor
-let i = 0;
-while (i < 10) {
-    print(i)
-    i = i + 1
-}
-```
-
-_Note: Semicolons are required on `let`/`const` declarations, but not after `if` blocks, `while` loops, or expression statements._
+| `wait(ms)`        | Asynchronously pauses execution for `ms` milliseconds.    | `await wait(1000);`                  |

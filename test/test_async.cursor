@@ -12,6 +12,15 @@ async fn main() {
 
     const (res2, err2) = await testAsync("World");
     print("Result 2:", res2, "Error 2:", err2);
+
+    print("Fetching data from API...");
+    const (data, networkError) = await Network.get("https://jsonplaceholder.typicode.com/todos/1");
+    if (networkError) {
+        printError("Network Error:", networkError);
+    } else {
+        print("Network Success! Todo Title:", data.title);
+    }
+
     print("Main finished");
 }
 

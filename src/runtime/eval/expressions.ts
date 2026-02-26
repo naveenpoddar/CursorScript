@@ -248,7 +248,13 @@ export async function evaluateCallExpr(
 
   if (caller.type === "native-fn") {
     // Native functions might be async or sync
-    return (caller as NativeFnValue).call(args, env);
+    const result = (caller as NativeFnValue).call(args, env);
+    if (result && result.type === "promise") {
+      if (!(global as any).pendingPromises)
+        (global as any).pendingPromises = [];
+      (global as any).pendingPromises.push((result as any).promise);
+    }
+    return result;
   }
 
   if (caller.type === "function") {
@@ -289,6 +295,18 @@ export async function evaluateAssignment(
   node: AssignmentExpr,
   env: Environment,
 ): Promise<RuntimeValue> {
+  if (node.identifiers) {
+    const value = await evaluate(node.value, env);
+    if (value.type !== "array") {
+      throw `Cannot destructure non-array value. Got ${value.type}`;
+    }
+    const arr = value as ArrayValue;
+    for (let i = 0; i < node.identifiers.length; i++) {
+      env.assignVar(node.identifiers[i]!, arr.elements[i] || MK_NULL());
+    }
+    return value;
+  }
+
   if (node.assignee.kind === "Identifier") {
     const varname = (node.assignee as Identifier).symbol;
     return env.assignVar(varname, await evaluate(node.value, env));

@@ -37,229 +37,129 @@ class Network {
   /**
    * Performs a GET request.
    * @param url The URL to request.
-   * @param optionsOrCallback Optional request options or a callback function.
+   * @param options Optional request options.
    */
-  public async get(url: any, optionsOrCallback: any = {}) {
+  public async get(url: any, options: any = {}) {
     const u = requireString(url);
-    let options = optionsOrCallback;
-    let callback: any = null;
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      headers: {
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+    const result = await this.parseResponse(response);
 
-    if (typeof optionsOrCallback === "function") {
-      options = {};
-      callback = optionsOrCallback;
+    if (!response.ok) {
+      throw `GET request failed with status ${response.status}: ${JSON.stringify(result)}`;
     }
-
-    try {
-      const parsedOptions = this.parseOptions(options);
-      const response = await fetch(u, {
-        ...parsedOptions,
-        headers: {
-          ...this.defaultHeaders,
-          ...parsedOptions.headers,
-        },
-      });
-      const result = await this.parseResponse(response);
-
-      if (callback) callback(result, null);
-      return {
-        data: result,
-        error: null,
-        ok: response.ok,
-        status: response.status,
-      };
-    } catch (e: any) {
-      const errorMsg = e.message || String(e);
-      if (callback) callback(null, errorMsg);
-      return { data: null, error: errorMsg, ok: false, status: 0 };
-    }
+    return result;
   }
 
   /**
    * Performs a POST request.
    * @param url The URL to request.
-   * @param body The body of the request or a callback if no body provided.
-   * @param optionsOrCallback Optional request options or a callback.
+   * @param body The body of the request.
+   * @param options Optional request options.
    */
-  public async post(url: any, body: any, optionsOrCallback: any = {}) {
+  public async post(url: any, body: any, options: any = {}) {
     const u = requireString(url);
-    let bodyData = body;
-    let options = optionsOrCallback;
-    let callback: any = null;
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      method: "POST",
+      body: body ? JSON.stringify(toNative(body)) : null,
+      headers: {
+        "Content-Type": "application/json",
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+    const result = await this.parseResponse(response);
 
-    if (typeof body === "function") {
-      bodyData = null;
-      callback = body;
-      options = {};
-    } else if (typeof optionsOrCallback === "function") {
-      options = {};
-      callback = optionsOrCallback;
+    if (!response.ok) {
+      throw `POST request failed with status ${response.status}: ${JSON.stringify(result)}`;
     }
-
-    try {
-      const parsedOptions = this.parseOptions(options);
-      const response = await fetch(u, {
-        ...parsedOptions,
-        method: "POST",
-        body: bodyData ? JSON.stringify(toNative(bodyData)) : null,
-        headers: {
-          "Content-Type": "application/json",
-          ...this.defaultHeaders,
-          ...parsedOptions.headers,
-        },
-      });
-      const result = await this.parseResponse(response);
-
-      if (callback) callback(result, null);
-      return {
-        data: result,
-        error: null,
-        ok: response.ok,
-        status: response.status,
-      };
-    } catch (e: any) {
-      const errorMsg = e.message || String(e);
-      if (callback) callback(null, errorMsg);
-      return { data: null, error: errorMsg, ok: false, status: 0 };
-    }
+    return result;
   }
 
   /**
    * Performs a PUT request.
    * @param url The URL to request.
    * @param body The body of the request.
-   * @param optionsOrCallback Optional request options or a callback.
+   * @param options Optional request options.
    */
-  public async put(url: any, body: any, optionsOrCallback: any = {}) {
+  public async put(url: any, body: any, options: any = {}) {
     const u = requireString(url);
-    let bodyData = body;
-    let options = optionsOrCallback;
-    let callback: any = null;
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      method: "PUT",
+      body: body ? JSON.stringify(toNative(body)) : null,
+      headers: {
+        "Content-Type": "application/json",
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+    const result = await this.parseResponse(response);
 
-    if (typeof body === "function") {
-      bodyData = null;
-      callback = body;
-      options = {};
-    } else if (typeof optionsOrCallback === "function") {
-      options = {};
-      callback = optionsOrCallback;
+    if (!response.ok) {
+      throw `PUT request failed with status ${response.status}: ${JSON.stringify(result)}`;
     }
-
-    try {
-      const parsedOptions = this.parseOptions(options);
-      const response = await fetch(u, {
-        ...parsedOptions,
-        method: "PUT",
-        body: bodyData ? JSON.stringify(toNative(bodyData)) : null,
-        headers: {
-          "Content-Type": "application/json",
-          ...this.defaultHeaders,
-          ...parsedOptions.headers,
-        },
-      });
-      const result = await this.parseResponse(response);
-
-      if (callback) callback(result, null);
-      return {
-        data: result,
-        error: null,
-        ok: response.ok,
-        status: response.status,
-      };
-    } catch (e: any) {
-      const errorMsg = e.message || String(e);
-      if (callback) callback(null, errorMsg);
-      return { data: null, error: errorMsg, ok: false, status: 0 };
-    }
+    return result;
   }
 
   /**
    * Performs a DELETE request.
    * @param url The URL to request.
-   * @param optionsOrCallback Optional request options or a callback.
+   * @param options Optional request options.
    */
-  public async delete(url: any, optionsOrCallback: any = {}) {
+  public async delete(url: any, options: any = {}) {
     const u = requireString(url);
-    let options = optionsOrCallback;
-    let callback: any = null;
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      method: "DELETE",
+      headers: {
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+    const result = await this.parseResponse(response);
 
-    if (typeof optionsOrCallback === "function") {
-      options = {};
-      callback = optionsOrCallback;
+    if (!response.ok) {
+      throw `DELETE request failed with status ${response.status}: ${JSON.stringify(result)}`;
     }
-
-    try {
-      const parsedOptions = this.parseOptions(options);
-      const response = await fetch(u, {
-        ...parsedOptions,
-        method: "DELETE",
-        headers: {
-          ...this.defaultHeaders,
-          ...parsedOptions.headers,
-        },
-      });
-      const result = await this.parseResponse(response);
-
-      if (callback) callback(result, null);
-      return {
-        data: result,
-        error: null,
-        ok: response.ok,
-        status: response.status,
-      };
-    } catch (e: any) {
-      const errorMsg = e.message || String(e);
-      if (callback) callback(null, errorMsg);
-      return { data: null, error: errorMsg, ok: false, status: 0 };
-    }
+    return result;
   }
 
   /**
    * Performs a PATCH request.
    * @param url The URL to request.
    * @param body The body of the request.
-   * @param optionsOrCallback Optional request options or a callback.
+   * @param options Optional request options.
    */
-  public async patch(url: any, body: any, optionsOrCallback: any = {}) {
+  public async patch(url: any, body: any, options: any = {}) {
     const u = requireString(url);
-    let bodyData = body;
-    let options = optionsOrCallback;
-    let callback: any = null;
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      method: "PATCH",
+      body: body ? JSON.stringify(toNative(body)) : null,
+      headers: {
+        "Content-Type": "application/json",
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+    const result = await this.parseResponse(response);
 
-    if (typeof body === "function") {
-      bodyData = null;
-      callback = body;
-      options = {};
-    } else if (typeof optionsOrCallback === "function") {
-      options = {};
-      callback = optionsOrCallback;
+    if (!response.ok) {
+      throw `PATCH request failed with status ${response.status}: ${JSON.stringify(result)}`;
     }
-
-    try {
-      const parsedOptions = this.parseOptions(options);
-      const response = await fetch(u, {
-        ...parsedOptions,
-        method: "PATCH",
-        body: bodyData ? JSON.stringify(toNative(bodyData)) : null,
-        headers: {
-          "Content-Type": "application/json",
-          ...this.defaultHeaders,
-          ...parsedOptions.headers,
-        },
-      });
-      const result = await this.parseResponse(response);
-
-      if (callback) callback(result, null);
-      return {
-        data: result,
-        error: null,
-        ok: response.ok,
-        status: response.status,
-      };
-    } catch (e: any) {
-      const errorMsg = e.message || String(e);
-      if (callback) callback(null, errorMsg);
-      return { data: null, error: errorMsg, ok: false, status: 0 };
-    }
+    return result;
   }
 
   /**
@@ -269,20 +169,19 @@ class Network {
    */
   public async head(url: any, options: any = {}) {
     const u = requireString(url);
-    try {
-      const parsedOptions = this.parseOptions(options);
-      const response = await fetch(u, {
-        ...parsedOptions,
-        method: "HEAD",
-        headers: {
-          ...this.defaultHeaders,
-          ...parsedOptions.headers,
-        },
-      });
-      return Object.fromEntries(response.headers.entries());
-    } catch (e: any) {
-      return { error: e.message || String(e) };
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      method: "HEAD",
+      headers: {
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+    if (!response.ok) {
+      throw `HEAD request failed with status ${response.status}`;
     }
+    return Object.fromEntries(response.headers.entries());
   }
 
   private parseOptions(options: any) {

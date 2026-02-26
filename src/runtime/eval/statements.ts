@@ -78,11 +78,14 @@ export async function evaluateProgram(
   }
 
   // Ensure all background tasks are promised
-  if (
+  // We use a loop because async tasks might spawn more async tasks
+  while (
     (global as any).pendingPromises &&
     (global as any).pendingPromises.length > 0
   ) {
-    await Promise.all((global as any).pendingPromises);
+    const toWait = [...(global as any).pendingPromises];
+    (global as any).pendingPromises = [];
+    await Promise.all(toWait);
   }
 
   return lastEvaluatedValue;

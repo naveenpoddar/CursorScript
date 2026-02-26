@@ -106,6 +106,7 @@ export interface AssignmentExpr extends Expr {
   kind: "AssignmentExpr";
   assignee: Expr;
   value: Expr;
+  identifiers?: string[];
 }
 
 export interface BinaryExpr extends Expr {

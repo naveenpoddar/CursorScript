@@ -44,7 +44,7 @@ export default function ConvertTOMK_Object(obj: any) {
             // If it is a function, we must wrap it so native code can call it easily
             if (arg.type === "function") {
               const fn = arg as FunctionValue;
-              return (...nativeArgs: any[]) => {
+              return async (...nativeArgs: any[]) => {
                 // Convert native args back to CursorX types
                 const runtimeArgs = nativeArgs.map((a) => GetCursorXType(a)!);
 
@@ -59,7 +59,7 @@ export default function ConvertTOMK_Object(obj: any) {
 
                 let lastResult: RuntimeValue = MK_NULL();
                 for (const stmt of fn.body) {
-                  lastResult = global.evaluate(stmt, scope);
+                  lastResult = await global.evaluate(stmt, scope);
                 }
 
                 return (lastResult as any).value !== undefined
@@ -109,6 +109,14 @@ export function GetCursorXType(value: any): RuntimeValue | null {
   // Check for 'type' string property which is common across all our RuntimeValues
   if (typeof value === "object" && typeof (value as any).type === "string") {
     return value as RuntimeValue;
+  }
+
+  // Handle Promises
+  if (value instanceof Promise) {
+    return {
+      type: "promise",
+      promise: value.then((val) => GetCursorXType(val)!),
+    } as any;
   }
 
   if (Array.isArray(value)) {

@@ -33,6 +33,15 @@ curl -fsSL https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/inst
 irm https://raw.githubusercontent.com/naveenpoddar/cursorscript/main/install.ps1 | iex
 ```
 
+### IDE Support (VS Code Extension) 🧩
+
+To significantly improve your development experience, install the official CursorScript extension:
+
+- **For Cursor / Google Antigravity / Open Source IDEs**: [Open VSX Registry](https://open-vsx.org/extension/naveenpoddar/cursorscript)
+- **For Official Visual Studio Code**: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=NaveenPoddar.cursorscript)
+
+Features include syntax highlighting, intelligent snippets, and code formatting.
+
 ### Manual Installation (From Source)
 
 #### Prerequisites
@@ -42,6 +51,10 @@ You need [Bun](https://bun.sh/) installed.
 1. `git clone https://github.com/naveenpoddar/cursorscript.git`
 2. `cd CursorPP`
 3. `bun install`
+
+### Detailed API Documentation 📖
+
+For a full list of built-in libraries, global functions, and language features, please visit the **[API Documentation Reference](./API.md)**.
 
 ### Run the Snake Game! 🐍
 

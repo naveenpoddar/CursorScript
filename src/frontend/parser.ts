@@ -354,6 +354,36 @@ export default class Parser {
   }
 
   private parse_assignment_expr(): Expr {
+    if (this.at().type === TokenType.OpenParen && this.isDestructuring()) {
+      const line = this.at().line;
+      const column = this.at().column;
+      this.eat(); // (
+      const identifiers: string[] = [];
+      while (this.notEOF() && this.at().type !== TokenType.CloseParen) {
+        if (this.at().type === TokenType.Identifier) {
+          identifiers.push(this.eat().value);
+        } else {
+          throw `Expected identifier in destructuring assignment, got ${this.at().type}`;
+        }
+        if (this.at().type === TokenType.Comma) this.eat();
+      }
+      this.expect(TokenType.CloseParen, "Expected ')' after destructuring");
+      this.expect(
+        TokenType.Equals,
+        "Expected '=' after destructuring assignment",
+      );
+
+      const value = this.parse_assignment_expr();
+      return {
+        kind: "AssignmentExpr",
+        assignee: { kind: "Identifier", symbol: "destructured" } as any,
+        value,
+        identifiers,
+        line,
+        column,
+      } as AssignmentExpr;
+    }
+
     const left = this.parse_logical_or_expr();
 
     if (this.at().type === TokenType.Equals) {
@@ -377,6 +407,21 @@ export default class Parser {
     }
 
     return left;
+  }
+
+  private isDestructuring(): boolean {
+    let parenCount = 0;
+    for (let i = 0; i < this.tokens.length; i++) {
+      const type = this.tokens[i]!.type;
+      if (type === TokenType.OpenParen) parenCount++;
+      else if (type === TokenType.CloseParen) {
+        parenCount--;
+        if (parenCount === 0) {
+          return this.tokens[i + 1]?.type === TokenType.Equals;
+        }
+      } else if (type === TokenType.EOF) return false;
+    }
+    return false;
   }
 
   private parse_logical_or_expr(): Expr {
@@ -666,10 +711,15 @@ export default class Parser {
   }
 
   private isLambda(): boolean {
-    if (this.at().type !== TokenType.OpenParen) return false;
+    let offset = 0;
+    if (this.at().type === TokenType.Async) {
+      offset = 1;
+    }
+
+    if (this.tokens[offset]?.type !== TokenType.OpenParen) return false;
 
     let parenCount = 0;
-    for (let i = 0; i < this.tokens.length; i++) {
+    for (let i = offset; i < this.tokens.length; i++) {
       const type = this.tokens[i]!.type;
       if (type === TokenType.OpenParen) parenCount++;
       else if (type === TokenType.CloseParen) {
@@ -683,6 +733,12 @@ export default class Parser {
   }
 
   private parse_lambda_expr(): Expr {
+    let isAsync = false;
+    if (this.at().type === TokenType.Async) {
+      this.eat();
+      isAsync = true;
+    }
+
     this.expect(TokenType.OpenParen, "Expected '(' at start of lambda");
 
     const params: string[] = [];
@@ -722,7 +778,7 @@ export default class Parser {
       kind: "LambdaExpr",
       parameters: params,
       body,
-      async: false, // TODO: support async lambdas if needed
+      async: isAsync,
       line: this.at().line,
       column: this.at().column,
     } as LambdaExpr;
@@ -757,8 +813,14 @@ export default class Parser {
         } as StringLiteral;
 
       case TokenType.OpenParen:
+      case TokenType.Async:
         if (this.isLambda()) {
           return this.parse_lambda_expr();
+        }
+        if (tk === TokenType.Async) {
+          // If it's not a lambda, it might be an error or handled elsewhere
+          // but here in primary_expr it MUST be a lambda if it's async
+          throw "Unexpected 'async' keyword. Expected async lambda or async function.";
         }
         this.eat(); // eat the opening paren
         const value = this.parse_expr();

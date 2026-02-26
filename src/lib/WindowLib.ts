@@ -239,7 +239,7 @@ class _WindowL {
   }
 
   private gameLoop() {
-    const tick = () => {
+    const tick = async () => {
       if (lib.symbols.WindowShouldClose()) {
         lib.symbols.CloseWindow();
         process.exit(0);
@@ -256,7 +256,7 @@ class _WindowL {
       while (this.accumulatedTime >= this.fixedTimeStep) {
         try {
           if (this.fixedUpdateCallback) {
-            executeCallback(this.fixedUpdateCallback);
+            await executeCallback(this.fixedUpdateCallback);
           }
         } catch (e) {
           console.error("Runtime Error in fixedUpdate callback:", e);
@@ -268,7 +268,7 @@ class _WindowL {
       lib.symbols.BeginDrawing();
       try {
         if (this.updateCallback) {
-          executeCallback(this.updateCallback);
+          await executeCallback(this.updateCallback);
         }
       } catch (e) {
         console.error("Runtime Error in update callback:", e);

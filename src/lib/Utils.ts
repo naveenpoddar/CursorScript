@@ -3,10 +3,10 @@ import { evaluate } from "../runtime/interpreter";
 import { MK_NULL, type RuntimeValue } from "../runtime/values";
 import { GetCursorXType } from "./BaseLibConverter";
 
-export function executeCallback(func: any, ...args: any[]) {
+export async function executeCallback(func: any, ...args: any[]) {
   if (typeof func === "function") {
     // If it's a wrapped function from BaseLibConverter, just call it
-    return func(...args);
+    return await func(...args);
   } else if (func && func.body) {
     // If it's a raw FunctionValue (internal call), evaluate it
     const runtimeArgs = args.map((a) => GetCursorXType(a)!);
@@ -26,7 +26,7 @@ export function executeCallback(func: any, ...args: any[]) {
 
     let lastResult: RuntimeValue = MK_NULL();
     for (const stmt of func.body) {
-      lastResult = evaluate(stmt, scope) as RuntimeValue;
+      lastResult = await evaluate(stmt, scope);
     }
 
     return (lastResult as any).value !== undefined

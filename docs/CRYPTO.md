@@ -9,8 +9,8 @@ The `Crypto` library provides utility functions for cryptography and unique ID g
 
 ## Hashing & Verification
 
-- `Crypto.hash(data, callback)` - Asynchronously hashes a string using bcrypt. The callback receives `(hash, error)`.
-- `Crypto.verifyHash(data, hash, callback)` - Asynchronously verifies a string against a hash. The callback receives `(isMatch, error)`.
+- `await Crypto.hash(data)` - Asynchronously hashes a string using bcrypt. Returns a tuple `(hash, error)`.
+- `await Crypto.verifyHash(data, hash)` - Asynchronously verifies a string against a hash. Returns a tuple `(isMatch, error)`.
 - `Crypto.sha256(data)` - Synchronously returns the SHA-256 hash of the string, formatted in hex.
 - `Crypto.hmacSha256(data, key)` - Synchronously returns the HMAC-SHA-256 hash for the given data and secret key, formatted in hex.
 

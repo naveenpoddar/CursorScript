@@ -99,6 +99,17 @@ class AudioL {
   // Store original frequencies so dynamic pitch changes don't compound
   private originalFreqs = new Map<number, number>();
 
+  async loadAsync(path: string) {
+    return new Promise<number>((resolve, reject) => {
+      try {
+        const handle = this.load(path);
+        resolve(handle);
+      } catch (e: any) {
+        reject(`Failed to load audio: ${e.message}`);
+      }
+    });
+  }
+
   load(path: string) {
     const pathBuffer = Buffer.from(path + "\0", "utf-8");
     // mem=0, file=pathBuffer, offset=0, length=0, flags=0

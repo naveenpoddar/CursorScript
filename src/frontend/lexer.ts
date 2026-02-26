@@ -215,16 +215,14 @@ class Lexer {
         if (this.match("&")) {
           this.addToken(TokenType.AmpersandAmpersand);
         } else {
-          console.error("Unexpected character '&'");
-          process.exit(1);
+          throw `Unexpected character '&' at ${this.filename}:${this.line}:${this.start - this.lineStart + 1}`;
         }
         break;
       case "|":
         if (this.match("|")) {
           this.addToken(TokenType.BarBar);
         } else {
-          console.error("Unexpected character '|'");
-          process.exit(1);
+          throw `Unexpected character '|' at ${this.filename}:${this.line}:${this.start - this.lineStart + 1}`;
         }
         break;
 
@@ -268,10 +266,7 @@ class Lexer {
         } else if (this.isAlpha(char)) {
           this.handleIdentifier();
         } else {
-          console.error(
-            `Unrecognised character '${char}' at ${this.filename}:${this.line}:${this.start - this.lineStart + 1}`,
-          );
-          process.exit(1);
+          throw `Unrecognised character '${char}' at ${this.filename}:${this.line}:${this.start - this.lineStart + 1}`;
         }
         break;
     }
@@ -312,10 +307,7 @@ class Lexer {
     }
 
     if (this.isAtEnd()) {
-      console.error(
-        `Unterminated string at ${this.filename}:${this.line}:${this.current - this.lineStart + 1}`,
-      );
-      process.exit(1);
+      throw `Unterminated string at ${this.filename}:${this.line}:${this.current - this.lineStart + 1}`;
     }
 
     // The closing ".

@@ -40,14 +40,7 @@ export default class Parser {
   private expect(type: TokenType, msg: string): Token {
     const prev = this.eat();
     if (prev.type !== type) {
-      console.error(
-        msg,
-        prev,
-        "- Expecting:",
-        type,
-        `at ${this.filename}:${prev.line}:${prev.column}`,
-      );
-      process.exit(1);
+      throw `${msg} ${JSON.stringify(prev)} - Expecting: ${type} at ${this.filename}:${prev.line}:${prev.column}`;
     }
     return prev;
   }
@@ -75,19 +68,29 @@ export default class Parser {
         return this.parse_var_declaration();
 
       case TokenType.Fn:
-        return this.parse_function_declaration();
+        const fn = this.parse_function_declaration();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return fn;
 
       case TokenType.If:
-        return this.parse_if_stmt();
+        const ifStmt = this.parse_if_stmt();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return ifStmt;
 
       case TokenType.While:
-        return this.parse_while_stmt();
+        const whileStmt = this.parse_while_stmt();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return whileStmt;
 
       case TokenType.Import:
-        return this.parse_import_declaration();
+        const importStmt = this.parse_import_declaration();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return importStmt;
 
       case TokenType.Export:
-        return this.parse_export_declaration();
+        const exportStmt = this.parse_export_declaration();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return exportStmt;
 
       default:
         const expr = this.parse_expr();
@@ -157,7 +160,9 @@ export default class Parser {
   }
 
   private parse_function_declaration(): Stmt {
-    this.eat();
+    const line = this.at().line;
+    const column = this.at().column;
+    this.eat(); // consume fn
 
     const name = this.expect(
       TokenType.Identifier,
@@ -193,12 +198,16 @@ export default class Parser {
       name,
       parameters: params,
       body,
+      line,
+      column,
     } as FunctionDeclaration;
 
     return fn;
   }
 
   private parse_var_declaration(): Stmt {
+    const line = this.at().line;
+    const column = this.at().column;
     const isConst = this.eat().type === TokenType.Const;
 
     const identifier = this.expect(
@@ -216,6 +225,8 @@ export default class Parser {
         kind: "VarDeclaration",
         identifier,
         constant: isConst,
+        line,
+        column,
       } as VarDeclaration;
     }
 
@@ -231,6 +242,8 @@ export default class Parser {
       identifier,
       constant: isConst,
       value,
+      line,
+      column,
     } as VarDeclaration;
   }
 
@@ -699,11 +712,7 @@ export default class Parser {
         return this.parse_array_literal();
 
       default:
-        console.error(
-          `Unexpected token found during parsing at ${this.filename}:${this.at().line}:${this.at().column}:`,
-          this.at(),
-        );
-        process.exit(1);
+        throw `Unexpected token found during parsing at ${this.filename}:${this.at().line}:${this.at().column}: ${JSON.stringify(this.at())}`;
     }
   }
 

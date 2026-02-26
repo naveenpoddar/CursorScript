@@ -518,8 +518,107 @@
           "symbol": "obj"
         }
       ],
-      "line": 36,
-      "column": 11
+      "line": 38,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "encoded",
+      "constant": true,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 38,
+            "column": 17,
+            "symbol": "Crypto"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 38,
+            "column": 24,
+            "symbol": "base64Encode"
+          },
+          "computed": false,
+          "line": 38,
+          "column": 36
+        },
+        "args": [
+          {
+            "kind": "StringLiteral",
+            "line": 38,
+            "column": 37,
+            "value": "das"
+          }
+        ],
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 39,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 39,
+          "column": 7,
+          "symbol": "encoded"
+        }
+      ],
+      "line": 41,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 41,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 41,
+              "column": 7,
+              "symbol": "Crypto"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 41,
+              "column": 14,
+              "symbol": "base64Decode"
+            },
+            "computed": false,
+            "line": 41,
+            "column": 26
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 41,
+              "column": 27,
+              "symbol": "encoded"
+            }
+          ],
+          "line": 41,
+          "column": 35
+        }
+      ],
+      "line": 41,
+      "column": 36
     }
   ],
   "line": 0,

@@ -1,4 +1,4 @@
-import { MathL, requireString } from "../lib/MathLib";
+import { MathL } from "../lib/MathLib";
 import { GameL } from "../lib/GameLib";
 import { Engine3DL } from "../lib/Engine3D";
 import { PerlinNoiseL } from "../lib/PerlinNoise";
@@ -13,13 +13,13 @@ import {
   MK_NUMBER,
   MakePrintable,
   MK_STRING,
-  type StringValue,
   type NumberValue,
   type ArrayValue,
-  MK_ARRAY,
+  type StringValue,
 } from "./values";
 import { CryptoLib } from "../lib/Crypto";
 import { JsonLib } from "../lib/JSONLib";
+import { FileLib } from "../lib/FileLib";
 
 export function createGlobalEnv() {
   const env = new Environment();
@@ -212,6 +212,59 @@ export function createGlobalEnv() {
   env.declareVar("Thread", ThreadL, true);
   env.declareVar("Crypto", CryptoLib, true);
   env.declareVar("Json", JsonLib, true);
+  env.declareVar("File", FileLib, true);
+
+  env.declareVar(
+    "env",
+    MK_NATIVE_FN((args, scope) => {
+      const keyArg = args[0] as StringValue;
+      if (keyArg?.type !== "string") {
+        throw new Error(
+          "env() expects a string argument for the environment variable name.",
+        );
+      }
+      const keyToFind = keyArg.value;
+
+      try {
+        const fs = require("node:fs");
+        const path = require("node:path");
+
+        // Look for the user's .env file in the directory where they are running the script
+        const envPath = path.join(process.cwd(), ".env");
+        if (fs.existsSync(envPath)) {
+          const envFile = fs.readFileSync(envPath, "utf-8");
+          const lines = envFile.split(/\r?\n/);
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("#") || !trimmed.includes("=")) continue;
+
+            const [key, ...valueParts] = trimmed.split("=");
+            if (key.trim() === keyToFind) {
+              let val = valueParts.join("=").trim();
+              // Strip quotes if they wrap the environment variable
+              if (
+                (val.startsWith('"') && val.endsWith('"')) ||
+                (val.startsWith("'") && val.endsWith("'"))
+              ) {
+                val = val.slice(1, -1);
+              }
+              return MK_STRING(val);
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore file reading errors
+      }
+
+      // Fallback to exactly what Bun/Node already loaded in system memory
+      if (process.env[keyToFind] !== undefined) {
+        return MK_STRING(process.env[keyToFind]!);
+      }
+
+      return MK_NULL();
+    }),
+    true,
+  );
 
   // Support Running Native TypeScript/JavaScript but runs in a complete different scope than language runtime
   // env.declareVar(

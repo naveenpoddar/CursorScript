@@ -47,6 +47,19 @@ class CryptoL {
       .update(data)
       .digest("hex");
   }
+
+  base64Encode(data: any) {
+    if (typeof data === "string") {
+      return Buffer.from(data).toString("base64");
+    } else if (Array.isArray(data)) {
+      return Buffer.from(data).toString("base64");
+    }
+    throw new Error("base64Encode expects a string or array of bytes");
+  }
+
+  base64Decode(data: string) {
+    return Buffer.from(data, "base64").toString("utf-8");
+  }
 }
 
 export const CryptoLib = ConvertTOMK_Object(new CryptoL());

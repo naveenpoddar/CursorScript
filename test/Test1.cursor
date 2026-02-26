@@ -34,3 +34,8 @@ print(json)
 const obj = Json.deserialize(json)
 
 print(obj)
+
+const encoded = Crypto.base64Encode("das")
+print(encoded)
+
+print(Crypto.base64Decode(encoded))

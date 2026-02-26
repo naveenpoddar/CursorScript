@@ -214,6 +214,11 @@ The `Crypto` library provides utility functions for cryptography and unique ID g
 - `Crypto.sha256(data)` - Synchronously returns the SHA-256 hash of the string, formatted in hex.
 - `Crypto.hmacSha256(data, key)` - Synchronously returns the HMAC-SHA-256 hash for the given data and secret key, formatted in hex.
 
+### Base64 Encoding
+
+- `Crypto.base64Encode(data)` - Encodes a string or array of bytes into a Base64 string.
+- `Crypto.base64Decode(string)` - Decodes a Base64 string back into a standard string.
+
 ---
 
 ## JSON Library (`Json`) 📄
@@ -224,6 +229,20 @@ The `Json` library provides utilities for parsing and stringifying serialized da
 
 - `Json.serialize(value)` - Converts a CursorScript object, array, or primitive into a formatted JSON string.
 - `Json.deserialize(jsonString)` - Parses a JSON string back into native objects and arrays.
+
+---
+
+## File Library (`File`) 📁
+
+The `File` library provides methods for reading, writing, and traversing the filesystem.
+
+### Methods
+
+- `File.read(path)` - Synchronously reads and returns a text file's contents as a string.
+- `File.write(path, data)` - Synchronously writes a string `data` to the requested text file path. Returns `true` on success.
+- `File.readBytes(path)` - Synchronously reads a file containing binary data (like images or audio) and returns it as an array of bytes.
+- `File.exists(path)` - Checks if a file or directory exists. Returns a boolean.
+- `File.list(directory)` - Returns an array of file and directory names contained within the requested folder path.
 
 ---
 

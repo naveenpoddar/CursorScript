@@ -6,6 +6,13 @@ PACKAGE_NAME="cursorscript"
 INSTALL_ROOT="$HOME/.$PACKAGE_NAME"
 BIN_LINK="/usr/local/bin/$APP_NAME"
 
+# 0. Stop the application if it's currently running
+if pgrep -x "$APP_NAME" > /dev/null; then
+    echo "🛑 Stopping running instance of $APP_NAME..."
+    pkill -x "$APP_NAME"
+    sleep 1 # Give the OS a moment to clean up the process
+fi
+
 # 1. Detect Arch/OS
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"

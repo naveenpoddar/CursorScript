@@ -3,6 +3,13 @@ $packageName = "cursorscript"
 $installDir = "$HOME\.$packageName"
 $url = "https://github.com/naveenpoddar/cursorscript/releases/latest/download/cursorscript-windows-x64-baseline.zip"
 
+# 0. Stop the application if it's currently running
+if (Get-Process -Name $appName -ErrorAction SilentlyContinue) {
+    Write-Host "🛑 Stopping running instance of $appName..." -ForegroundColor Yellow
+    Stop-Process -Name $appName -Force
+    Start-Sleep -Seconds 1 # Give Windows a brief moment to release the file locks
+}
+
 # 1. Prepare Directory
 if (Test-Path $installDir) {
     Write-Host "🗑️ Removing existing $installDir..." -ForegroundColor Yellow

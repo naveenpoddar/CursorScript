@@ -1,0 +1,17 @@
+// File TEST
+
+File.write("test.txt", "Hello World")
+
+const content = File.read("test.txt")
+print(content)
+
+const bytes = File.readBytes("test.txt")
+print(bytes)
+
+const exists = File.exists("test.txt")
+print(exists)
+
+const list = File.list(".")
+print(list)
+
+print(env("USER"))

@@ -39,17 +39,9 @@ for (const target of targets) {
     // Build the executable
     await $`bun build ${entryPoint} \
       --compile \
+      --copy-files \
       --target=${target.id} \
       --outfile=${binPath}`.quiet();
-
-    // 3. COPY TERMINAL-KIT CONFIGS (The Missing Link)
-    // We need to place them where terminal-kit expects them relative to the execution
-    const termConfigSrc = "./node_modules/terminal-kit/lib/termconfig";
-    if (existsSync(termConfigSrc)) {
-      // Create the path terminal-kit expects: ./lib/termconfig/
-      await $`mkdir -p ${targetFolder}/lib/termconfig`;
-      await $`cp -r ${termConfigSrc}/* ${targetFolder}/lib/termconfig/`;
-    }
 
     // Copy the specific native library for this OS into the folder
     // Note: This assumes your lib files are named exactly as discussed in the root /lib folder

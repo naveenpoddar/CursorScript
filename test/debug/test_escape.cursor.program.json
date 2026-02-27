@@ -1,0 +1,64 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 1,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 1,
+          "column": 7,
+          "value": "Backslash: \\"
+        }
+      ],
+      "line": 1,
+      "column": 23
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 2,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 2,
+          "column": 7,
+          "value": "New line:\nHello"
+        }
+      ],
+      "line": 2,
+      "column": 26
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 3,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 3,
+          "column": 7,
+          "value": "Double quote \" in string"
+        }
+      ],
+      "line": 3,
+      "column": 35
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

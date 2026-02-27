@@ -1,0 +1,71 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "VarDeclaration",
+      "identifier": "r",
+      "constant": false,
+      "value": {
+        "kind": "RegexLiteral",
+        "line": 1,
+        "column": 9,
+        "value": "foo\\\"bar"
+      },
+      "line": 1,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 2,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 2,
+          "column": 7,
+          "symbol": "r"
+        }
+      ],
+      "line": 2,
+      "column": 9
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "r2",
+      "constant": false,
+      "value": {
+        "kind": "RegexLiteral",
+        "line": 3,
+        "column": 10,
+        "value": "foo\\\\bar"
+      },
+      "line": 3,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 4,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 4,
+          "column": 7,
+          "symbol": "r2"
+        }
+      ],
+      "line": 4,
+      "column": 10
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

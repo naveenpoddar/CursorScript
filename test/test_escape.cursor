@@ -1,0 +1,3 @@
+print("Backslash: \\");
+print("New line:\nHello");
+print("Double quote \" in string");

@@ -1,0 +1,4 @@
+let r = r"foo\"bar";
+print(r);
+let r2 = r"foo\\bar";
+print(r2);

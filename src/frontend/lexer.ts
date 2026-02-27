@@ -315,12 +315,39 @@ class Lexer {
    */
   private handleString(): void {
     let value = "";
-    while (this.peek() !== '"' && !this.isAtEnd()) {
-      if (this.peek() === "\n") {
-        this.line++;
-        this.lineStart = this.current + 1;
+    while (!this.isAtEnd() && this.peek() !== '"') {
+      if (this.peek() === "\\") {
+        this.advance(); // consume \
+        if (this.isAtEnd()) break;
+
+        const next = this.advance();
+        switch (next) {
+          case '"':
+            value += '"';
+            break;
+          case "\\":
+            value += "\\";
+            break;
+          case "n":
+            value += "\n";
+            break;
+          case "t":
+            value += "\t";
+            break;
+          case "r":
+            value += "\r";
+            break;
+          default:
+            value += "\\" + next;
+            break;
+        }
+      } else {
+        if (this.peek() === "\n") {
+          this.line++;
+          this.lineStart = this.current + 1;
+        }
+        value += this.advance();
       }
-      value += this.advance();
     }
 
     if (this.isAtEnd()) {
@@ -337,12 +364,19 @@ class Lexer {
    */
   private handleRegex(): void {
     let value = "";
-    while (this.peek() !== '"' && !this.isAtEnd()) {
-      if (this.peek() === "\n") {
-        this.line++;
-        this.lineStart = this.current + 1;
+    while (!this.isAtEnd() && this.peek() !== '"') {
+      if (this.peek() === "\\") {
+        value += this.advance(); // Add the \
+        if (!this.isAtEnd()) {
+          value += this.advance(); // Add the character being escaped
+        }
+      } else {
+        if (this.peek() === "\n") {
+          this.line++;
+          this.lineStart = this.current + 1;
+        }
+        value += this.advance();
       }
-      value += this.advance();
     }
 
     if (this.isAtEnd()) {

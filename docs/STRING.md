@@ -2,6 +2,18 @@
 
 The `String` library provides robust string manipulation utilities.
 
+## Literals & Escaping
+
+String literals are enclosed in double quotes `"..."`. You can use the backslash `\` to escape characters:
+
+- `\"` - Double quote
+- `\\` - Backslash
+- `\n` - New line
+- `\t` - Tab
+- `\r` - Carriage return
+
+**Example**: `print("Hello \"World\""); // Hello "World"`
+
 ## Methods
 
 ### `String.length(str)`
@@ -46,11 +58,10 @@ Splits a string into an array.
 
 - **Example**: `String.substr("hello", 1, 3); // "ell"`
 
-### `String.test(str, regex)`
-
-Tests if a string matches a regex pattern.
+Tests if a string matches a regex pattern. Regex literals use the `r"..."` prefix and support escaping the double quote `\"` without interfering with regex backslashes.
 
 - **Example**: `String.test("abc", r"^[a-z]+$"); // true`
+- **Example**: `String.test("quote\"", r"\"$"); // true`
 
 ### `String.reverse(str)`
 

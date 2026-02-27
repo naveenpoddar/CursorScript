@@ -20,6 +20,7 @@ import {
   type ExportDeclaration,
   type AwaitExpr,
   type RegexLiteral,
+  type ReturnStmt,
 } from "./ast";
 import { tokenise, type Token, TokenType } from "./lexer";
 
@@ -115,6 +116,12 @@ export default class Parser {
         return exportStmt;
       }
 
+      case TokenType.Return: {
+        const returnStmt = this.parse_return_stmt();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return returnStmt;
+      }
+
       default: {
         const expr = this.parse_expr();
         if (this.at().type === TokenType.Semicolon) {
@@ -143,6 +150,29 @@ export default class Parser {
       condition,
       body,
     } as WhileStmt;
+  }
+
+  private parse_return_stmt(): Stmt {
+    this.eat(); // consume return
+    const line = this.at().line;
+    const column = this.at().column;
+
+    let value: Expr | undefined;
+
+    if (
+      this.at().type !== TokenType.Semicolon &&
+      this.at().type !== TokenType.CloseBrace &&
+      this.at().type !== TokenType.EOF
+    ) {
+      value = this.parse_expr();
+    }
+
+    return {
+      kind: "ReturnStmt",
+      value,
+      line,
+      column,
+    } as ReturnStmt;
   }
 
   private parse_if_stmt(): Stmt {

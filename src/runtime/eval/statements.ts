@@ -6,9 +6,11 @@ import type {
   VarDeclaration,
   ImportDeclaration,
   ExportDeclaration,
+  ReturnStmt,
 } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
+import { unwrapAwait } from "../../lib/Utils";
 import {
   MK_NULL,
   type BooleanValue,
@@ -17,13 +19,20 @@ import {
   type RuntimeValue,
   MK_ARRAY,
   type ArrayValue,
+  type AwaitResultValue,
 } from "../values";
 
 function isTruthy(val: RuntimeValue): boolean {
-  if (val.type === "boolean") return (val as BooleanValue).value;
-  if (val.type === "number") return (val as NumberValue).value !== 0;
-  if (val.type === "null") return false;
+  const unwrapped = unwrapAwait(val);
+  if (unwrapped.type === "boolean") return (unwrapped as BooleanValue).value;
+  if (unwrapped.type === "number")
+    return (unwrapped as NumberValue).value !== 0;
+  if (unwrapped.type === "null") return false;
   return true;
+}
+
+export class ReturnSignal {
+  constructor(public value: RuntimeValue) {}
 }
 
 export async function evaluateIfStmt(
@@ -95,7 +104,22 @@ export async function evaluateVarDeclaration(
   varDecl: VarDeclaration,
   env: Environment,
 ): Promise<RuntimeValue> {
-  const value = varDecl.value ? await evaluate(varDecl.value, env) : MK_NULL();
+  let value = varDecl.value ? await evaluate(varDecl.value, env) : MK_NULL();
+
+  // Special handling for AwaitResult
+  if (value.type === "await-result") {
+    const awaitRes = value as AwaitResultValue;
+    if (varDecl.identifiers) {
+      // Destructuring: let (r, e) = await ...
+      value = MK_ARRAY([awaitRes.result, awaitRes.error]);
+    } else {
+      // Single var: let r = await ...
+      if (awaitRes.error.type !== "null") {
+        throw (awaitRes.error as any).value;
+      }
+      value = awaitRes.result;
+    }
+  }
 
   if (varDecl.identifiers) {
     // Destructuring (a, b) = value
@@ -167,4 +191,12 @@ export async function evaluateExportDeclaration(
 
   env.exports.add(name);
   return MK_NULL();
+}
+
+export async function evaluateReturnStmt(
+  stmt: ReturnStmt,
+  env: Environment,
+): Promise<RuntimeValue> {
+  const value = stmt.value ? await evaluate(stmt.value, env) : MK_NULL();
+  throw new ReturnSignal(value);
 }

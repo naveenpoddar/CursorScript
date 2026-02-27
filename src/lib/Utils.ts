@@ -1,7 +1,20 @@
 import Environment from "../runtime/environment";
 import { evaluate } from "../runtime/interpreter";
-import { MK_NULL, type RuntimeValue } from "../runtime/values";
+import {
+  MK_NULL,
+  type RuntimeValue,
+  type AwaitResultValue,
+} from "../runtime/values";
 import { GetCursorXType } from "./BaseLibConverter";
+
+export function unwrapAwait(val: RuntimeValue): RuntimeValue {
+  if (val.type === "await-result") {
+    const res = val as AwaitResultValue;
+    if (res.error.type !== "null") throw (res.error as any).value;
+    return res.result;
+  }
+  return val;
+}
 
 export async function executeCallback(func: any, ...args: any[]) {
   if (typeof func === "function") {
@@ -63,6 +76,10 @@ export function toNative(val: any): any {
 
   if (val.type === "array") {
     return val.elements.map((el: any) => toNative(el));
+  }
+
+  if (val.type === "await-result") {
+    return [toNative(val.result), toNative(val.error)];
   }
 
   if (val.type === "object") {

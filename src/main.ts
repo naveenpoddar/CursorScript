@@ -14,6 +14,7 @@ declare global {
 }
 
 global.evaluate = evaluate;
+global.lastStmt = null;
 
 const moduleCache = new Map<string, Map<string, any>>();
 import { handleCursorXCommand } from "./cursorx";

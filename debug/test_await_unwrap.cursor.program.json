@@ -1,0 +1,513 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "FunctionDeclaration",
+      "name": "failPromise",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "Identifier",
+          "line": 2,
+          "column": 5,
+          "symbol": "nonExistentVariable"
+        }
+      ],
+      "async": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "successPromise",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "ReturnStmt",
+          "value": {
+            "kind": "StringLiteral",
+            "line": 6,
+            "column": 12,
+            "value": "Success!"
+          },
+          "line": 6,
+          "column": 12
+        }
+      ],
+      "async": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "main",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 10,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 10,
+              "column": 11,
+              "value": "--- Test 1: Destructured Success ---"
+            }
+          ],
+          "line": 10,
+          "column": 50
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "",
+          "identifiers": [
+            "res1",
+            "err1"
+          ],
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 11,
+                "column": 30,
+                "symbol": "successPromise"
+              },
+              "args": [],
+              "line": 11,
+              "column": 46
+            },
+            "line": 11,
+            "column": 24
+          },
+          "line": 11,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 12,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 12,
+              "column": 11,
+              "value": "Result:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 12,
+              "column": 22,
+              "symbol": "res1"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 12,
+              "column": 28,
+              "value": "Error:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 12,
+              "column": 38,
+              "symbol": "err1"
+            }
+          ],
+          "line": 12,
+          "column": 43
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 14,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 14,
+              "column": 11,
+              "value": "\\n--- Test 2: Destructured Failure ---"
+            }
+          ],
+          "line": 14,
+          "column": 52
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "",
+          "identifiers": [
+            "res2",
+            "err2"
+          ],
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 15,
+                "column": 30,
+                "symbol": "failPromise"
+              },
+              "args": [],
+              "line": 15,
+              "column": 43
+            },
+            "line": 15,
+            "column": 24
+          },
+          "line": 15,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 16,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 16,
+              "column": 11,
+              "value": "Result:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 16,
+              "column": 22,
+              "symbol": "res2"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 16,
+              "column": 28,
+              "value": "Error:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 16,
+              "column": 38,
+              "symbol": "err2"
+            }
+          ],
+          "line": 16,
+          "column": 43
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 18,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 18,
+              "column": 11,
+              "value": "\\n--- Test 3: Single Variable Success (Unwrap) ---"
+            }
+          ],
+          "line": 18,
+          "column": 64
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "res3",
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 19,
+                "column": 22,
+                "symbol": "successPromise"
+              },
+              "args": [],
+              "line": 19,
+              "column": 38
+            },
+            "line": 19,
+            "column": 16
+          },
+          "line": 19,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 20,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 20,
+              "column": 11,
+              "value": "Result:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 20,
+              "column": 22,
+              "symbol": "res3"
+            }
+          ],
+          "line": 20,
+          "column": 27
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 22,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 22,
+              "column": 11,
+              "value": "\\n--- Test 4: Single Variable Failure (Crash) ---"
+            }
+          ],
+          "line": 22,
+          "column": 63
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 26,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 26,
+              "column": 11,
+              "value": "\\n--- Test 5: Early Return ---"
+            }
+          ],
+          "line": 26,
+          "column": 44
+        },
+        {
+          "kind": "FunctionDeclaration",
+          "name": "earlyReturn",
+          "parameters": [
+            "cond"
+          ],
+          "body": [
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "Identifier",
+                "line": 28,
+                "column": 13,
+                "symbol": "cond"
+              },
+              "thenBranch": [
+                {
+                  "kind": "ReturnStmt",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 29,
+                    "column": 20,
+                    "value": "Early"
+                  },
+                  "line": 29,
+                  "column": 20
+                }
+              ],
+              "line": 0,
+              "column": 0
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 32,
+              "column": 9,
+              "value": "LateLate"
+            }
+          ],
+          "async": false,
+          "line": 27,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 35,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 35,
+              "column": 11,
+              "value": "Condition true:"
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 35,
+                "column": 30,
+                "symbol": "earlyReturn"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 35,
+                  "column": 42,
+                  "symbol": "true"
+                }
+              ],
+              "line": 35,
+              "column": 47
+            }
+          ],
+          "line": 35,
+          "column": 48
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 36,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 36,
+              "column": 11,
+              "value": "Condition false:"
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 36,
+                "column": 31,
+                "symbol": "earlyReturn"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 36,
+                  "column": 43,
+                  "symbol": "false"
+                }
+              ],
+              "line": 36,
+              "column": 49
+            }
+          ],
+          "line": 36,
+          "column": 50
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 38,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 38,
+              "column": 11,
+              "value": "\\n--- Test 6: Await in Expression ---"
+            }
+          ],
+          "line": 38,
+          "column": 51
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 39,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 39,
+              "column": 11,
+              "value": "Direct Await Result:"
+            },
+            {
+              "kind": "AwaitExpr",
+              "argument": {
+                "kind": "CallExpr",
+                "caller": {
+                  "kind": "Identifier",
+                  "line": 39,
+                  "column": 41,
+                  "symbol": "successPromise"
+                },
+                "args": [],
+                "line": 39,
+                "column": 57
+              },
+              "line": 39,
+              "column": 35
+            }
+          ],
+          "line": 39,
+          "column": 58
+        }
+      ],
+      "async": true,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 42,
+        "column": 1,
+        "symbol": "main"
+      },
+      "args": [],
+      "line": 42,
+      "column": 7
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

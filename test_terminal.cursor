@@ -1,0 +1,33 @@
+async fn main() {
+    Terminal.clear();
+    Terminal.moveTo(10, 5);
+    Terminal.color("green");
+    Terminal.bold();
+    Terminal.println("Terminal Library Test");
+
+    let (choice, error) = await Terminal.singleColumnMenu(["Start Game", "Options", "Exit"]);
+    print("You selected: " + choice);
+
+    // Terminal.moveTo(10, 7);
+    // Terminal.color(__CURSOR_STR_6__);
+    // Terminal.println(__CURSOR_STR_7__ + str(Terminal.getWidth()) + __CURSOR_STR_8__ + str(Terminal.getHeight()));
+
+    // Terminal.moveTo(10, 9);
+    // print(__CURSOR_STR_9__);
+    // Terminal.grabInput(true);
+
+    Terminal.onKey((key) -> {
+        Terminal.moveTo(10, 11);
+        Terminal.eraseLine();
+        Terminal.color("yellow");
+        Terminal.println("Key Pressed: " + key);
+
+        if (key == "CTRL_C" || key == "q" || key == "ESCAPE") {
+            Terminal.grabInput(false);
+            Terminal.println("Exiting...");
+            exit(0);
+        }
+    });
+}
+
+main();

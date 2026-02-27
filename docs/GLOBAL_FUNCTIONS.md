@@ -6,6 +6,8 @@ These functions are built into the global scope of CursorScript and are availabl
 
 - `print(args...)` - Prints values to the standard output.
 - `printError(args...)` - Prints values to the error output (usually in red).
+- `input(prompt)` - Reads a line of input from the console (alias for `prompt`).
+- `prompt(prompt)` - Reads a line of input from the console.
 - `clear()` - Clears the console screen.
 
 ## Math & Random

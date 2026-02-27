@@ -23,6 +23,7 @@ import { FileLib } from "../lib/FileLib";
 import { AudioLib } from "../lib/AudioLib";
 import { DateTimeLib } from "../lib/DateTimeLib";
 import { StringLib } from "../lib/StringLib";
+import { TerminalLib } from "../lib/TerminalLib";
 
 export function createGlobalEnv() {
   const env = new Environment();
@@ -95,11 +96,35 @@ export function createGlobalEnv() {
       console.log("[====================================================]");
       console.log("Available commands:");
       console.log("print(args...) - prints any value");
+      console.log("input(prompt) - reads a string from standard input");
       console.log("time() - returns the current time in milliseconds");
+      console.log("Terminal - library for terminal interaction");
       console.log("exit() - exits the program");
       console.log("clear() - clears the console");
       console.log("[====================================================]");
       return MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "prompt",
+    MK_NATIVE_FN((args) => {
+      const p =
+        args[0] && args[0].type === "string" ? (args[0] as any).value : "";
+      const result = prompt(p);
+      return result ? MK_STRING(result) : MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "input",
+    MK_NATIVE_FN((args) => {
+      const p =
+        args[0] && args[0].type === "string" ? (args[0] as any).value : "";
+      const result = prompt(p);
+      return result ? MK_STRING(result) : MK_NULL();
     }),
     true,
   );
@@ -232,6 +257,7 @@ export function createGlobalEnv() {
   env.declareVar("File", FileLib, true);
   env.declareVar("Audio", AudioLib, true);
   env.declareVar("DateTime", DateTimeLib, true);
+  env.declareVar("Terminal", TerminalLib, true);
 
   env.declareVar(
     "env",

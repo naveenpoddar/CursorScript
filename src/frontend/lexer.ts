@@ -16,6 +16,7 @@ export enum TokenType {
   If,
   Else,
   While,
+  Return,
 
   // Operators & Delimiters
   OpenParen, // (
@@ -67,6 +68,7 @@ const KEYWORDS: Record<string, TokenType> = {
   from: TokenType.From,
   async: TokenType.Async,
   await: TokenType.Await,
+  return: TokenType.Return,
 };
 
 /**

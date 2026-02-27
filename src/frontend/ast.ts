@@ -7,6 +7,7 @@ export type NodeType =
   | "WhileStmt"
   | "ImportDeclaration"
   | "ExportDeclaration"
+  | "ReturnStmt"
 
   // Expressions
   | "AssignmentExpr"
@@ -99,6 +100,11 @@ export interface WhileStmt extends Stmt {
   kind: "WhileStmt";
   condition: Expr;
   body: Stmt[];
+}
+
+export interface ReturnStmt extends Stmt {
+  kind: "ReturnStmt";
+  value?: Expr;
 }
 
 export interface Expr extends Stmt {}

@@ -29,16 +29,19 @@ import type {
   ExportDeclaration,
   AwaitExpr,
   RegexLiteral,
+  ReturnStmt,
 } from "../frontend/ast";
 import type Environment from "./environment";
 import {
   evaluateFunctionDeclaration,
   evaluateIfStmt,
   evaluateWhileStmt,
-  evaluateProgram,
   evaluateVarDeclaration,
   evaluateImportDeclaration,
   evaluateExportDeclaration,
+  evaluateReturnStmt,
+  ReturnSignal,
+  evaluateProgram,
 } from "./eval/statements";
 
 import {
@@ -133,6 +136,9 @@ export async function evaluate(
       case "LambdaExpr":
         return evaluateLambdaExpr(astNode as LambdaExpr, env);
 
+      case "ReturnStmt":
+        return await evaluateReturnStmt(astNode as ReturnStmt, env);
+
       default:
         console.error(
           "This AST Node has not yet been setup for interpretation",
@@ -143,6 +149,7 @@ export async function evaluate(
         process.exit(0);
     }
   } catch (e: any) {
+    if (e instanceof ReturnSignal) throw e;
     if (e && e.hasLineInfo) throw e;
 
     // Convert to standard error with line numbers

@@ -1,0 +1,42 @@
+async fn failPromise() {
+    nonExistentVariable;
+}
+
+async fn successPromise() {
+    return "Success!";
+}
+
+async fn main() {
+    print("--- Test 1: Destructured Success ---");
+    let (res1, err1) = await successPromise();
+    print("Result:", res1, "Error:", err1);
+
+    print("\n--- Test 2: Destructured Failure ---");
+    let (res2, err2) = await failPromise();
+    print("Result:", res2, "Error:", err2);
+
+    print("\n--- Test 3: Single Variable Success (Unwrap) ---");
+    let res3 = await successPromise();
+    print("Result:", res3);
+
+    print("\n--- Test 4: Single Variable Failure (Crash) ---");
+    // let res4 = await failPromise();
+    // print(__CURSOR_STR_10__);
+
+    print("\n--- Test 5: Early Return ---");
+    fn earlyReturn(cond) {
+        if (cond) {
+            return "Early";
+        }
+
+        "LateLate";
+    }
+
+    print("Condition true:", earlyReturn(true));
+    print("Condition false:", earlyReturn(false));
+
+    print("\n--- Test 6: Await in Expression ---");
+    print("Direct Await Result:", await successPromise());
+}
+
+main();

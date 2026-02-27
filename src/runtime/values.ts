@@ -44,6 +44,11 @@ export function MakePrintable(
     return `promise { ... }`;
   }
 
+  if (value.type === "await-result") {
+    const res = value as AwaitResultValue;
+    return `(result: ${MakePrintable(res.result)}, error: ${MakePrintable(res.error)})`;
+  }
+
   return String((value as any).value).toString();
 }
 
@@ -57,10 +62,28 @@ export type ValueType =
   | "native-fn"
   | "function"
   | "promise"
-  | "regex";
+  | "regex"
+  | "await-result";
 
 export interface RuntimeValue {
   type: ValueType;
+}
+
+export interface AwaitResultValue extends RuntimeValue {
+  type: "await-result";
+  result: RuntimeValue;
+  error: RuntimeValue;
+}
+
+export function MK_AWAIT_RESULT(
+  result: RuntimeValue,
+  error: RuntimeValue,
+): AwaitResultValue {
+  return {
+    type: "await-result",
+    result,
+    error,
+  } as AwaitResultValue;
 }
 
 export interface ArrayValue extends RuntimeValue {

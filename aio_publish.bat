@@ -1,7 +1,9 @@
 @echo off
 
 echo Publishing Language..
-./PublishLanguage.bat
+call ./PublishLanguage.bat
 
 echo Publishing VS Code extension..
-C:\AIML2\cursorscript-vsc-support\publish.bat
+call "C:\AIML2\cursorscript-vsc-support\publish.bat"
+
+echo All tasks complete!

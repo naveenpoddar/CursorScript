@@ -2,10 +2,29 @@ import { terminal } from "terminal-kit";
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { executeCallback, toNative } from "./Utils";
 
-import "terminal-kit/lib/termconfig/xterm.generic.js";
-import "terminal-kit/lib/vttypes.js";
+const genericConfig = {
+  colorRegister: "xterm",
+  canvas: false,
+  term: "xterm-256color",
+};
 
 class _TerminalL {
+  constructor() {
+    // We "prime" the terminal object manually.
+    // This prevents terminal-kit from ever trying to call 'require()'
+    // to find xterm.generic.js at runtime.
+    try {
+      if ((terminal as any).setup) {
+        (terminal as any).setup({
+          term: "xterm-256color",
+          config: genericConfig,
+        });
+      }
+    } catch (e) {
+      // Silently fail if setup isn't available
+    }
+  }
+
   // Printing & Colors
   public print(text: any) {
     terminal(String(toNative(text)));

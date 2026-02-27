@@ -8,63 +8,62 @@ const outDir = "./dist";
 const appName = "cursorscript";
 const version = pkg.version;
 
-// 2. Define targets and their corresponding native libs
 const targets = [
-  { id: "bun-linux-x64" },
-  { id: "bun-linux-arm64" },
-  { id: "bun-darwin-x64" },
-  { id: "bun-darwin-arm64" },
-  { id: "bun-windows-x64-baseline" },
+  "bun-linux-x64",
+  "bun-linux-arm64",
+  "bun-darwin-x64",
+  "bun-darwin-arm64",
+  "bun-windows-x64-baseline",
 ];
 
-// 3. Clean up old builds
-console.log(`\n🚀 Building ${appName} v${version}...`);
+console.log(`\n🚀 Bundling ${appName} v${version}...`);
 await $`rm -rf ${outDir} && mkdir -p ${outDir}`;
 
-// 4. Run the build loop
-for (const target of targets) {
-  const isWindows = target.id.includes("windows");
+for (const targetId of targets) {
+  const isWindows = targetId.includes("windows");
   const extension = isWindows ? ".exe" : "";
-  const baseName = `${appName}-${target.id.replace("bun-", "")}`;
-
+  const baseName = `${appName}-${targetId.replace("bun-", "")}`;
   const targetFolder = `${outDir}/${baseName}`;
   const binPath = `${targetFolder}/cursorx${extension}`;
 
-  process.stdout.write(`📦 Target: ${target.id.padEnd(25)} ... `);
+  process.stdout.write(`📦 Target: ${targetId.padEnd(25)} ... `);
 
   try {
-    // Create a subfolder for this specific OS build
-    await $`mkdir -p ${targetFolder}`;
+    // 2. Bundling Step (The "Bundler-based" part)
+    // This prepares the code, handles imports, and tree-shakes.
+    const buildResult = await Bun.build({
+      entrypoints: [entryPoint],
+      target: "bun", // We bundle for the bun runtime
+      minify: true,
+      sourcemap: "none",
+    });
 
-    // Build the executable
-    await $`bun build ${entryPoint} \
-      --compile \
-      --copy-files \
-      --target=${target.id} \
-      --outfile=${binPath}`.quiet();
-
-    // Copy the specific native library for this OS into the folder
-    // Note: This assumes your lib files are named exactly as discussed in the root /lib folder
-    const libSource = `./lib`;
-    if (existsSync(libSource)) {
-      // This creates the 'lib' folder inside the target folder and copies everything
-      await $`cp -r ${libSource} ${targetFolder}/`;
-    } else {
-      console.warn(`⚠️  Warning: Root /lib folder not found, skipping copy.`);
+    if (!buildResult.success) {
+      console.error("Build failed:", buildResult.logs);
+      continue;
     }
 
-    console.log("Zipping...");
+    // 3. Compilation & Packaging
+    await $`mkdir -p ${targetFolder}`;
 
+    // Compile the bundled output into a single executable
+    await $`bun build ${entryPoint} --compile --target=${targetId} --outfile=${binPath}`.quiet();
+
+    // 4. Asset Management
+    const libSource = `./lib`;
+    if (existsSync(libSource)) {
+      await $`cp -r ${libSource} ${targetFolder}/`;
+    }
+
+    // 5. Compression
     await $`cd ${outDir} && zip -r -9 ${baseName}.zip ${baseName}`.quiet();
-
-    // Delete the original folder
     await $`rm -rf ${targetFolder}`;
 
-    console.log("✅ Zipped");
+    console.log("✅ Done");
   } catch (error) {
     console.log("❌ Failed");
     console.error(error);
   }
 }
 
-console.log(`\n✨ All builds compressed! Check the ${outDir} folder.`);
+console.log(`\n✨ All builds compressed in ${outDir}`);

@@ -30,7 +30,7 @@ jobs:
 
       - name: Run Build Script
         # Pass the matrix target to your script
-        run: bun run scripts/build.ts ${{ matrix.target }}
+        run: bun run build.ts ${{ matrix.target }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

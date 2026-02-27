@@ -1,0 +1,19 @@
+let i = 0;
+while (i < 10) {
+    if (i == 5) {
+        break;
+    }
+    print("i is: " + i);
+    i = i + 1;
+}
+
+print("Loop broken at i = 5");
+
+let j = 0;
+while (j < 10) {
+    j = j + 1;
+    if (j % 2 == 0) {
+        continue;
+    }
+    print("Odd j: " + j);
+}

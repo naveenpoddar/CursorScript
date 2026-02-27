@@ -8,6 +8,8 @@ export type NodeType =
   | "ImportDeclaration"
   | "ExportDeclaration"
   | "ReturnStmt"
+  | "BreakStmt"
+  | "ContinueStmt"
 
   // Expressions
   | "AssignmentExpr"
@@ -105,6 +107,14 @@ export interface WhileStmt extends Stmt {
 export interface ReturnStmt extends Stmt {
   kind: "ReturnStmt";
   value?: Expr;
+}
+
+export interface BreakStmt extends Stmt {
+  kind: "BreakStmt";
+}
+
+export interface ContinueStmt extends Stmt {
+  kind: "ContinueStmt";
 }
 
 export interface Expr extends Stmt {}

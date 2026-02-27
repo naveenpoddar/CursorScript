@@ -21,6 +21,8 @@ import {
   type AwaitExpr,
   type RegexLiteral,
   type ReturnStmt,
+  type BreakStmt,
+  type ContinueStmt,
 } from "./ast";
 import { tokenise, type Token, TokenType } from "./lexer";
 
@@ -121,6 +123,16 @@ export default class Parser {
         if (this.at().type === TokenType.Semicolon) this.eat();
         return returnStmt;
       }
+      case TokenType.Break: {
+        const stmt = this.parse_break_stmt();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return stmt;
+      }
+      case TokenType.Continue: {
+        const stmt = this.parse_continue_stmt();
+        if (this.at().type === TokenType.Semicolon) this.eat();
+        return stmt;
+      }
 
       default: {
         const expr = this.parse_expr();
@@ -173,6 +185,20 @@ export default class Parser {
       line,
       column,
     } as ReturnStmt;
+  }
+
+  private parse_break_stmt(): Stmt {
+    const line = this.at().line;
+    const column = this.at().column;
+    this.eat(); // consume break
+    return { kind: "BreakStmt", line, column } as BreakStmt;
+  }
+
+  private parse_continue_stmt(): Stmt {
+    const line = this.at().line;
+    const column = this.at().column;
+    this.eat(); // consume continue
+    return { kind: "ContinueStmt", line, column } as ContinueStmt;
   }
 
   private parse_if_stmt(): Stmt {

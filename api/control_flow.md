@@ -32,10 +32,20 @@ if (score > 10 && gameOver == false) {
 ```cursor
 let i = 0;
 while (i < 10) {
+    if (i == 5) break;
+    if (i % 2 == 0) {
+        i = i + 1;
+        continue;
+    }
     print(i)
     i = i + 1
 }
 ```
+
+## Break & Continue
+
+- `break` - Exits the current loop immediately.
+- `continue` - Skips the rest of the current loop iteration and moves to the next check.
 
 ## Async/Await
 

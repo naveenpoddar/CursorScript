@@ -30,6 +30,8 @@ import type {
   AwaitExpr,
   RegexLiteral,
   ReturnStmt,
+  BreakStmt,
+  ContinueStmt,
 } from "../frontend/ast";
 import type Environment from "./environment";
 import {
@@ -40,7 +42,11 @@ import {
   evaluateImportDeclaration,
   evaluateExportDeclaration,
   evaluateReturnStmt,
+  evaluateBreakStmt,
+  evaluateContinueStmt,
   ReturnSignal,
+  BreakSignal,
+  ContinueSignal,
   evaluateProgram,
 } from "./eval/statements";
 
@@ -139,6 +145,12 @@ export async function evaluate(
       case "ReturnStmt":
         return await evaluateReturnStmt(astNode as ReturnStmt, env);
 
+      case "BreakStmt":
+        return evaluateBreakStmt(astNode as BreakStmt, env);
+
+      case "ContinueStmt":
+        return evaluateContinueStmt(astNode as ContinueStmt, env);
+
       default:
         console.error(
           "This AST Node has not yet been setup for interpretation",
@@ -149,7 +161,12 @@ export async function evaluate(
         process.exit(0);
     }
   } catch (e: any) {
-    if (e instanceof ReturnSignal) throw e;
+    if (
+      e instanceof ReturnSignal ||
+      e instanceof BreakSignal ||
+      e instanceof ContinueSignal
+    )
+      throw e;
     if (e && e.hasLineInfo) throw e;
 
     // Convert to standard error with line numbers

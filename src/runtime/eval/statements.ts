@@ -7,6 +7,8 @@ import type {
   ImportDeclaration,
   ExportDeclaration,
   ReturnStmt,
+  BreakStmt,
+  ContinueStmt,
 } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
@@ -34,6 +36,9 @@ function isTruthy(val: RuntimeValue): boolean {
 export class ReturnSignal {
   constructor(public value: RuntimeValue) {}
 }
+
+export class BreakSignal {}
+export class ContinueSignal {}
 
 export async function evaluateIfStmt(
   stmt: IfStmt,
@@ -68,8 +73,18 @@ export async function evaluateWhileStmt(
 
   while (isTruthy(await evaluate(stmt.condition, env))) {
     const scope = new Environment(env);
-    for (const child of stmt.body) {
-      lastEvaluatedValue = await evaluate(child, scope);
+    try {
+      for (const child of stmt.body) {
+        lastEvaluatedValue = await evaluate(child, scope);
+      }
+    } catch (e: any) {
+      if (e instanceof BreakSignal) {
+        break;
+      }
+      if (e instanceof ContinueSignal) {
+        continue;
+      }
+      throw e;
     }
   }
 
@@ -199,4 +214,15 @@ export async function evaluateReturnStmt(
 ): Promise<RuntimeValue> {
   const value = stmt.value ? await evaluate(stmt.value, env) : MK_NULL();
   throw new ReturnSignal(value);
+}
+
+export function evaluateBreakStmt(stmt: BreakStmt, env: Environment): never {
+  throw new BreakSignal();
+}
+
+export function evaluateContinueStmt(
+  stmt: ContinueStmt,
+  env: Environment,
+): never {
+  throw new ContinueSignal();
 }

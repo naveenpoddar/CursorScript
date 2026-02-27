@@ -30,8 +30,10 @@ const buildResult = await Bun.build({
   entrypoints: [entryPoint],
   target: "bun", // We bundle for the bun runtime
   minify: true,
+  external: [],
+  packages: "bundle",
   naming: "_temp_bundle.js",
-  sourcemap: "none",
+  sourcemap: "external",
   outdir: outDir,
 });
 

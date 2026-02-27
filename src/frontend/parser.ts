@@ -19,6 +19,7 @@ import {
   type ImportDeclaration,
   type ExportDeclaration,
   type AwaitExpr,
+  type RegexLiteral,
 } from "./ast";
 import { tokenise, type Token, TokenType } from "./lexer";
 
@@ -811,6 +812,14 @@ export default class Parser {
           column: this.at().column,
           value: this.eat().value,
         } as StringLiteral;
+
+      case TokenType.Regex:
+        return {
+          kind: "RegexLiteral",
+          line: this.at().line,
+          column: this.at().column,
+          value: this.eat().value,
+        } as RegexLiteral;
 
       case TokenType.OpenParen:
       case TokenType.Async:

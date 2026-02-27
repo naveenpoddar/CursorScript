@@ -1,0 +1,22 @@
+let pattern = r"hello";
+let text = "hello world";
+let result = String.test(text, pattern);
+print("Testing 'hello' in 'hello world':", result);
+
+let pattern2 = r"^[a-z]+$";
+let text2 = "abc";
+let result2 = String.test(text2, pattern2);
+print("Testing '^[a-z]+$' in 'abc':", result2);
+
+let text3 = "123";
+let result3 = String.test(text3, pattern2);
+print("Testing '^[a-z]+$' in '123':", result3);
+
+let run = "running";
+print("Identifier 'run':", run);
+
+let r = "just r";
+print("Identifier 'r':", r);
+
+let regexWithSpace = r"hello world";
+print("Regex with space test:", String.test("hello world", regexWithSpace));

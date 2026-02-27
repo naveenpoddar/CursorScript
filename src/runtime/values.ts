@@ -56,7 +56,8 @@ export type ValueType =
   | "array"
   | "native-fn"
   | "function"
-  | "promise";
+  | "promise"
+  | "regex";
 
 export interface RuntimeValue {
   type: ValueType;
@@ -82,6 +83,11 @@ export interface NumberValue extends RuntimeValue {
 export interface StringValue extends RuntimeValue {
   type: "string";
   value: string;
+}
+
+export interface RegexValue extends RuntimeValue {
+  type: "regex";
+  value: RegExp;
 }
 
 export interface NullValue extends RuntimeValue {
@@ -111,6 +117,13 @@ export function MK_STRING(s = ""): StringValue {
     type: "string",
     value: s,
   } as StringValue;
+}
+
+export function MK_REGEX(r: RegExp): RegexValue {
+  return {
+    type: "regex",
+    value: r,
+  } as RegexValue;
 }
 
 export function MK_NULL(): NullValue {

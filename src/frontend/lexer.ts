@@ -7,6 +7,7 @@ export enum TokenType {
   Number,
   Identifier,
   String,
+  Regex,
 
   // Keywords
   Let,
@@ -149,7 +150,8 @@ class Lexer {
       type,
       value: text,
       line: this.line,
-      column: this.start - this.lineStart + 1,
+      column:
+        (value !== undefined ? this.start : this.start) - this.lineStart + 1,
     });
   }
 
@@ -264,6 +266,14 @@ class Lexer {
       case '"':
         this.handleString();
         break;
+      case "r":
+        if (this.peek() === '"') {
+          this.advance(); // consume "
+          this.handleRegex();
+        } else {
+          this.handleIdentifier();
+        }
+        break;
 
       default:
         if (this.isDigit(char)) {
@@ -318,6 +328,28 @@ class Lexer {
     // The closing ".
     this.advance();
     this.addToken(TokenType.String, value);
+  }
+
+  /**
+   * Consumes a regex literal.
+   */
+  private handleRegex(): void {
+    let value = "";
+    while (this.peek() !== '"' && !this.isAtEnd()) {
+      if (this.peek() === "\n") {
+        this.line++;
+        this.lineStart = this.current + 1;
+      }
+      value += this.advance();
+    }
+
+    if (this.isAtEnd()) {
+      throw `Unterminated regex at ${this.filename}:${this.line}:${this.current - this.lineStart + 1}`;
+    }
+
+    // The closing ".
+    this.advance();
+    this.addToken(TokenType.Regex, value);
   }
 
   /**

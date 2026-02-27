@@ -23,7 +23,8 @@ export type NodeType =
   | "UnaryExpr"
   | "ArrayLiteral"
   | "LambdaExpr"
-  | "AwaitExpr";
+  | "AwaitExpr"
+  | "RegexLiteral";
 
 export interface LambdaExpr extends Expr {
   kind: "LambdaExpr";
@@ -128,6 +129,11 @@ export interface NumericLiteral extends Expr {
 
 export interface StringLiteral extends Expr {
   kind: "StringLiteral";
+  value: string;
+}
+
+export interface RegexLiteral extends Expr {
+  kind: "RegexLiteral";
   value: string;
 }
 

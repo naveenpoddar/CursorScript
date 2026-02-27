@@ -74,6 +74,10 @@ class StringL {
   substr(str: string, start: number, length: number) {
     return str.slice(start, start + length);
   }
+
+  test(str: string, regex: RegExp) {
+    return regex.test(str);
+  }
 }
 
 export const StringLib = ConvertTOMK_Object(new StringL());

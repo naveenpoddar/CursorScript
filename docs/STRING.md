@@ -46,6 +46,12 @@ Splits a string into an array.
 
 - **Example**: `String.substr("hello", 1, 3); // "ell"`
 
+### `String.test(str, regex)`
+
+Tests if a string matches a regex pattern.
+
+- **Example**: `String.test("abc", r"^[a-z]+$"); // true`
+
 ### `String.reverse(str)`
 
 - **Example**: `String.reverse("abc"); // "cba"`

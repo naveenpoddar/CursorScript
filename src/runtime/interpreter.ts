@@ -4,6 +4,7 @@ import {
   type RuntimeValue,
   type StringValue,
   type ValueType,
+  MK_REGEX,
 } from "./values";
 import type {
   ArrayLiteral,
@@ -27,6 +28,7 @@ import type {
   ImportDeclaration,
   ExportDeclaration,
   AwaitExpr,
+  RegexLiteral,
 } from "../frontend/ast";
 import type Environment from "./environment";
 import {
@@ -70,6 +72,9 @@ export async function evaluate(
           type: "string",
           value: (astNode as StringLiteral).value,
         } as StringValue;
+
+      case "RegexLiteral":
+        return MK_REGEX(new RegExp((astNode as RegexLiteral).value));
 
       case "Identifier":
         return evaluateIdentifier(astNode as Identifier, env);

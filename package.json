@@ -1,6 +1,6 @@
 {
     "name":  "cursorscript",
-    "version":  "Build Update",
+    "version":  "1.8.11",
     "devDependencies":  {
                             "@types/bun":  "latest",
                             "@types/terminal-kit":  "^2.5.7"

@@ -19,6 +19,24 @@ const targets = [
 console.log(`\n🚀 Bundling ${appName} v${version}...`);
 await $`rm -rf ${outDir} && mkdir -p ${outDir}`;
 
+const tempBundle = `${outDir}/_temp_bundle.js`;
+
+// 2. Bundling Step (The "Bundler-based" part)
+// This prepares the code, handles imports, and tree-shakes.
+const buildResult = await Bun.build({
+  entrypoints: [entryPoint],
+  target: "bun", // We bundle for the bun runtime
+  minify: true,
+  naming: "_temp_bundle.js",
+  sourcemap: "none",
+  outdir: outDir,
+});
+
+if (!buildResult.success) {
+  console.error("Build failed:", buildResult.logs);
+  process.exit(1);
+}
+
 for (const targetId of targets) {
   const isWindows = targetId.includes("windows");
   const extension = isWindows ? ".exe" : "";
@@ -29,25 +47,11 @@ for (const targetId of targets) {
   process.stdout.write(`📦 Target: ${targetId.padEnd(25)} ... `);
 
   try {
-    // 2. Bundling Step (The "Bundler-based" part)
-    // This prepares the code, handles imports, and tree-shakes.
-    const buildResult = await Bun.build({
-      entrypoints: [entryPoint],
-      target: "bun", // We bundle for the bun runtime
-      minify: true,
-      sourcemap: "none",
-    });
-
-    if (!buildResult.success) {
-      console.error("Build failed:", buildResult.logs);
-      continue;
-    }
-
     // 3. Compilation & Packaging
     await $`mkdir -p ${targetFolder}`;
 
     // Compile the bundled output into a single executable
-    await $`bun build ${entryPoint} --compile --target=${targetId} --outfile=${binPath}`.quiet();
+    await $`bun build ${tempBundle} --compile --target=${targetId} --outfile=${binPath}`.quiet();
 
     // 4. Asset Management
     const libSource = `./lib`;

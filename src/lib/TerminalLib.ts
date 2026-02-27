@@ -1,45 +1,33 @@
-import { terminal } from "terminal-kit";
+import chalk from "chalk";
+import prompts from "prompts";
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { executeCallback, toNative } from "./Utils";
-
-const genericConfig = {
-  colorRegister: "xterm",
-  canvas: false,
-  term: "xterm-256color",
-};
+import * as readline from "readline";
 
 class _TerminalL {
+  private _currentStyle: (text: string) => string = (text) => text;
+
   constructor() {
-    // We "prime" the terminal object manually.
-    // This prevents terminal-kit from ever trying to call 'require()'
-    // to find xterm.generic.js at runtime.
-    try {
-      if ((terminal as any).setup) {
-        (terminal as any).setup({
-          term: "xterm-256color",
-          config: genericConfig,
-        });
-      }
-    } catch (e) {
-      // Silently fail if setup isn't available
-    }
+    // No initialization needed for chalk/prompts
   }
 
   // Printing & Colors
   public print(text: any) {
-    terminal(String(toNative(text)));
+    process.stdout.write(this._currentStyle(String(toNative(text))));
     return this;
   }
 
   public println(text: any) {
-    terminal(String(toNative(text)) + "\n");
+    process.stdout.write(this._currentStyle(String(toNative(text)) + "\n"));
     return this;
   }
 
   public color(colorName: any) {
     const c = String(toNative(colorName));
-    if ((terminal as any)[c]) {
-      (terminal as any)[c]("");
+    const style = (chalk as any)[c];
+    if (typeof style === "function") {
+      const prev = this._currentStyle;
+      this._currentStyle = (text: string) => prev(style(text));
     }
     return this;
   }
@@ -47,170 +35,239 @@ class _TerminalL {
   public bgColor(colorName: any) {
     const c = String(toNative(colorName));
     const bgName = "bg" + c.charAt(0).toUpperCase() + c.slice(1);
-    if ((terminal as any)[bgName]) {
-      (terminal as any)[bgName]("");
+    const style = (chalk as any)[bgName];
+    if (typeof style === "function") {
+      const prev = this._currentStyle;
+      this._currentStyle = (text: string) => prev(style(text));
     }
     return this;
   }
 
   public bold() {
-    terminal.bold("");
+    const prev = this._currentStyle;
+    this._currentStyle = (text: string) => prev(chalk.bold(text));
     return this;
   }
 
   public italic() {
-    terminal.italic("");
+    const prev = this._currentStyle;
+    this._currentStyle = (text: string) => prev(chalk.italic(text));
     return this;
   }
 
   public underline() {
-    terminal.underline("");
+    const prev = this._currentStyle;
+    this._currentStyle = (text: string) => prev(chalk.underline(text));
     return this;
   }
 
   public inverse() {
-    terminal.inverse("");
+    const prev = this._currentStyle;
+    this._currentStyle = (text: string) => prev(chalk.inverse(text));
     return this;
   }
 
   public reset() {
-    terminal.styleReset();
+    this._currentStyle = (text: string) => text;
+    process.stdout.write("\x1b[0m");
     return this;
   }
 
   // Cursor & Screen
   public moveTo(x: any, y: any) {
-    terminal.moveTo(Number(toNative(x)), Number(toNative(y)));
+    process.stdout.write(`\x1b[${Number(toNative(y))};${Number(toNative(x))}H`);
     return this;
   }
 
   public move(x: any, y: any) {
-    terminal.move(Number(toNative(x)), Number(toNative(y)));
+    const nx = Number(toNative(x));
+    const ny = Number(toNative(y));
+    if (nx > 0) process.stdout.write(`\x1b[${nx}C`);
+    else if (nx < 0) process.stdout.write(`\x1b[${-nx}D`);
+    if (ny > 0) process.stdout.write(`\x1b[${ny}B`);
+    else if (ny < 0) process.stdout.write(`\x1b[${-ny}A`);
     return this;
   }
 
   public up(n: any = 1) {
-    terminal.up(Number(toNative(n)));
+    process.stdout.write(`\x1b[${Number(toNative(n))}A`);
     return this;
   }
 
   public down(n: any = 1) {
-    terminal.down(Number(toNative(n)));
+    process.stdout.write(`\x1b[${Number(toNative(n))}B`);
     return this;
   }
 
   public left(n: any = 1) {
-    terminal.left(Number(toNative(n)));
+    process.stdout.write(`\x1b[${Number(toNative(n))}D`);
     return this;
   }
 
   public right(n: any = 1) {
-    terminal.right(Number(toNative(n)));
+    process.stdout.write(`\x1b[${Number(toNative(n))}C`);
     return this;
   }
 
   public clear() {
-    terminal.clear();
+    process.stdout.write("\x1b[2J\x1b[H");
     return this;
   }
 
   public eraseLine() {
-    terminal.eraseLine();
+    process.stdout.write("\x1b[2K");
     return this;
   }
 
   public eraseLineAfter() {
-    terminal.eraseLineAfter();
+    process.stdout.write("\x1b[0K");
     return this;
   }
 
   public eraseLineBefore() {
-    terminal.eraseLineBefore();
+    process.stdout.write("\x1b[1K");
     return this;
   }
 
   // Info
   public getWidth() {
-    return terminal.width;
+    return process.stdout.columns || 80;
   }
 
   public getHeight() {
-    return terminal.height;
+    return process.stdout.rows || 24;
   }
 
   // Input
   public grabInput(enable: any = true) {
-    terminal.grabInput(toNative(enable));
+    const isEnabled = toNative(enable);
+    if (process.stdin.isTTY) {
+      if (isEnabled) {
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        readline.emitKeypressEvents(process.stdin);
+      } else {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+      }
+    }
     return this;
   }
 
   public onKey(callback: any) {
-    terminal.on("key", async (name: string, matches: any, data: any) => {
-      await executeCallback(callback, name, matches, data);
+    process.stdin.on("keypress", async (str, key) => {
+      if (!key) return;
+      let name = key.name || str;
+      if (key.ctrl) {
+        name = "CTRL_" + (key.name ? key.name.toUpperCase() : "");
+      }
+      if (key.name === "return") name = "ENTER";
+      if (key.name === "escape") name = "ESCAPE";
+      if (key.name === "backspace") name = "BACKSPACE";
+      if (key.name === "tab") name = "TAB";
+
+      await executeCallback(callback, name, [name], key);
     });
     return this;
   }
 
   public onMouse(callback: any) {
-    terminal.on("mouse", async (name: string, data: any) => {
-      await executeCallback(callback, name, data);
-    });
     return this;
   }
 
   // High-level Widgets
   public async inputField(options: any = {}) {
-    return new Promise((resolve) => {
-      terminal.inputField(toNative(options), (error, input) => {
-        resolve(input);
-      });
+    const opt = toNative(options);
+    const response = await prompts({
+      type: "text",
+      name: "value",
+      message: opt.message || opt.title || "Input:",
+      initial: opt.default || "",
     });
+    return response.value;
   }
 
   public async yesOrNo(options: any = {}) {
-    return new Promise((resolve) => {
-      terminal.yesOrNo(toNative(options), (error, result) => {
-        resolve(result);
-      });
+    const opt = toNative(options);
+    const response = await prompts({
+      type: "confirm",
+      name: "value",
+      message:
+        typeof opt === "string"
+          ? opt
+          : opt.message || opt.title || "Yes or No?",
+      initial: opt.default !== undefined ? opt.default : true,
     });
+    return response.value;
   }
 
   public async gridMenu(items: any, options: any = {}) {
     const nativeItems = toNative(items);
-    return new Promise((resolve) => {
-      terminal.gridMenu(nativeItems, toNative(options), (error, response) => {
-        resolve(response ? response.selectedText : null);
-      });
+    const opt = toNative(options);
+    const response = await prompts({
+      type: "select",
+      name: "value",
+      message: opt.message || opt.title || "Select an item",
+      choices: nativeItems.map((item: any) => ({
+        title: String(item),
+        value: item,
+      })),
     });
+    return response.value;
   }
 
   public async singleColumnMenu(items: any, options: any = {}) {
     const nativeItems = toNative(items);
-    return new Promise((resolve, reject) => {
-      if (!Array.isArray(nativeItems)) {
-        return reject("singleColumnMenu items must be an array.");
-      }
-      terminal.singleColumnMenu(
-        nativeItems,
-        toNative(options),
-        (error, response) => {
-          if (error) reject(error);
-          else resolve(response ? response.selectedText : null);
-        },
-      );
+    const opt = toNative(options);
+    if (!Array.isArray(nativeItems)) {
+      throw "singleColumnMenu items must be an array.";
+    }
+    const response = await prompts({
+      type: "select",
+      name: "value",
+      message: opt.message || opt.title || "Select an item",
+      choices: nativeItems.map((item: any) => ({
+        title: String(item),
+        value: item,
+      })),
     });
+    return response.value;
   }
 
   public progressBar(options: any = {}) {
-    const bar = terminal.progressBar(toNative(options));
+    const opt = toNative(options);
+    const width = opt.width || 40;
+    const title = opt.title || "";
+
+    const render = (progress: number) => {
+      const filledWidth = Math.min(
+        width,
+        Math.max(0, Math.round(width * progress)),
+      );
+      const emptyWidth = width - filledWidth;
+      const bar = "█".repeat(filledWidth) + "░".repeat(emptyWidth);
+      const percent = Math.round(progress * 100);
+      process.stdout.write(`\r${title} [${bar}] ${percent}%`);
+    };
+
+    render(0);
+
     return {
-      update: (progress: any) => bar.update(toNative(progress)),
-      stop: () => bar.stop(),
+      update: (progress: any) => {
+        render(toNative(progress));
+      },
+      stop: () => {
+        process.stdout.write("\n");
+      },
     };
   }
 
   public fullscreen(enable: any = true) {
-    terminal.fullscreen(toNative(enable));
+    if (toNative(enable)) {
+      process.stdout.write("\x1b[?1049h");
+    } else {
+      process.stdout.write("\x1b[?1049l");
+    }
     return this;
   }
 

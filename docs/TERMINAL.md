@@ -1,11 +1,11 @@
 # Terminal Library
 
-The `Terminal` library provides advanced terminal interaction capabilities, wrapping the powerful `terminal-kit` library.
+The `Terminal` library provides advanced terminal interaction capabilities, using `chalk` for styling and `prompts` for interactive widgets.
 
 ## Printing & Styling
 
-- `Terminal.print(text)` - Prints text without a newline.
-- `Terminal.println(text)` - Prints text with a newline.
+- `Terminal.print(text)` - Prints text with current styling.
+- `Terminal.println(text)` - Prints text with a newline and current styling.
 - `Terminal.color(name)` - Sets the foreground color (e.g., "red", "green", "blue", "yellow", "magenta", "cyan", "white", "black").
 - `Terminal.bgColor(name)` - Sets the background color.
 - `Terminal.bold()` - Enables bold text.
@@ -16,13 +16,13 @@ The `Terminal` library provides advanced terminal interaction capabilities, wrap
 
 ## Cursor & Screen Control
 
-- `Terminal.moveTo(x, y)` - Moves the cursor to absolute position (x, y).
+- `Terminal.moveTo(x, y)` - Moves the cursor to absolute position (x, y). 1-indexed.
 - `Terminal.move(x, y)` - Moves the cursor relative to its current position.
 - `Terminal.up(n)` - Moves the cursor up by `n` lines (default 1).
 - `Terminal.down(n)` - Moves the cursor down.
 - `Terminal.left(n)` - Moves the cursor left.
 - `Terminal.right(n)` - Moves the cursor right.
-- `Terminal.clear()` - Clears the entire screen.
+- `Terminal.clear()` - Clears the entire screen and moves cursor to home.
 - `Terminal.eraseLine()` - Erases the current line.
 - `Terminal.eraseLineAfter()` - Erases from cursor to end of line.
 - `Terminal.eraseLineBefore()` - Erases from start of line to cursor.
@@ -34,9 +34,11 @@ The `Terminal` library provides advanced terminal interaction capabilities, wrap
 
 ## Input Handling
 
-- `Terminal.grabInput(bool)` - Enables or disables raw input grabbing (capturing individual keys/mouse).
+- `Terminal.grabInput(bool)` - Enables or disables raw input grabbing (required for `onKey`).
 - `Terminal.onKey(callback)` - Sets a callback for key events. Callback receives `(name, matches, data)`.
-- `Terminal.onMouse(callback)` - Sets a callback for mouse events. Callback receives `(name, data)`.
+  - `name`: String name of the key (e.g., "a", "ENTER", "ESCAPE", "CTRL_C").
+  - `matches`: An array containing the key name.
+  - `data`: Raw key object from Node.js `keypress` event.
 
 ## Interactive Widgets (Async)
 
@@ -51,9 +53,8 @@ These functions return promises and should be used with `await`.
 
 - `Terminal.progressBar(options)` - Creates and returns a progress bar object.
   - `bar.update(progress)` - Updates progress (0.0 to 1.0).
-  - `bar.stop()` - Stops the progress bar.
-- `Terminal.beep()` - Triggers a terminal beep sound.
-- `Terminal.fullscreen(bool)` - Enters or exits fullscreen mode.
+  - `bar.stop()` - Stops the progress bar and moves to a new line.
+- `Terminal.fullscreen(bool)` - Enters or exits fullscreen mode (alternate buffer).
 - `Terminal.processExit()` - Gracefully exits the process.
 
 ## Example

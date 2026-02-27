@@ -1,15 +1,9 @@
 import { terminal } from "terminal-kit";
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { executeCallback, toNative } from "./Utils";
-import path from "node:path";
 
-if (process.env.BUN_BINARY_TARGET) {
-  // This helps if the internal resolver gets confused
-  process.env.TERM_KIT_CONFIG_PATH = path.join(
-    path.dirname(process.argv[0]!),
-    "lib/termconfig",
-  );
-}
+import "terminal-kit/lib/termconfig/xterm.generic.js";
+import "terminal-kit/lib/vttypes.js";
 
 class _TerminalL {
   // Printing & Colors

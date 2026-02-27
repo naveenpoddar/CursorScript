@@ -3,37 +3,61 @@ name: Release Compiler
 on:
   push:
     tags:
-      - "v*" # Triggers whenever you push a tag starting with 'v'
+      - "v*"
 
 jobs:
+  # JOB 1: Parallel Compilation
   build:
-    name: Build and Release
+    name: Build ${{ matrix.target }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Important: Allows the action to create the release
+    strategy:
+      matrix:
+        target:
+          [
+            bun-linux-x64,
+            bun-linux-arm64,
+            bun-darwin-x64,
+            bun-darwin-arm64,
+            bun-windows-x64-baseline,
+          ]
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
         run: bun install
 
-      - name: Install Build Essentials
-        run: sudo apt-get update && sudo apt-get install -y build-essential zip
-
       - name: Run Build Script
-        run: bun run build # This runs your scripts/build.ts
+        # Pass the matrix target to your script
+        run: bun run scripts/build.ts ${{ matrix.target }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.target }}
+          path: dist/*.zip
+          retention-days: 1
+
+  # JOB 2: Aggregate and Release
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./all-dist
+          pattern: bin-*
+          merge-multiple: true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: ./all-dist/*.zip
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           draft: false

@@ -8,13 +8,16 @@ const outDir = "./dist";
 const appName = "cursorscript";
 const version = pkg.version;
 
-const targets = [
+const ALL_TARGETS = [
   "bun-linux-x64",
   "bun-linux-arm64",
   "bun-darwin-x64",
   "bun-darwin-arm64",
   "bun-windows-x64-baseline",
 ];
+
+const targetArg = process.argv.find((arg) => arg.startsWith("bun-"));
+const targets = targetArg ? [targetArg] : ALL_TARGETS;
 
 console.log(`\n🚀 Bundling ${appName} v${version}...`);
 await $`rm -rf ${outDir} && mkdir -p ${outDir}`;

@@ -23,6 +23,7 @@ Welcome to the CursorScript API documentation. This index provides links to deta
 - [Engine3D Library](./docs/ENGINE3D.md) - High-performance 3D rendering.
 - [String Library](./docs/STRING.md) - String manipulation utilities.
 - [DateTime Library](./docs/DATE_TIME.md) - Date and time utilities.
+- [Server Library](./docs/SERVER.md) - HTTP and WebSocket server support.
 - # [Perlin Noise Library](./docs/PERLIN_NOISE.md) - Procedural noise generation.
 
 * [Math Library](api/math.md) - Mathematical constants and functions.
@@ -33,6 +34,7 @@ Welcome to the CursorScript API documentation. This index provides links to deta
 * [Crypto Library](api/crypto.md) - Hashing, encryption, and UUIDs.
 * [JSON Library](api/json.md) - Serializing and deserializing data.
 * [File Library](api/file.md) - Filesystem read/write operations.
+* [Server Library](api/server.md) - HTTP and WebSocket server support.
 
 ---
 

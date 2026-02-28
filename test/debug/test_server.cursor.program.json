@@ -1,0 +1,855 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "FunctionDeclaration",
+      "name": "main",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "port",
+          "constant": false,
+          "value": {
+            "kind": "NumericLiteral",
+            "line": 3,
+            "column": 16,
+            "value": 8080
+          },
+          "line": 3,
+          "column": 5
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "serverMsg",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 4,
+                "column": 21,
+                "symbol": "Server"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 4,
+                "column": 28,
+                "symbol": "start"
+              },
+              "computed": false,
+              "line": 4,
+              "column": 33
+            },
+            "args": [
+              {
+                "kind": "ObjectLiteral",
+                "properties": [
+                  {
+                    "kind": "Property",
+                    "key": "port",
+                    "value": {
+                      "kind": "Identifier",
+                      "line": 5,
+                      "column": 15,
+                      "symbol": "port"
+                    }
+                  }
+                ]
+              },
+              {
+                "kind": "LambdaExpr",
+                "parameters": [
+                  "req",
+                  "server"
+                ],
+                "body": [
+                  {
+                    "kind": "CallExpr",
+                    "caller": {
+                      "kind": "Identifier",
+                      "line": 7,
+                      "column": 9,
+                      "symbol": "print"
+                    },
+                    "args": [
+                      {
+                        "kind": "StringLiteral",
+                        "line": 7,
+                        "column": 15,
+                        "value": "Received request:"
+                      },
+                      {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 7,
+                          "column": 36,
+                          "symbol": "req"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 7,
+                          "column": 40,
+                          "symbol": "method"
+                        },
+                        "computed": false,
+                        "line": 7,
+                        "column": 46
+                      },
+                      {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 7,
+                          "column": 48,
+                          "symbol": "req"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 7,
+                          "column": 52,
+                          "symbol": "pathname"
+                        },
+                        "computed": false,
+                        "line": 7,
+                        "column": 60
+                      }
+                    ],
+                    "line": 7,
+                    "column": 61
+                  },
+                  {
+                    "kind": "IfStmt",
+                    "condition": {
+                      "kind": "BinaryExpr",
+                      "operator": "==",
+                      "left": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 9,
+                          "column": 13,
+                          "symbol": "req"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 9,
+                          "column": 17,
+                          "symbol": "pathname"
+                        },
+                        "computed": false,
+                        "line": 9,
+                        "column": 26
+                      },
+                      "right": {
+                        "kind": "StringLiteral",
+                        "line": 9,
+                        "column": 29,
+                        "value": "/ping"
+                      },
+                      "line": 9,
+                      "column": 36
+                    },
+                    "thenBranch": [
+                      {
+                        "kind": "ReturnStmt",
+                        "value": {
+                          "kind": "StringLiteral",
+                          "line": 10,
+                          "column": 20,
+                          "value": "pong"
+                        },
+                        "line": 10,
+                        "column": 20
+                      }
+                    ],
+                    "line": 0,
+                    "column": 0
+                  },
+                  {
+                    "kind": "IfStmt",
+                    "condition": {
+                      "kind": "BinaryExpr",
+                      "operator": "==",
+                      "left": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 13,
+                          "column": 13,
+                          "symbol": "req"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 13,
+                          "column": 17,
+                          "symbol": "pathname"
+                        },
+                        "computed": false,
+                        "line": 13,
+                        "column": 26
+                      },
+                      "right": {
+                        "kind": "StringLiteral",
+                        "line": 13,
+                        "column": 29,
+                        "value": "/json"
+                      },
+                      "line": 13,
+                      "column": 36
+                    },
+                    "thenBranch": [
+                      {
+                        "kind": "ReturnStmt",
+                        "value": {
+                          "kind": "ObjectLiteral",
+                          "properties": [
+                            {
+                              "kind": "Property",
+                              "key": "status",
+                              "value": {
+                                "kind": "NumericLiteral",
+                                "line": 15,
+                                "column": 25,
+                                "value": 200
+                              }
+                            },
+                            {
+                              "kind": "Property",
+                              "key": "headers",
+                              "value": {
+                                "kind": "ObjectLiteral",
+                                "properties": [
+                                  {
+                                    "kind": "Property",
+                                    "key": "X-Custom-Header",
+                                    "value": {
+                                      "kind": "StringLiteral",
+                                      "line": 17,
+                                      "column": 40,
+                                      "value": "CursorScript"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "kind": "Property",
+                              "key": "body",
+                              "value": {
+                                "kind": "ObjectLiteral",
+                                "properties": [
+                                  {
+                                    "kind": "Property",
+                                    "key": "message",
+                                    "value": {
+                                      "kind": "StringLiteral",
+                                      "line": 20,
+                                      "column": 32,
+                                      "value": "Hello from CursorScript Server!"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "line": 14,
+                        "column": 20
+                      }
+                    ],
+                    "line": 0,
+                    "column": 0
+                  },
+                  {
+                    "kind": "ReturnStmt",
+                    "value": {
+                      "kind": "ObjectLiteral",
+                      "properties": [
+                        {
+                          "kind": "Property",
+                          "key": "status",
+                          "value": {
+                            "kind": "NumericLiteral",
+                            "line": 26,
+                            "column": 21,
+                            "value": 404
+                          }
+                        },
+                        {
+                          "kind": "Property",
+                          "key": "body",
+                          "value": {
+                            "kind": "StringLiteral",
+                            "line": 27,
+                            "column": 19,
+                            "value": "Not Found"
+                          }
+                        }
+                      ]
+                    },
+                    "line": 25,
+                    "column": 16
+                  }
+                ],
+                "async": false,
+                "line": 29,
+                "column": 6
+              }
+            ],
+            "line": 29,
+            "column": 7
+          },
+          "line": 4,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 31,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 31,
+              "column": 11,
+              "symbol": "serverMsg"
+            }
+          ],
+          "line": 31,
+          "column": 21
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 33,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 33,
+              "column": 11,
+              "value": "Waiting a bit before testing..."
+            }
+          ],
+          "line": 33,
+          "column": 45
+        },
+        {
+          "kind": "AwaitExpr",
+          "argument": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "Identifier",
+              "line": 34,
+              "column": 11,
+              "symbol": "wait"
+            },
+            "args": [
+              {
+                "kind": "NumericLiteral",
+                "line": 34,
+                "column": 16,
+                "value": 1000
+              }
+            ],
+            "line": 34,
+            "column": 21
+          },
+          "line": 34,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 36,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 36,
+              "column": 11,
+              "value": "Testing /ping endpoint..."
+            }
+          ],
+          "line": 36,
+          "column": 39
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "pingRes",
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 37,
+                  "column": 25,
+                  "symbol": "Network"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 37,
+                  "column": 33,
+                  "symbol": "get"
+                },
+                "computed": false,
+                "line": 37,
+                "column": 36
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "BinaryExpr",
+                    "operator": "+",
+                    "left": {
+                      "kind": "StringLiteral",
+                      "line": 37,
+                      "column": 37,
+                      "value": "http://localhost:"
+                    },
+                    "right": {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 37,
+                        "column": 59,
+                        "symbol": "str"
+                      },
+                      "args": [
+                        {
+                          "kind": "Identifier",
+                          "line": 37,
+                          "column": 63,
+                          "symbol": "port"
+                        }
+                      ],
+                      "line": 37,
+                      "column": 69
+                    },
+                    "line": 37,
+                    "column": 69
+                  },
+                  "right": {
+                    "kind": "StringLiteral",
+                    "line": 37,
+                    "column": 71,
+                    "value": "/ping"
+                  },
+                  "line": 37,
+                  "column": 78
+                }
+              ],
+              "line": 37,
+              "column": 79
+            },
+            "line": 37,
+            "column": 19
+          },
+          "line": 37,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 38,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 38,
+              "column": 11,
+              "value": "Ping response:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 38,
+              "column": 29,
+              "symbol": "pingRes"
+            }
+          ],
+          "line": 38,
+          "column": 37
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 40,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 40,
+              "column": 11,
+              "value": "Testing /json endpoint..."
+            }
+          ],
+          "line": 40,
+          "column": 39
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "jsonRes",
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 41,
+                  "column": 25,
+                  "symbol": "Network"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 41,
+                  "column": 33,
+                  "symbol": "get"
+                },
+                "computed": false,
+                "line": 41,
+                "column": 36
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "BinaryExpr",
+                    "operator": "+",
+                    "left": {
+                      "kind": "StringLiteral",
+                      "line": 41,
+                      "column": 37,
+                      "value": "http://localhost:"
+                    },
+                    "right": {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 41,
+                        "column": 59,
+                        "symbol": "str"
+                      },
+                      "args": [
+                        {
+                          "kind": "Identifier",
+                          "line": 41,
+                          "column": 63,
+                          "symbol": "port"
+                        }
+                      ],
+                      "line": 41,
+                      "column": 69
+                    },
+                    "line": 41,
+                    "column": 69
+                  },
+                  "right": {
+                    "kind": "StringLiteral",
+                    "line": 41,
+                    "column": 71,
+                    "value": "/json"
+                  },
+                  "line": 41,
+                  "column": 78
+                }
+              ],
+              "line": 41,
+              "column": 79
+            },
+            "line": 41,
+            "column": 19
+          },
+          "line": 41,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 42,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 42,
+              "column": 11,
+              "value": "JSON response:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 42,
+              "column": 29,
+              "symbol": "jsonRes"
+            }
+          ],
+          "line": 42,
+          "column": 37
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 44,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 44,
+              "column": 11,
+              "value": "Testing 404 endpoint..."
+            }
+          ],
+          "line": 44,
+          "column": 37
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "",
+          "identifiers": [
+            "missingRes",
+            "missError"
+          ],
+          "constant": true,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 45,
+                  "column": 43,
+                  "symbol": "Network"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 45,
+                  "column": 51,
+                  "symbol": "get"
+                },
+                "computed": false,
+                "line": 45,
+                "column": 54
+              },
+              "args": [
+                {
+                  "kind": "BinaryExpr",
+                  "operator": "+",
+                  "left": {
+                    "kind": "BinaryExpr",
+                    "operator": "+",
+                    "left": {
+                      "kind": "StringLiteral",
+                      "line": 45,
+                      "column": 55,
+                      "value": "http://localhost:"
+                    },
+                    "right": {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 45,
+                        "column": 77,
+                        "symbol": "str"
+                      },
+                      "args": [
+                        {
+                          "kind": "Identifier",
+                          "line": 45,
+                          "column": 81,
+                          "symbol": "port"
+                        }
+                      ],
+                      "line": 45,
+                      "column": 87
+                    },
+                    "line": 45,
+                    "column": 87
+                  },
+                  "right": {
+                    "kind": "StringLiteral",
+                    "line": 45,
+                    "column": 89,
+                    "value": "/missing"
+                  },
+                  "line": 45,
+                  "column": 99
+                }
+              ],
+              "line": 45,
+              "column": 100
+            },
+            "line": 45,
+            "column": 37
+          },
+          "line": 45,
+          "column": 5
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "Identifier",
+            "line": 47,
+            "column": 9,
+            "symbol": "missError"
+          },
+          "thenBranch": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 48,
+                "column": 9,
+                "symbol": "print"
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 48,
+                  "column": 15,
+                  "value": "Got expected error on /missing:"
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 48,
+                  "column": 50,
+                  "symbol": "missError"
+                }
+              ],
+              "line": 48,
+              "column": 60
+            }
+          ],
+          "line": 0,
+          "column": 0
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 51,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 51,
+              "column": 11,
+              "value": "Stopping server..."
+            }
+          ],
+          "line": 51,
+          "column": 32
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 52,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 52,
+                  "column": 11,
+                  "symbol": "Server"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 52,
+                  "column": 18,
+                  "symbol": "stop"
+                },
+                "computed": false,
+                "line": 52,
+                "column": 22
+              },
+              "args": [],
+              "line": 52,
+              "column": 24
+            }
+          ],
+          "line": 52,
+          "column": 25
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 53,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 53,
+              "column": 11,
+              "value": "Test complete."
+            }
+          ],
+          "line": 53,
+          "column": 28
+        }
+      ],
+      "async": true,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 56,
+        "column": 1,
+        "symbol": "main"
+      },
+      "args": [],
+      "line": 56,
+      "column": 7
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

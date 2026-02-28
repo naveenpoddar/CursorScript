@@ -1,6 +1,6 @@
 {
     "name":  "cursorscript",
-    "version":  "1.8.17",
+    "version":  "1.8.18",
     "devDependencies":  {
                             "@types/bun":  "latest",
                             "@types/prompts":  "^2.4.9"

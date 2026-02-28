@@ -1,0 +1,233 @@
+// Simple Z.ai API Test - Debug Network Return
+
+let ZAI_SECRET_KEY = "key-@@@@)))()((9))-xxxx&&&%%%%%";
+let BASE_URL = "https://chat.z.ai";
+let FE_VERSION = "prod-fe-1.0.239";
+
+let bearer_token = "";
+let user_id = "";
+let chat_id = "";
+
+fn generateSignature(rid, ts, uid, prompt) {
+    let promptB64 = btoa(prompt);
+    let s = "requestId," + rid + ",timestamp," + ts + ",user_id," + uid + "|" + promptB64 + "|" + ts;
+    print("s", s);
+    let tsNum = num(ts);
+    let bucket = str(Math.floor(tsNum / 300000));
+    let k = Crypto.hmacSha256(bucket, ZAI_SECRET_KEY);
+    let sig = Crypto.hmacSha256(s, k);
+    return sig;
+}
+
+async fn login() {
+    print("[1] Logging in...");
+    let options = {
+        "headers": {
+            "Accept": "application/json",
+            "Origin": BASE_URL,
+            "Referer": BASE_URL
+        }
+    };
+
+    let result = await Network.get(BASE_URL + "/api/v1/auths/", options);
+
+    // Debug: what did we get?
+    print("Result type:", typeof(result));
+    print("Result:", result);
+
+    // Check if result is a list/array
+    if (typeof(result) == "list") {
+        print("Result is a list, length:", len(result));
+        let data = result[0];
+        let error = result[1];
+        print("data type:", typeof(data));
+        print("error type:", typeof(error));
+        print("error value:", error);
+
+        if (error) {
+            printError("Login error:", error);
+            return false;
+        }
+
+        if (!data) {
+            printError("Login failed: data is null");
+            return false;
+        }
+
+        bearer_token = data.token;
+        user_id = data.id;
+        print("[OK] Logged in");
+        return true;
+    } else {
+        // Maybe result is the data directly?
+        if (typeof(result) == "object") {
+            print("Result is a map/object");
+            if (result.token) {
+                bearer_token = result.token;
+                user_id = result.id;
+                print("[OK] Logged in");
+                return true;
+            } else {
+                printError("No token in result");
+                print("Keys:", Json.serialize(result));
+                return false;
+            }
+        } else {
+            printError("Unexpected result type:", typeof(result));
+            return false;
+        }
+    }
+}
+
+async fn createChat() {
+    print("[2] Creating chat...");
+    let payload = {
+        "chat": {
+            "id": "",
+            "title": "Test",
+            "models": ["glm-5"],
+            "history": {
+                "messages": {}, "currentId": null
+            },
+            "features": [],
+            "enable_thinking": false,
+            "auto_web_search": false,
+            "timestamp": time()
+        }
+    };
+
+    let options = {
+        "headers": {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + bearer_token
+        }
+    };
+
+    let result = await Network.post(BASE_URL + "/api/v1/chats/new", payload, options);
+    print("CreateChat Result type:", typeof(result));
+
+    if (typeof(result) == "list") {
+        let data = result[0];
+        let error = result[1];
+
+        if (error) {
+            printError("Create chat error:", error);
+            return false;
+        }
+
+        if (!data) {
+            printError("Create chat: data is null");
+            return false;
+        }
+
+        chat_id = data.id;
+        print("[OK] Chat created:", chat_id);
+        return true;
+    } else {
+        if (typeof(result) == "object" && result.id) {
+            chat_id = result.id;
+            print("[OK] Chat created:", chat_id);
+            return true;
+        }
+        printError("Unexpected createChat result");
+        return false;
+    }
+}
+
+async fn sendMessage(msg) {
+    print("[3] Sending:", msg);
+
+    let ts = str(time());
+    print("ts", ts);
+    let rid = Crypto.uuid();
+    print("rid", rid);
+    let msgId = Crypto.uuid();
+    print("msgId", msgId);
+    let sig = generateSignature(rid, ts, user_id, msg);
+    print("sig", sig);
+
+    print("    Timestamp:", ts);
+    print("    Signature:", String.substr(sig, 0, 20) + "...");
+
+    let body = {
+        "stream": true,
+        "model": "glm-5",
+        "messages": [{
+            "role": "user", "content": msg
+        }],
+        "signature_prompt": msg,
+        "params": {},
+        "extra": {},
+        "files": [],
+        "features": {
+            "image_generation": false,
+            "web_search": false,
+            "auto_web_search": false,
+            "preview_mode": true,
+            "flags": [],
+            "enable_thinking": false
+        },
+        "chat_id": chat_id,
+        "id": msgId,
+        "current_user_message_id": Crypto.uuid()
+    };
+
+    let options = {
+        "headers": {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + bearer_token,
+            "X-Signature": sig,
+            "X-FE-Version": FE_VERSION
+        },
+        body: Json.serialize(body),
+        method: "POST",
+    };
+
+    print("[4] Calling API...");
+
+    const (res, error) = await Network.stream(BASE_URL + "/api/v2/chat/completions", options, (chunk) -> {
+        // SSE chunks typically come in as __CURSOR_STR_46__
+        Terminal.print(chunk);
+    });
+
+    if (error) {
+        Terminal.color("red");
+        Terminal.println("\nError: " + error, res);
+        Terminal.reset();
+        return null;
+    }else{
+        Terminal.println(res);
+    }
+
+    Terminal.println("");
+}
+
+async fn main() {
+    print("=== Z.ai Test v4 - Debug ===\n");
+
+    if (!await login()) {
+        return;
+    }
+
+    if (!await createChat()) {
+        return;
+    }
+
+    print("\nType ONE word:");
+    let word = input("> ");
+    word = String.trim(word);
+
+    print(word, len);
+
+    if (len(word) <= 0) {
+        return;
+    }
+
+    await sendMessage(word);
+
+    print("\n=== Done ===");
+}
+
+main();

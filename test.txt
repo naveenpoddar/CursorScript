@@ -1,1 +1,37 @@
-Hello World
+{
+  "options": {
+    "headers": {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJlMWNjMWFlLTBlNTYtNDAyZi1iN2NmLThlNjI5OWYwNThmMyIsImVtYWlsIjoiR3Vlc3QtMTc3MjI3NjY5NzM2NUBndWVzdC5jb20ifQ.5VXFT6Nx3Tt9vv1EL3uKOgeDkEUTQHXrxRc5QfBUyGBeEYdKjv4cAkliSvizTPyj6FSIhLE509dAMsTuzufW3w",
+      "X-Signature": "a1455167ca6f3fd80d772bd8881d5d48550f406850810d7322e5541378cbb032",
+      "X-FE-Version": "prod-fe-1.0.239"
+    },
+    "body": {
+      "stream": true,
+      "model": "glm-5",
+      "messages": [
+        {
+          "role": "user",
+          "content": "hello"
+        }
+      ],
+      "signature_prompt": "hello",
+      "params": {},
+      "extra": {},
+      "files": [],
+      "features": {
+        "image_generation": false,
+        "web_search": false,
+        "auto_web_search": false,
+        "preview_mode": true,
+        "flags": [],
+        "enable_thinking": false
+      },
+      "chat_id": "ee8e2b72-a3d6-41b5-a2a9-63bd4a7886ec",
+      "id": "cd096d91-9895-4514-9d77-6ddab12b067f",
+      "current_user_message_id": "c01b9be7-7ef9-4c17-b137-976a71f0b77b"
+    },
+    "method": "POST"
+  }
+}

@@ -50,14 +50,14 @@ export async function evaluateIfStmt(
     const scope = new Environment(env);
     let lastEvaluatedValue: RuntimeValue = MK_NULL();
     for (const child of stmt.thenBranch) {
-      lastEvaluatedValue = await evaluate(child, scope);
+      lastEvaluatedValue = unwrapAwait(await evaluate(child, scope));
     }
     return lastEvaluatedValue;
   } else if (stmt.elseBranch) {
     const scope = new Environment(env);
     let lastEvaluatedValue: RuntimeValue = MK_NULL();
     for (const child of stmt.elseBranch) {
-      lastEvaluatedValue = await evaluate(child, scope);
+      lastEvaluatedValue = unwrapAwait(await evaluate(child, scope));
     }
     return lastEvaluatedValue;
   }
@@ -75,7 +75,7 @@ export async function evaluateWhileStmt(
     const scope = new Environment(env);
     try {
       for (const child of stmt.body) {
-        lastEvaluatedValue = await evaluate(child, scope);
+        lastEvaluatedValue = unwrapAwait(await evaluate(child, scope));
       }
     } catch (e: any) {
       if (e instanceof BreakSignal) {
@@ -97,8 +97,16 @@ export async function evaluateProgram(
 ): Promise<RuntimeValue> {
   let lastEvaluatedValue: RuntimeValue = MK_NULL();
 
-  for (const child of program.body) {
-    lastEvaluatedValue = await evaluate(child, env);
+  try {
+    for (const child of program.body) {
+      lastEvaluatedValue = unwrapAwait(await evaluate(child, env));
+    }
+  } catch (e: any) {
+    if (e instanceof ReturnSignal) {
+      lastEvaluatedValue = e.value;
+    } else {
+      throw e;
+    }
   }
 
   // Ensure all background tasks are promised

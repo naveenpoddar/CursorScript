@@ -222,11 +222,58 @@ export function createGlobalEnv() {
   );
 
   env.declareVar(
+    "num",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as RuntimeValue;
+      const numValue = MakePrintable(arg);
+
+      return numValue !== null ? MK_NUMBER(Number(numValue)) : MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "bool",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as RuntimeValue;
+      const boolValue = MakePrintable(arg);
+
+      return boolValue !== null ? MK_BOOL(Boolean(boolValue)) : MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
     "typeof",
     MK_NATIVE_FN((args, scope) => {
       const arg = args[0] as RuntimeValue;
 
       return MK_STRING(arg.type);
+    }),
+    true,
+  );
+
+  // btoa, atob
+  env.declareVar(
+    "btoa",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as RuntimeValue;
+      const strValue = MakePrintable(arg);
+
+      return strValue !== null
+        ? MK_STRING(Buffer.from(String(strValue), "utf-8").toString("base64"))
+        : MK_NULL();
+    }),
+    true,
+  );
+
+  env.declareVar(
+    "atob",
+    MK_NATIVE_FN((args, scope) => {
+      const arg = args[0] as RuntimeValue;
+      const strValue = MakePrintable(arg);
+
+      return strValue !== null ? MK_STRING(atob(String(strValue))) : MK_NULL();
     }),
     true,
   );

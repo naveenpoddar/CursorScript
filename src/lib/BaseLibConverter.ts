@@ -107,7 +107,24 @@ export function GetCursorXType(value: any): RuntimeValue | null {
 
   // If it's already a CursorX RuntimeValue, don't convert it
   // Check for 'type' string property which is common across all our RuntimeValues
-  if (typeof value === "object" && typeof (value as any).type === "string") {
+  const VALID_TYPES = [
+    "number",
+    "string",
+    "null",
+    "boolean",
+    "object",
+    "array",
+    "native-fn",
+    "function",
+    "promise",
+    "regex",
+    "await-result",
+  ];
+  if (
+    typeof value === "object" &&
+    typeof (value as any).type === "string" &&
+    VALID_TYPES.includes((value as any).type)
+  ) {
     return value as RuntimeValue;
   }
 

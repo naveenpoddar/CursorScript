@@ -184,6 +184,55 @@ class Network {
     return Object.fromEntries(response.headers.entries());
   }
 
+  /**
+   * Performs a streaming request, typically used for Server-Sent Events (SSE).
+   * @param url The URL to request.
+   * @param options Optional request options.
+   * @param onChunk A callback function invoked for each chunk of data received.
+   */
+  public async stream(url: any, options: any = {}, onChunk: any) {
+    const u = requireString(url);
+    if (typeof onChunk !== "function") {
+      throw "onChunk must be a function";
+    }
+
+    const parsedOptions = this.parseOptions(options);
+    const response = await fetch(u, {
+      ...parsedOptions,
+      headers: {
+        Accept: "text/event-stream",
+        ...this.defaultHeaders,
+        ...parsedOptions.headers,
+      },
+    });
+
+    if (!response.ok) {
+      throw `Stream request failed with status ${response.status}, ${response.statusText}, body: ${await response.body?.text()}`;
+    }
+
+    if (!response.body) {
+      throw "Response body is empty or not readable";
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        const chunk = decoder.decode(value, { stream: true });
+        // Call the user-provided callback
+        onChunk(chunk);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    return null;
+  }
+
   private parseOptions(options: any) {
     if (!options) return {};
     const native = toNative(options);

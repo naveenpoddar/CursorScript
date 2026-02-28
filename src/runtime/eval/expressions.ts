@@ -281,7 +281,7 @@ export async function evaluateCallExpr(
       let results: RuntimeValue = MK_NULL();
       try {
         for (const stmt of func.body) {
-          results = await evaluate(stmt, scope);
+          results = unwrapAwait(await evaluate(stmt, scope));
         }
       } catch (e) {
         if (e instanceof ReturnSignal) {

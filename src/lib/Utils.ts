@@ -39,7 +39,7 @@ export async function executeCallback(func: any, ...args: any[]) {
 
     let lastResult: RuntimeValue = MK_NULL();
     for (const stmt of func.body) {
-      lastResult = await evaluate(stmt, scope);
+      lastResult = unwrapAwait(await evaluate(stmt, scope));
     }
 
     return (lastResult as any).value !== undefined

@@ -343,36 +343,44 @@ Window.onUpdate(() -> {
     let chunkX = Math.floor(cx / 16);
     let chunkZ = Math.floor(cz / 16);
 
-    // Unload far chunks
-    let i = 0;
-    while (i < len(loadedCols)) {
-        let col = loadedCols[i];
-        let dist = Math.abs(col.x - chunkX) + Math.abs(col.z - chunkZ);
-        if (dist > viewDist * 1.6) {
-            let j = 0;
-            while (j < len(col.meshes)) {
-                Engine3D.deleteMesh(scene, col.meshes[j].id);
-                j = j + 1;
+    // 1. Unload far chunks (Throttled to every 30 frames/approx 0.5s)
+    if (Math.floor(time() / 500) % 2 == 0) {
+        let i = 0;
+        let lenCols = len(loadedCols);
+        while (i < lenCols) {
+            let col = loadedCols[i];
+            let dist = Math.abs(col.x - chunkX) + Math.abs(col.z - chunkZ);
+            if (dist > viewDist * 1.6) {
+                let j = 0;
+                while (j < len(col.meshes)) {
+                    Engine3D.deleteMesh(scene, col.meshes[j].id);
+                    j = j + 1;
+                }
+                // Array fast remove
+                loadedCols[i] = loadedCols[lenCols - 1];
+                pop(loadedCols);
+                lenCols = lenCols - 1;
+            } else {
+                i = i + 1;
             }
-            // Array fast remove using pop
-            let lenCols = len(loadedCols);
-            loadedCols[i] = loadedCols[lenCols - 1];
-            pop(loadedCols);
-        } else {
-            i = i + 1;
         }
     }
 
-    // Load near chunks (16x16 regions)
+    // 2. Find the closest unloaded chunk (Prioritize player's current position)
+    let bestOx = -999;
+    let bestOz = -999;
+    let minD = 999;
+
     let ox = -viewDist;
     while (ox <= viewDist) {
         let oz = -viewDist;
         while (oz <= viewDist) {
-            let wrldChunkX = chunkX + ox;
-            let wrldChunkZ = chunkZ + oz;
+            let d = Math.abs(ox) + Math.abs(oz);
+            // Search for the closest unloaded chunk within radial distance
+            if (d <= viewDist * 1.5 && d < minD) {
+                let wrldChunkX = chunkX + ox;
+                let wrldChunkZ = chunkZ + oz;
 
-            // Only load within a circle to save perf
-            if (Math.abs(ox) + Math.abs(oz) <= viewDist * 1.5) {
                 let isLoaded = false;
                 let k = 0;
                 let lenLoaded = len(loadedCols);
@@ -385,162 +393,181 @@ Window.onUpdate(() -> {
                 }
 
                 if (isLoaded == false) {
-                    let colMeshes = [];
-
-                    // Generate 16x16 blocks for this chunk
-                    let bx = 0;
-                    while (bx < 16) {
-                        let bz = 0;
-                        while (bz < 16) {
-                            let wrldX = (wrldChunkX * 16) + bx;
-                            let wrldZ = (wrldChunkZ * 16) + bz;
-
-                            let h = getHeight(wrldX, wrldZ);
-                            let h_nx = getHeight(wrldX - 1, wrldZ);
-                            let h_px = getHeight(wrldX + 1, wrldZ);
-                            let h_nz = getHeight(wrldX, wrldZ - 1);
-                            let h_pz = getHeight(wrldX, wrldZ + 1);
-
-                            // --- Vertical Layering (Grass -> Dirt -> Stone) ---
-                            let h_nw = getHeight(wrldX - 1, wrldZ - 1);
-                            let h_ne = getHeight(wrldX + 1, wrldZ - 1);
-                            let h_sw = getHeight(wrldX - 1, wrldZ + 1);
-                            let h_se = getHeight(wrldX + 1, wrldZ + 1);
-
-                            let dirtDepth = 3 + Math.floor(Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 3);
-                            let currY = 0;
-
-                            while (currY <= h) {
-                                // Performance Culling:
-                                // Only render top 2 layers or exposed faces
-                                let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz);
-
-                                if (isExposed) {
-                                    let color = "#7f8c8d";
-                                    if (currY == h) {
-                                        color = "#78e08f";
-                                    }
-                                    else if (currY > h - dirtDepth) {
-                                        color = "#d35400";
-                                    }
-
-                                    let cube = Engine3D.createCube(scene, 1, color);
-                                    Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ);
-                                    Engine3D.setSolidMode(scene, cube, true);
-
-                                    // AO Calculation
-                                    let top_v0 = 0;
-                                    if (h_nx > currY) {
-                                        top_v0 = top_v0 + 1;
-                                    }
-                                    if (h_nz > currY) {
-                                        top_v0 = top_v0 + 1;
-                                    }
-                                    if (h_nw > currY) {
-                                        top_v0 = top_v0 + 1;
-                                    }
-                                    let top_v1 = 0;
-                                    if (h_px > currY) {
-                                        top_v1 = top_v1 + 1;
-                                    }
-                                    if (h_nz > currY) {
-                                        top_v1 = top_v1 + 1;
-                                    }
-                                    if (h_ne > currY) {
-                                        top_v1 = top_v1 + 1;
-                                    }
-                                    let top_v2 = 0;
-                                    if (h_px > currY) {
-                                        top_v2 = top_v2 + 1;
-                                    }
-                                    if (h_pz > currY) {
-                                        top_v2 = top_v2 + 1;
-                                    }
-                                    if (h_se > currY) {
-                                        top_v2 = top_v2 + 1;
-                                    }
-                                    let top_v3 = 0;
-                                    if (h_nx > currY) {
-                                        top_v3 = top_v3 + 1;
-                                    }
-                                    if (h_pz > currY) {
-                                        top_v3 = top_v3 + 1;
-                                    }
-                                    if (h_sw > currY) {
-                                        top_v3 = top_v3 + 1;
-                                    }
-                                    Engine3D.setFaceAO(scene, cube, 5, top_v0, top_v3, top_v2, top_v1);
-
-                                    push(colMeshes, {
-                                        id: cube, x: wrldX, y: currY, z: wrldZ
-                                    })
-
-                                    // Trees
-                                    if (currY == h && color == "#78e08f") {
-                                        let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453;
-                                        let rV = randVal - Math.floor(randVal);
-                                        if (rV < 0.0075) {
-                                            let treeHeight = 3 + Math.floor(rV * 100) % 5;
-                                            let ty = 1;
-                                            while (ty <= treeHeight) {
-                                                let trunk = Engine3D.createCube(scene, 1, "#8B4513");
-                                                Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ);
-                                                Engine3D.setSolidMode(scene, trunk, true);
-                                                push(colMeshes, {
-                                                    id: trunk, x: wrldX, y: h + ty, z: wrldZ
-                                                })
-                                                ty = ty + 1;
-                                            }
-                                            let leafSpread = 1;
-                                            if (treeHeight > 5) {
-                                                leafSpread = 2;
-                                            }
-                                            let lx = -leafSpread;
-                                            while (lx <= leafSpread) {
-                                                let lz = -leafSpread;
-                                                while (lz <= leafSpread) {
-                                                    let maxLy = treeHeight + 1; let minLy = treeHeight - 1;
-                                                    if (leafSpread == 2) {
-                                                        minLy = treeHeight - 2;
-                                                    }
-                                                    let ly = minLy;
-                                                    while (ly <= maxLy) {
-                                                        let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy;
-                                                        if (isCorner == false) {
-                                                            let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy;
-                                                            if (isOuterCorner == false) {
-                                                                let leaf = Engine3D.createCube(scene, 1, "#228B22");
-                                                                Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz);
-                                                                Engine3D.setSolidMode(scene, leaf, true);
-                                                                push(colMeshes, {
-                                                                    id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz
-                                                                })
-                                                            }
-                                                        }
-                                                        ly = ly + 1;
-                                                    }
-                                                    lz = lz + 1;
-                                                }
-                                                lx = lx + 1;
-                                            }
-                                        }
-                                    }
-                                }
-                                currY = currY + 1;
-                            }
-                            bz = bz + 1;
-                        }
-                        bx = bx + 1;
+                    minD = d;
+                    bestOx = ox;
+                    bestOz = oz;
+                    // If we found the exact chunk the player is in, we can stop searching for better
+                    if (d == 0) {
+                        ox = viewDist + 1; // Break outer loop
+                        oz = viewDist + 1; // Break inner loop
                     }
-
-                    push(loadedCols, {
-                        x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes
-                    })
                 }
             }
             oz = oz + 1;
         }
         ox = ox + 1;
+    }
+
+    // 3. Load the best chunk found (Throttled to ONE per frame)
+    if (bestOx != -999) {
+        let wrldChunkX = chunkX + bestOx;
+        let wrldChunkZ = chunkZ + bestOz;
+        let colMeshes = [];
+
+        // --- PRE-CALCULATE HEIGHTS FOR ENTIRE CHUNK + AO BORDER ---
+        let heightCache = [];
+        let hxi = -1;
+        while (hxi <= 16) {
+            let hzi = -1;
+            while (hzi <= 16) {
+                push(heightCache, getHeight(wrldChunkX * 16 + hxi, wrldChunkZ * 16 + hzi));
+                hzi = hzi + 1;
+            }
+            hxi = hxi + 1;
+        }
+
+        // Helper for local lookup
+        let getH = (lx, lz) -> {
+            return heightCache[(lx + 1) * 18 + (lz + 1)];
+        }
+
+        // Generate 16x16 blocks for this chunk
+        let bx = 0;
+        while (bx < 16) {
+            let bz = 0;
+            while (bz < 16) {
+                let wrldX = (wrldChunkX * 16) + bx;
+                let wrldZ = (wrldChunkZ * 16) + bz;
+
+                let h = getH(bx, bz);
+                let h_nx = getH(bx - 1, bz);
+                let h_px = getH(bx + 1, bz);
+                let h_nz = getH(bx, bz - 1);
+                let h_pz = getH(bx, bz + 1);
+
+                let h_nw = getH(bx - 1, bz - 1);
+                let h_ne = getH(bx + 1, bz - 1);
+                let h_sw = getH(bx - 1, bz + 1);
+                let h_se = getH(bx + 1, bz + 1);
+
+                // Random value for dirt depth and trees (per column)
+                let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453;
+                let rV = randVal - Math.floor(randVal);
+
+                let dirtDepth = 3 + Math.floor(rV * 3);
+                let currY = 0;
+
+                while (currY <= h) {
+                    let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz);
+
+                    if (isExposed) {
+                        let color = "#7f8c8d"; // Stone
+                        if (currY == h) {
+                            color = "#78e08f"; // Grass
+                        }
+                        else if (currY > h - dirtDepth) {
+                            color = "#d35400"; // Dirt
+                        }
+
+                        let cube = Engine3D.createCube(scene, 1, color);
+                        Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ);
+                        Engine3D.setSolidMode(scene, cube, true);
+
+                        // AO Calculation
+                        let top_v0 = 0; if (h_nx > currY) {
+                            top_v0 = top_v0 + 1;
+                        } if (h_nz > currY) {
+                            top_v0 = top_v0 + 1;
+                        } if (h_nw > currY) {
+                            top_v0 = top_v0 + 1;
+                        }
+                        let top_v1 = 0; if (h_px > currY) {
+                            top_v1 = top_v1 + 1;
+                        } if (h_nz > currY) {
+                            top_v1 = top_v1 + 1;
+                        } if (h_ne > currY) {
+                            top_v1 = top_v1 + 1;
+                        }
+                        let top_v2 = 0; if (h_px > currY) {
+                            top_v2 = top_v2 + 1;
+                        } if (h_pz > currY) {
+                            top_v2 = top_v2 + 1;
+                        } if (h_se > currY) {
+                            top_v2 = top_v2 + 1;
+                        }
+                        let top_v3 = 0; if (h_nx > currY) {
+                            top_v3 = top_v3 + 1;
+                        } if (h_pz > currY) {
+                            top_v3 = top_v3 + 1;
+                        } if (h_sw > currY) {
+                            top_v3 = top_v3 + 1;
+                        }
+
+                        Engine3D.setFaceAO(scene, cube, 5, top_v0, top_v3, top_v2, top_v1);
+                        push(colMeshes, {
+                            id: cube, x: wrldX, y: currY, z: wrldZ
+                        })
+
+                        // Tree Spawning
+                        if (currY == h && color == "#78e08f") {
+                            if (rV < 0.0075) {
+                                let treeHeight = 3 + Math.floor(rV * 100) % 5;
+                                let ty = 1;
+                                while (ty <= treeHeight) {
+                                    let trunk = Engine3D.createCube(scene, 1, "#8B4513");
+                                    Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ);
+                                    Engine3D.setSolidMode(scene, trunk, true);
+                                    push(colMeshes, {
+                                        id: trunk, x: wrldX, y: h + ty, z: wrldZ
+                                    })
+                                    ty = ty + 1;
+                                }
+                                let leafSpread = 1;
+                                if (treeHeight > 5) {
+                                    leafSpread = 2;
+                                }
+                                let lx = -leafSpread;
+                                while (lx <= leafSpread) {
+                                    let lz = -leafSpread;
+                                    while (lz <= leafSpread) {
+                                        let maxLy = treeHeight + 1;
+                                        let minLy = treeHeight - 1;
+                                        if (leafSpread == 2) {
+                                            minLy = treeHeight - 2;
+                                        }
+                                        let ly = minLy;
+                                        while (ly <= maxLy) {
+                                            let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy;
+                                            if (isCorner == false) {
+                                                let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy;
+                                                if (isOuterCorner == false) {
+                                                    let leaf = Engine3D.createCube(scene, 1, "#228B22");
+                                                    Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz);
+                                                    Engine3D.setSolidMode(scene, leaf, true);
+                                                    push(colMeshes, {
+                                                        id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz
+                                                    })
+                                                }
+                                            }
+                                            ly = ly + 1;
+                                        }
+                                        lz = lz + 1;
+                                    }
+                                    lx = lx + 1;
+                                }
+                            }
+                        }
+                    }
+                    currY = currY + 1;
+                }
+                bz = bz + 1;
+            }
+            bx = bx + 1;
+        }
+
+        push(loadedCols, {
+            x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes
+        })
     }
 
     // Update Camera position in Engine

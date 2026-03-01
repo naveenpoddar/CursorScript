@@ -86,7 +86,7 @@ if "!HAS_CHANGES!"=="1" (
         if "!PLAIN_VERSION:~0,1!"=="v" set PLAIN_VERSION=!PLAIN_VERSION:~1!
 
         echo 📝 Updating package.json to v!PLAIN_VERSION!...
-        powershell -Command "$json = Get-Content package.json | ConvertFrom-Json; $json.version = '!PLAIN_VERSION!'; $json | ConvertTo-Json | Set-Content package.json"
+        bun -e "const pkg = await Bun.file('package.json').json(); pkg.version = '!PLAIN_VERSION!'; await Bun.write('package.json', JSON.stringify(pkg, null, 4));"
 
         echo ➕ Staging changes...
         git add .
@@ -95,8 +95,6 @@ if "!HAS_CHANGES!"=="1" (
         echo ⬆️ Pushing changes to origin...
         git push
         echo.
-
-
 
         echo.
         echo 🚀 Creating tag !NEW_TAG!...

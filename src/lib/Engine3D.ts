@@ -1,7 +1,8 @@
 import ConvertTOMK_Object from "./BaseLibConverter";
 import { requireNumber } from "./RequireFunctions";
-import { lib as raylib, parseColor } from "./WindowLib";
+import { createWindowLibrary, parseColor } from "./WindowLib";
 import { ptr } from "bun:ffi";
+import { toNative } from "./Utils";
 
 interface Vec3 {
   x: number;
@@ -52,6 +53,19 @@ interface Scene {
 class _Engine3D {
   private scenes: Map<number, Scene> = new Map();
   private nextSceneId = 1;
+
+  public lib: ReturnType<typeof createWindowLibrary> = {} as any;
+  public initilized: boolean = false;
+
+  public get raylib() {
+    if (!this.initilized) this.init();
+    return this.lib;
+  }
+
+  public init() {
+    this.lib = createWindowLibrary();
+    this.initilized = true;
+  }
 
   // ----- Vector Math Utility -----
   public dot(x1: any, y1: any, z1: any, x2: any, y2: any, z2: any): number {
@@ -200,6 +214,74 @@ class _Engine3D {
     };
     scene.meshes.set(meshId, mesh);
     return meshId;
+  }
+
+  public createMesh(
+    sceneId: any,
+    vertices: any,
+    faces: any,
+    colorStr: any,
+  ): number {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return -1;
+
+    const nativeVerts = toNative(vertices);
+    const nativeFaces = toNative(faces);
+    const color = parseColor(colorStr);
+
+    const verticesList: Vec3[] = [];
+    if (Array.isArray(nativeVerts)) {
+      for (const v of nativeVerts) {
+        verticesList.push({
+          x: requireNumber(v.x),
+          y: requireNumber(v.y),
+          z: requireNumber(v.z),
+        });
+      }
+    }
+
+    const facesList: Face[] = [];
+    if (Array.isArray(nativeFaces)) {
+      for (const f of nativeFaces) {
+        if (f.v && Array.isArray(f.v)) {
+          facesList.push({ v: f.v.map((v: any) => requireNumber(v)) });
+        } else if (Array.isArray(f)) {
+          facesList.push({ v: f.map((v: any) => requireNumber(v)) });
+        }
+      }
+    }
+
+    const meshId = scene.nextMeshId++;
+    const mesh: Mesh = {
+      id: meshId,
+      vertices: verticesList,
+      faces: facesList,
+      pos: { x: 0, y: 0, z: 0 },
+      rot: { x: 0, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 },
+      color,
+      isSolid: true,
+      isGlow: false,
+      isBillboard: false,
+    };
+    scene.meshes.set(meshId, mesh);
+    return meshId;
+  }
+
+  public updateMeshVertices(sceneId: any, meshId: any, vertices: any) {
+    const scene = this.scenes.get(requireNumber(sceneId));
+    if (!scene) return;
+    const mesh = scene.meshes.get(requireNumber(meshId));
+    if (!mesh) return;
+
+    const nativeVerts = toNative(vertices);
+    if (Array.isArray(nativeVerts)) {
+      mesh.vertices = nativeVerts.map((v: any) => ({
+        x: requireNumber(v.x),
+        y: requireNumber(v.y),
+        z: requireNumber(v.z),
+      }));
+    }
   }
 
   public deleteMesh(sceneId: any, meshId: any) {
@@ -515,7 +597,7 @@ class _Engine3D {
       // 2. FOV-based Horizontal and Vertical Culling
       // Only apply frustum culling for objects meaningfully in front of the camera
       if (camZ > 0.1) {
-        const margin = 5.0;
+        const margin = 20.0; // Increased margin for large meshes
         const hThreshold = (sw / 2) * (camZ / cam.fov) + margin;
         const vThreshold = (sh / 2) * (camZ / cam.fov) + margin;
 
@@ -685,7 +767,8 @@ class _Engine3D {
     // Render pass
     for (const face of renderList) {
       if (face.isGlow) {
-        if (raylib.symbols.BeginBlendMode) raylib.symbols.BeginBlendMode(1); // 1 = BLEND_ADDITIVE
+        if (this.raylib.symbols.BeginBlendMode)
+          this.raylib.symbols.BeginBlendMode(1); // 1 = BLEND_ADDITIVE
       }
 
       if (face.isSolid) {
@@ -728,9 +811,9 @@ class _Engine3D {
           let p1 = face.v[i]!;
           let p2 = face.v[i + 1]!;
 
-          if (raylib.symbols.DrawTriangleFan) {
-            const pts = new Float32Array([p2.x, p2.y, p1.x, p1.y, p0.x, p0.y]);
-            raylib.symbols.DrawTriangleFan(ptr(pts), 3, drawColor);
+          if (this.raylib.symbols.DrawTriangleFan) {
+            const pts = new Float32Array([p0.x, p0.y, p1.x, p1.y, p2.x, p2.y]);
+            this.raylib.symbols.DrawTriangleFan(ptr(pts), 3, drawColor);
           }
         }
       } else {
@@ -738,12 +821,13 @@ class _Engine3D {
         for (let i = 0; i < face.v.length; i++) {
           let p1 = face.v[i]!;
           let p2 = face.v[(i + 1) % face.v.length]!;
-          raylib.symbols.DrawLine(p1.x, p1.y, p2.x, p2.y, face.color);
+          this.raylib.symbols.DrawLine(p1.x, p1.y, p2.x, p2.y, face.color);
         }
       }
 
       if (face.isGlow) {
-        if (raylib.symbols.EndBlendMode) raylib.symbols.EndBlendMode();
+        if (this.raylib.symbols.EndBlendMode)
+          this.raylib.symbols.EndBlendMode();
       }
     }
   }

@@ -1,0 +1,2943 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "VarDeclaration",
+      "identifier": "seedValue",
+      "constant": false,
+      "value": {
+        "kind": "NumericLiteral",
+        "line": 4,
+        "column": 17,
+        "value": 0
+      },
+      "line": 4,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 6,
+        "column": 1,
+        "symbol": "onMessage"
+      },
+      "args": [
+        {
+          "kind": "LambdaExpr",
+          "parameters": [
+            "msg"
+          ],
+          "body": [
+            {
+              "kind": "IfStmt",
+              "condition": {
+                "kind": "BinaryExpr",
+                "operator": "==",
+                "left": {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 7,
+                    "column": 9,
+                    "symbol": "msg"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 7,
+                    "column": 13,
+                    "symbol": "type"
+                  },
+                  "computed": false,
+                  "line": 7,
+                  "column": 18
+                },
+                "right": {
+                  "kind": "StringLiteral",
+                  "line": 7,
+                  "column": 21,
+                  "value": "init"
+                },
+                "line": 7,
+                "column": 27
+              },
+              "thenBranch": [
+                {
+                  "kind": "AssignmentExpr",
+                  "assignee": {
+                    "kind": "Identifier",
+                    "line": 8,
+                    "column": 9,
+                    "symbol": "seedValue"
+                  },
+                  "value": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 8,
+                      "column": 21,
+                      "symbol": "msg"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 8,
+                      "column": 25,
+                      "symbol": "seed"
+                    },
+                    "computed": false,
+                    "line": 9,
+                    "column": 9
+                  },
+                  "line": 8,
+                  "column": 19
+                },
+                {
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 9,
+                      "column": 9,
+                      "symbol": "PerlinNoise"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 9,
+                      "column": 21,
+                      "symbol": "seed"
+                    },
+                    "computed": false,
+                    "line": 9,
+                    "column": 25
+                  },
+                  "args": [
+                    {
+                      "kind": "Identifier",
+                      "line": 9,
+                      "column": 26,
+                      "symbol": "seedValue"
+                    }
+                  ],
+                  "line": 10,
+                  "column": 9
+                },
+                {
+                  "kind": "CallExpr",
+                  "caller": {
+                    "kind": "Identifier",
+                    "line": 10,
+                    "column": 9,
+                    "symbol": "print"
+                  },
+                  "args": [
+                    {
+                      "kind": "BinaryExpr",
+                      "operator": "+",
+                      "left": {
+                        "kind": "StringLiteral",
+                        "line": 10,
+                        "column": 15,
+                        "value": "ChunkWorker initialized with seed: "
+                      },
+                      "right": {
+                        "kind": "CallExpr",
+                        "caller": {
+                          "kind": "Identifier",
+                          "line": 10,
+                          "column": 55,
+                          "symbol": "str"
+                        },
+                        "args": [
+                          {
+                            "kind": "Identifier",
+                            "line": 10,
+                            "column": 59,
+                            "symbol": "seedValue"
+                          }
+                        ],
+                        "line": 10,
+                        "column": 69
+                      },
+                      "line": 10,
+                      "column": 69
+                    }
+                  ],
+                  "line": 11,
+                  "column": 5
+                }
+              ],
+              "elseBranch": [
+                {
+                  "kind": "IfStmt",
+                  "condition": {
+                    "kind": "BinaryExpr",
+                    "operator": "==",
+                    "left": {
+                      "kind": "MemberExpr",
+                      "object": {
+                        "kind": "Identifier",
+                        "line": 11,
+                        "column": 16,
+                        "symbol": "msg"
+                      },
+                      "property": {
+                        "kind": "Identifier",
+                        "line": 11,
+                        "column": 20,
+                        "symbol": "type"
+                      },
+                      "computed": false,
+                      "line": 11,
+                      "column": 25
+                    },
+                    "right": {
+                      "kind": "StringLiteral",
+                      "line": 11,
+                      "column": 28,
+                      "value": "generate"
+                    },
+                    "line": 11,
+                    "column": 38
+                  },
+                  "thenBranch": [
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "wrldChunkX",
+                      "constant": false,
+                      "value": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 12,
+                          "column": 26,
+                          "symbol": "msg"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 12,
+                          "column": 30,
+                          "symbol": "x"
+                        },
+                        "computed": false,
+                        "line": 13,
+                        "column": 9
+                      },
+                      "line": 12,
+                      "column": 9
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "wrldChunkZ",
+                      "constant": false,
+                      "value": {
+                        "kind": "MemberExpr",
+                        "object": {
+                          "kind": "Identifier",
+                          "line": 13,
+                          "column": 26,
+                          "symbol": "msg"
+                        },
+                        "property": {
+                          "kind": "Identifier",
+                          "line": 13,
+                          "column": 30,
+                          "symbol": "z"
+                        },
+                        "computed": false,
+                        "line": 17,
+                        "column": 9
+                      },
+                      "line": 13,
+                      "column": 9
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "getHeight",
+                      "constant": false,
+                      "value": {
+                        "kind": "LambdaExpr",
+                        "parameters": [
+                          "x",
+                          "z"
+                        ],
+                        "body": [
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "scale1",
+                            "constant": false,
+                            "value": {
+                              "kind": "NumericLiteral",
+                              "line": 18,
+                              "column": 26,
+                              "value": 0.015
+                            },
+                            "line": 18,
+                            "column": 13
+                          },
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "scale2",
+                            "constant": false,
+                            "value": {
+                              "kind": "NumericLiteral",
+                              "line": 19,
+                              "column": 26,
+                              "value": 0.05
+                            },
+                            "line": 19,
+                            "column": 13
+                          },
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "scale3",
+                            "constant": false,
+                            "value": {
+                              "kind": "NumericLiteral",
+                              "line": 20,
+                              "column": 26,
+                              "value": 0.1
+                            },
+                            "line": 20,
+                            "column": 13
+                          },
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "h1",
+                            "constant": false,
+                            "value": {
+                              "kind": "BinaryExpr",
+                              "operator": "*",
+                              "left": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "MemberExpr",
+                                  "object": {
+                                    "kind": "Identifier",
+                                    "line": 22,
+                                    "column": 22,
+                                    "symbol": "PerlinNoise"
+                                  },
+                                  "property": {
+                                    "kind": "Identifier",
+                                    "line": 22,
+                                    "column": 34,
+                                    "symbol": "noise2D"
+                                  },
+                                  "computed": false,
+                                  "line": 22,
+                                  "column": 41
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "*",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 22,
+                                      "column": 42,
+                                      "symbol": "x"
+                                    },
+                                    "right": {
+                                      "kind": "Identifier",
+                                      "line": 22,
+                                      "column": 46,
+                                      "symbol": "scale1"
+                                    },
+                                    "line": 22,
+                                    "column": 52
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "*",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 22,
+                                      "column": 54,
+                                      "symbol": "z"
+                                    },
+                                    "right": {
+                                      "kind": "Identifier",
+                                      "line": 22,
+                                      "column": 58,
+                                      "symbol": "scale1"
+                                    },
+                                    "line": 22,
+                                    "column": 64
+                                  }
+                                ],
+                                "line": 22,
+                                "column": 66
+                              },
+                              "right": {
+                                "kind": "NumericLiteral",
+                                "line": 22,
+                                "column": 68,
+                                "value": 35
+                              },
+                              "line": 23,
+                              "column": 13
+                            },
+                            "line": 22,
+                            "column": 13
+                          },
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "h2",
+                            "constant": false,
+                            "value": {
+                              "kind": "BinaryExpr",
+                              "operator": "*",
+                              "left": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "MemberExpr",
+                                  "object": {
+                                    "kind": "Identifier",
+                                    "line": 23,
+                                    "column": 22,
+                                    "symbol": "PerlinNoise"
+                                  },
+                                  "property": {
+                                    "kind": "Identifier",
+                                    "line": 23,
+                                    "column": 34,
+                                    "symbol": "noise2D"
+                                  },
+                                  "computed": false,
+                                  "line": 23,
+                                  "column": 41
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "*",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 23,
+                                      "column": 42,
+                                      "symbol": "x"
+                                    },
+                                    "right": {
+                                      "kind": "Identifier",
+                                      "line": 23,
+                                      "column": 46,
+                                      "symbol": "scale2"
+                                    },
+                                    "line": 23,
+                                    "column": 52
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "*",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 23,
+                                      "column": 54,
+                                      "symbol": "z"
+                                    },
+                                    "right": {
+                                      "kind": "Identifier",
+                                      "line": 23,
+                                      "column": 58,
+                                      "symbol": "scale2"
+                                    },
+                                    "line": 23,
+                                    "column": 64
+                                  }
+                                ],
+                                "line": 23,
+                                "column": 66
+                              },
+                              "right": {
+                                "kind": "NumericLiteral",
+                                "line": 23,
+                                "column": 68,
+                                "value": 12
+                              },
+                              "line": 24,
+                              "column": 13
+                            },
+                            "line": 23,
+                            "column": 13
+                          },
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "h3",
+                            "constant": false,
+                            "value": {
+                              "kind": "BinaryExpr",
+                              "operator": "*",
+                              "left": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "MemberExpr",
+                                  "object": {
+                                    "kind": "Identifier",
+                                    "line": 24,
+                                    "column": 22,
+                                    "symbol": "PerlinNoise"
+                                  },
+                                  "property": {
+                                    "kind": "Identifier",
+                                    "line": 24,
+                                    "column": 34,
+                                    "symbol": "noise2D"
+                                  },
+                                  "computed": false,
+                                  "line": 24,
+                                  "column": 41
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "*",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 24,
+                                      "column": 42,
+                                      "symbol": "x"
+                                    },
+                                    "right": {
+                                      "kind": "Identifier",
+                                      "line": 24,
+                                      "column": 46,
+                                      "symbol": "scale3"
+                                    },
+                                    "line": 24,
+                                    "column": 52
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "*",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 24,
+                                      "column": 54,
+                                      "symbol": "z"
+                                    },
+                                    "right": {
+                                      "kind": "Identifier",
+                                      "line": 24,
+                                      "column": 58,
+                                      "symbol": "scale3"
+                                    },
+                                    "line": 24,
+                                    "column": 64
+                                  }
+                                ],
+                                "line": 24,
+                                "column": 66
+                              },
+                              "right": {
+                                "kind": "NumericLiteral",
+                                "line": 24,
+                                "column": 68,
+                                "value": 4
+                              },
+                              "line": 26,
+                              "column": 13
+                            },
+                            "line": 24,
+                            "column": 13
+                          },
+                          {
+                            "kind": "VarDeclaration",
+                            "identifier": "combined",
+                            "constant": false,
+                            "value": {
+                              "kind": "BinaryExpr",
+                              "operator": "+",
+                              "left": {
+                                "kind": "BinaryExpr",
+                                "operator": "+",
+                                "left": {
+                                  "kind": "BinaryExpr",
+                                  "operator": "+",
+                                  "left": {
+                                    "kind": "Identifier",
+                                    "line": 26,
+                                    "column": 28,
+                                    "symbol": "h1"
+                                  },
+                                  "right": {
+                                    "kind": "Identifier",
+                                    "line": 26,
+                                    "column": 33,
+                                    "symbol": "h2"
+                                  },
+                                  "line": 26,
+                                  "column": 36
+                                },
+                                "right": {
+                                  "kind": "Identifier",
+                                  "line": 26,
+                                  "column": 38,
+                                  "symbol": "h3"
+                                },
+                                "line": 26,
+                                "column": 41
+                              },
+                              "right": {
+                                "kind": "NumericLiteral",
+                                "line": 26,
+                                "column": 43,
+                                "value": 12
+                              },
+                              "line": 27,
+                              "column": 13
+                            },
+                            "line": 26,
+                            "column": 13
+                          },
+                          {
+                            "kind": "CallExpr",
+                            "caller": {
+                              "kind": "MemberExpr",
+                              "object": {
+                                "kind": "Identifier",
+                                "line": 27,
+                                "column": 13,
+                                "symbol": "Math"
+                              },
+                              "property": {
+                                "kind": "Identifier",
+                                "line": 27,
+                                "column": 18,
+                                "symbol": "round"
+                              },
+                              "computed": false,
+                              "line": 27,
+                              "column": 23
+                            },
+                            "args": [
+                              {
+                                "kind": "Identifier",
+                                "line": 27,
+                                "column": 24,
+                                "symbol": "combined"
+                              }
+                            ],
+                            "line": 28,
+                            "column": 9
+                          }
+                        ],
+                        "async": false,
+                        "line": 30,
+                        "column": 9
+                      },
+                      "line": 17,
+                      "column": 9
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "voxels",
+                      "constant": false,
+                      "value": {
+                        "kind": "ArrayLiteral",
+                        "elements": []
+                      },
+                      "line": 30,
+                      "column": 9
+                    },
+                    {
+                      "kind": "VarDeclaration",
+                      "identifier": "bx",
+                      "constant": false,
+                      "value": {
+                        "kind": "NumericLiteral",
+                        "line": 33,
+                        "column": 18,
+                        "value": 0
+                      },
+                      "line": 33,
+                      "column": 9
+                    },
+                    {
+                      "kind": "WhileStmt",
+                      "condition": {
+                        "kind": "BinaryExpr",
+                        "operator": "<",
+                        "left": {
+                          "kind": "Identifier",
+                          "line": 34,
+                          "column": 16,
+                          "symbol": "bx"
+                        },
+                        "right": {
+                          "kind": "NumericLiteral",
+                          "line": 34,
+                          "column": 21,
+                          "value": 16
+                        },
+                        "line": 34,
+                        "column": 23
+                      },
+                      "body": [
+                        {
+                          "kind": "VarDeclaration",
+                          "identifier": "bz",
+                          "constant": false,
+                          "value": {
+                            "kind": "NumericLiteral",
+                            "line": 35,
+                            "column": 22,
+                            "value": 0
+                          },
+                          "line": 35,
+                          "column": 13
+                        },
+                        {
+                          "kind": "WhileStmt",
+                          "condition": {
+                            "kind": "BinaryExpr",
+                            "operator": "<",
+                            "left": {
+                              "kind": "Identifier",
+                              "line": 36,
+                              "column": 20,
+                              "symbol": "bz"
+                            },
+                            "right": {
+                              "kind": "NumericLiteral",
+                              "line": 36,
+                              "column": 25,
+                              "value": 16
+                            },
+                            "line": 36,
+                            "column": 27
+                          },
+                          "body": [
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "wrldX",
+                              "constant": false,
+                              "value": {
+                                "kind": "BinaryExpr",
+                                "operator": "+",
+                                "left": {
+                                  "kind": "BinaryExpr",
+                                  "operator": "*",
+                                  "left": {
+                                    "kind": "Identifier",
+                                    "line": 37,
+                                    "column": 30,
+                                    "symbol": "wrldChunkX"
+                                  },
+                                  "right": {
+                                    "kind": "NumericLiteral",
+                                    "line": 37,
+                                    "column": 43,
+                                    "value": 16
+                                  },
+                                  "line": 37,
+                                  "column": 45
+                                },
+                                "right": {
+                                  "kind": "Identifier",
+                                  "line": 37,
+                                  "column": 49,
+                                  "symbol": "bx"
+                                },
+                                "line": 38,
+                                "column": 17
+                              },
+                              "line": 37,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "wrldZ",
+                              "constant": false,
+                              "value": {
+                                "kind": "BinaryExpr",
+                                "operator": "+",
+                                "left": {
+                                  "kind": "BinaryExpr",
+                                  "operator": "*",
+                                  "left": {
+                                    "kind": "Identifier",
+                                    "line": 38,
+                                    "column": 30,
+                                    "symbol": "wrldChunkZ"
+                                  },
+                                  "right": {
+                                    "kind": "NumericLiteral",
+                                    "line": 38,
+                                    "column": 43,
+                                    "value": 16
+                                  },
+                                  "line": 38,
+                                  "column": 45
+                                },
+                                "right": {
+                                  "kind": "Identifier",
+                                  "line": 38,
+                                  "column": 49,
+                                  "symbol": "bz"
+                                },
+                                "line": 40,
+                                "column": 17
+                              },
+                              "line": 38,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 40,
+                                  "column": 25,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "Identifier",
+                                    "line": 40,
+                                    "column": 35,
+                                    "symbol": "wrldX"
+                                  },
+                                  {
+                                    "kind": "Identifier",
+                                    "line": 40,
+                                    "column": 42,
+                                    "symbol": "wrldZ"
+                                  }
+                                ],
+                                "line": 41,
+                                "column": 17
+                              },
+                              "line": 40,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_nx",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 41,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "-",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 41,
+                                      "column": 38,
+                                      "symbol": "wrldX"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 41,
+                                      "column": 46,
+                                      "value": 1
+                                    },
+                                    "line": 41,
+                                    "column": 47
+                                  },
+                                  {
+                                    "kind": "Identifier",
+                                    "line": 41,
+                                    "column": 49,
+                                    "symbol": "wrldZ"
+                                  }
+                                ],
+                                "line": 42,
+                                "column": 17
+                              },
+                              "line": 41,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_px",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 42,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 42,
+                                      "column": 38,
+                                      "symbol": "wrldX"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 42,
+                                      "column": 46,
+                                      "value": 1
+                                    },
+                                    "line": 42,
+                                    "column": 47
+                                  },
+                                  {
+                                    "kind": "Identifier",
+                                    "line": 42,
+                                    "column": 49,
+                                    "symbol": "wrldZ"
+                                  }
+                                ],
+                                "line": 43,
+                                "column": 17
+                              },
+                              "line": 42,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_nz",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 43,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "Identifier",
+                                    "line": 43,
+                                    "column": 38,
+                                    "symbol": "wrldX"
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "-",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 43,
+                                      "column": 45,
+                                      "symbol": "wrldZ"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 43,
+                                      "column": 53,
+                                      "value": 1
+                                    },
+                                    "line": 43,
+                                    "column": 54
+                                  }
+                                ],
+                                "line": 44,
+                                "column": 17
+                              },
+                              "line": 43,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_pz",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 44,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "Identifier",
+                                    "line": 44,
+                                    "column": 38,
+                                    "symbol": "wrldX"
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 44,
+                                      "column": 45,
+                                      "symbol": "wrldZ"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 44,
+                                      "column": 53,
+                                      "value": 1
+                                    },
+                                    "line": 44,
+                                    "column": 54
+                                  }
+                                ],
+                                "line": 45,
+                                "column": 17
+                              },
+                              "line": 44,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_nw",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 45,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "-",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 45,
+                                      "column": 38,
+                                      "symbol": "wrldX"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 45,
+                                      "column": 46,
+                                      "value": 1
+                                    },
+                                    "line": 45,
+                                    "column": 47
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "-",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 45,
+                                      "column": 49,
+                                      "symbol": "wrldZ"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 45,
+                                      "column": 57,
+                                      "value": 1
+                                    },
+                                    "line": 45,
+                                    "column": 58
+                                  }
+                                ],
+                                "line": 46,
+                                "column": 17
+                              },
+                              "line": 45,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_ne",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 46,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 46,
+                                      "column": 38,
+                                      "symbol": "wrldX"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 46,
+                                      "column": 46,
+                                      "value": 1
+                                    },
+                                    "line": 46,
+                                    "column": 47
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "-",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 46,
+                                      "column": 49,
+                                      "symbol": "wrldZ"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 46,
+                                      "column": 57,
+                                      "value": 1
+                                    },
+                                    "line": 46,
+                                    "column": 58
+                                  }
+                                ],
+                                "line": 47,
+                                "column": 17
+                              },
+                              "line": 46,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_sw",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 47,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "-",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 47,
+                                      "column": 38,
+                                      "symbol": "wrldX"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 47,
+                                      "column": 46,
+                                      "value": 1
+                                    },
+                                    "line": 47,
+                                    "column": 47
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 47,
+                                      "column": 49,
+                                      "symbol": "wrldZ"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 47,
+                                      "column": 57,
+                                      "value": 1
+                                    },
+                                    "line": 47,
+                                    "column": 58
+                                  }
+                                ],
+                                "line": 48,
+                                "column": 17
+                              },
+                              "line": 47,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "h_se",
+                              "constant": false,
+                              "value": {
+                                "kind": "CallExpr",
+                                "caller": {
+                                  "kind": "Identifier",
+                                  "line": 48,
+                                  "column": 28,
+                                  "symbol": "getHeight"
+                                },
+                                "args": [
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 48,
+                                      "column": 38,
+                                      "symbol": "wrldX"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 48,
+                                      "column": 46,
+                                      "value": 1
+                                    },
+                                    "line": 48,
+                                    "column": 47
+                                  },
+                                  {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 48,
+                                      "column": 49,
+                                      "symbol": "wrldZ"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 48,
+                                      "column": 57,
+                                      "value": 1
+                                    },
+                                    "line": 48,
+                                    "column": 58
+                                  }
+                                ],
+                                "line": 50,
+                                "column": 17
+                              },
+                              "line": 48,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "dirtDepth",
+                              "constant": false,
+                              "value": {
+                                "kind": "BinaryExpr",
+                                "operator": "+",
+                                "left": {
+                                  "kind": "NumericLiteral",
+                                  "line": 50,
+                                  "column": 33,
+                                  "value": 3
+                                },
+                                "right": {
+                                  "kind": "CallExpr",
+                                  "caller": {
+                                    "kind": "MemberExpr",
+                                    "object": {
+                                      "kind": "Identifier",
+                                      "line": 50,
+                                      "column": 37,
+                                      "symbol": "Math"
+                                    },
+                                    "property": {
+                                      "kind": "Identifier",
+                                      "line": 50,
+                                      "column": 42,
+                                      "symbol": "floor"
+                                    },
+                                    "computed": false,
+                                    "line": 50,
+                                    "column": 47
+                                  },
+                                  "args": [
+                                    {
+                                      "kind": "BinaryExpr",
+                                      "operator": "*",
+                                      "left": {
+                                        "kind": "CallExpr",
+                                        "caller": {
+                                          "kind": "MemberExpr",
+                                          "object": {
+                                            "kind": "Identifier",
+                                            "line": 50,
+                                            "column": 48,
+                                            "symbol": "Math"
+                                          },
+                                          "property": {
+                                            "kind": "Identifier",
+                                            "line": 50,
+                                            "column": 53,
+                                            "symbol": "abs"
+                                          },
+                                          "computed": false,
+                                          "line": 50,
+                                          "column": 56
+                                        },
+                                        "args": [
+                                          {
+                                            "kind": "CallExpr",
+                                            "caller": {
+                                              "kind": "MemberExpr",
+                                              "object": {
+                                                "kind": "Identifier",
+                                                "line": 50,
+                                                "column": 57,
+                                                "symbol": "Math"
+                                              },
+                                              "property": {
+                                                "kind": "Identifier",
+                                                "line": 50,
+                                                "column": 62,
+                                                "symbol": "sin"
+                                              },
+                                              "computed": false,
+                                              "line": 50,
+                                              "column": 65
+                                            },
+                                            "args": [
+                                              {
+                                                "kind": "BinaryExpr",
+                                                "operator": "+",
+                                                "left": {
+                                                  "kind": "BinaryExpr",
+                                                  "operator": "*",
+                                                  "left": {
+                                                    "kind": "Identifier",
+                                                    "line": 50,
+                                                    "column": 66,
+                                                    "symbol": "wrldX"
+                                                  },
+                                                  "right": {
+                                                    "kind": "NumericLiteral",
+                                                    "line": 50,
+                                                    "column": 74,
+                                                    "value": 12.9898
+                                                  },
+                                                  "line": 50,
+                                                  "column": 82
+                                                },
+                                                "right": {
+                                                  "kind": "BinaryExpr",
+                                                  "operator": "*",
+                                                  "left": {
+                                                    "kind": "Identifier",
+                                                    "line": 50,
+                                                    "column": 84,
+                                                    "symbol": "wrldZ"
+                                                  },
+                                                  "right": {
+                                                    "kind": "NumericLiteral",
+                                                    "line": 50,
+                                                    "column": 92,
+                                                    "value": 78.233
+                                                  },
+                                                  "line": 50,
+                                                  "column": 98
+                                                },
+                                                "line": 50,
+                                                "column": 98
+                                              }
+                                            ],
+                                            "line": 50,
+                                            "column": 99
+                                          }
+                                        ],
+                                        "line": 50,
+                                        "column": 101
+                                      },
+                                      "right": {
+                                        "kind": "NumericLiteral",
+                                        "line": 50,
+                                        "column": 103,
+                                        "value": 3
+                                      },
+                                      "line": 50,
+                                      "column": 104
+                                    }
+                                  ],
+                                  "line": 51,
+                                  "column": 17
+                                },
+                                "line": 51,
+                                "column": 17
+                              },
+                              "line": 50,
+                              "column": 17
+                            },
+                            {
+                              "kind": "VarDeclaration",
+                              "identifier": "currY",
+                              "constant": false,
+                              "value": {
+                                "kind": "NumericLiteral",
+                                "line": 51,
+                                "column": 29,
+                                "value": 0
+                              },
+                              "line": 51,
+                              "column": 17
+                            },
+                            {
+                              "kind": "WhileStmt",
+                              "condition": {
+                                "kind": "BinaryExpr",
+                                "operator": "<=",
+                                "left": {
+                                  "kind": "Identifier",
+                                  "line": 53,
+                                  "column": 24,
+                                  "symbol": "currY"
+                                },
+                                "right": {
+                                  "kind": "Identifier",
+                                  "line": 53,
+                                  "column": 33,
+                                  "symbol": "h"
+                                },
+                                "line": 53,
+                                "column": 34
+                              },
+                              "body": [
+                                {
+                                  "kind": "VarDeclaration",
+                                  "identifier": "isExposed",
+                                  "constant": false,
+                                  "value": {
+                                    "kind": "BinaryExpr",
+                                    "operator": "||",
+                                    "left": {
+                                      "kind": "BinaryExpr",
+                                      "operator": "||",
+                                      "left": {
+                                        "kind": "BinaryExpr",
+                                        "operator": "||",
+                                        "left": {
+                                          "kind": "BinaryExpr",
+                                          "operator": "||",
+                                          "left": {
+                                            "kind": "BinaryExpr",
+                                            "operator": ">=",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 54,
+                                              "column": 38,
+                                              "symbol": "currY"
+                                            },
+                                            "right": {
+                                              "kind": "BinaryExpr",
+                                              "operator": "-",
+                                              "left": {
+                                                "kind": "Identifier",
+                                                "line": 54,
+                                                "column": 47,
+                                                "symbol": "h"
+                                              },
+                                              "right": {
+                                                "kind": "NumericLiteral",
+                                                "line": 54,
+                                                "column": 51,
+                                                "value": 1
+                                              },
+                                              "line": 54,
+                                              "column": 53
+                                            },
+                                            "line": 54,
+                                            "column": 53
+                                          },
+                                          "right": {
+                                            "kind": "BinaryExpr",
+                                            "operator": ">",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 54,
+                                              "column": 56,
+                                              "symbol": "currY"
+                                            },
+                                            "right": {
+                                              "kind": "Identifier",
+                                              "line": 54,
+                                              "column": 64,
+                                              "symbol": "h_nx"
+                                            },
+                                            "line": 54,
+                                            "column": 69
+                                          },
+                                          "line": 54,
+                                          "column": 69
+                                        },
+                                        "right": {
+                                          "kind": "BinaryExpr",
+                                          "operator": ">",
+                                          "left": {
+                                            "kind": "Identifier",
+                                            "line": 54,
+                                            "column": 72,
+                                            "symbol": "currY"
+                                          },
+                                          "right": {
+                                            "kind": "Identifier",
+                                            "line": 54,
+                                            "column": 80,
+                                            "symbol": "h_px"
+                                          },
+                                          "line": 54,
+                                          "column": 85
+                                        },
+                                        "line": 54,
+                                        "column": 85
+                                      },
+                                      "right": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 54,
+                                          "column": 88,
+                                          "symbol": "currY"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 54,
+                                          "column": 96,
+                                          "symbol": "h_nz"
+                                        },
+                                        "line": 54,
+                                        "column": 101
+                                      },
+                                      "line": 54,
+                                      "column": 101
+                                    },
+                                    "right": {
+                                      "kind": "BinaryExpr",
+                                      "operator": ">",
+                                      "left": {
+                                        "kind": "Identifier",
+                                        "line": 54,
+                                        "column": 104,
+                                        "symbol": "currY"
+                                      },
+                                      "right": {
+                                        "kind": "Identifier",
+                                        "line": 54,
+                                        "column": 112,
+                                        "symbol": "h_pz"
+                                      },
+                                      "line": 54,
+                                      "column": 116
+                                    },
+                                    "line": 54,
+                                    "column": 116
+                                  },
+                                  "line": 54,
+                                  "column": 21
+                                },
+                                {
+                                  "kind": "IfStmt",
+                                  "condition": {
+                                    "kind": "Identifier",
+                                    "line": 56,
+                                    "column": 25,
+                                    "symbol": "isExposed"
+                                  },
+                                  "thenBranch": [
+                                    {
+                                      "kind": "VarDeclaration",
+                                      "identifier": "color",
+                                      "constant": false,
+                                      "value": {
+                                        "kind": "StringLiteral",
+                                        "line": 57,
+                                        "column": 37,
+                                        "value": "#7f8c8d"
+                                      },
+                                      "line": 57,
+                                      "column": 25
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": "==",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 58,
+                                          "column": 29,
+                                          "symbol": "currY"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 58,
+                                          "column": 38,
+                                          "symbol": "h"
+                                        },
+                                        "line": 58,
+                                        "column": 39
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 59,
+                                            "column": 29,
+                                            "symbol": "color"
+                                          },
+                                          "value": {
+                                            "kind": "StringLiteral",
+                                            "line": 59,
+                                            "column": 37,
+                                            "value": "#78e08f"
+                                          },
+                                          "line": 59,
+                                          "column": 35
+                                        }
+                                      ],
+                                      "elseBranch": [
+                                        {
+                                          "kind": "IfStmt",
+                                          "condition": {
+                                            "kind": "BinaryExpr",
+                                            "operator": ">",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 60,
+                                              "column": 36,
+                                              "symbol": "currY"
+                                            },
+                                            "right": {
+                                              "kind": "BinaryExpr",
+                                              "operator": "-",
+                                              "left": {
+                                                "kind": "Identifier",
+                                                "line": 60,
+                                                "column": 44,
+                                                "symbol": "h"
+                                              },
+                                              "right": {
+                                                "kind": "Identifier",
+                                                "line": 60,
+                                                "column": 48,
+                                                "symbol": "dirtDepth"
+                                              },
+                                              "line": 60,
+                                              "column": 57
+                                            },
+                                            "line": 60,
+                                            "column": 57
+                                          },
+                                          "thenBranch": [
+                                            {
+                                              "kind": "AssignmentExpr",
+                                              "assignee": {
+                                                "kind": "Identifier",
+                                                "line": 61,
+                                                "column": 29,
+                                                "symbol": "color"
+                                              },
+                                              "value": {
+                                                "kind": "StringLiteral",
+                                                "line": 61,
+                                                "column": 37,
+                                                "value": "#d35400"
+                                              },
+                                              "line": 61,
+                                              "column": 35
+                                            }
+                                          ],
+                                          "line": 0,
+                                          "column": 0
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "VarDeclaration",
+                                      "identifier": "top_v0",
+                                      "constant": false,
+                                      "value": {
+                                        "kind": "NumericLiteral",
+                                        "line": 65,
+                                        "column": 38,
+                                        "value": 0
+                                      },
+                                      "line": 65,
+                                      "column": 25
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 66,
+                                          "column": 29,
+                                          "symbol": "h_nx"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 66,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 66,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 66,
+                                            "column": 45,
+                                            "symbol": "top_v0"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 66,
+                                              "column": 54,
+                                              "symbol": "top_v0"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 66,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 66,
+                                            "column": 65
+                                          },
+                                          "line": 66,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 67,
+                                          "column": 29,
+                                          "symbol": "h_nz"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 67,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 67,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 67,
+                                            "column": 45,
+                                            "symbol": "top_v0"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 67,
+                                              "column": 54,
+                                              "symbol": "top_v0"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 67,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 67,
+                                            "column": 65
+                                          },
+                                          "line": 67,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 68,
+                                          "column": 29,
+                                          "symbol": "h_nw"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 68,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 68,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 68,
+                                            "column": 45,
+                                            "symbol": "top_v0"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 68,
+                                              "column": 54,
+                                              "symbol": "top_v0"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 68,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 68,
+                                            "column": 65
+                                          },
+                                          "line": 68,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "VarDeclaration",
+                                      "identifier": "top_v1",
+                                      "constant": false,
+                                      "value": {
+                                        "kind": "NumericLiteral",
+                                        "line": 69,
+                                        "column": 38,
+                                        "value": 0
+                                      },
+                                      "line": 69,
+                                      "column": 25
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 70,
+                                          "column": 29,
+                                          "symbol": "h_px"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 70,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 70,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 70,
+                                            "column": 45,
+                                            "symbol": "top_v1"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 70,
+                                              "column": 54,
+                                              "symbol": "top_v1"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 70,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 70,
+                                            "column": 65
+                                          },
+                                          "line": 70,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 71,
+                                          "column": 29,
+                                          "symbol": "h_nz"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 71,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 71,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 71,
+                                            "column": 45,
+                                            "symbol": "top_v1"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 71,
+                                              "column": 54,
+                                              "symbol": "top_v1"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 71,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 71,
+                                            "column": 65
+                                          },
+                                          "line": 71,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 72,
+                                          "column": 29,
+                                          "symbol": "h_ne"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 72,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 72,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 72,
+                                            "column": 45,
+                                            "symbol": "top_v1"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 72,
+                                              "column": 54,
+                                              "symbol": "top_v1"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 72,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 72,
+                                            "column": 65
+                                          },
+                                          "line": 72,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "VarDeclaration",
+                                      "identifier": "top_v2",
+                                      "constant": false,
+                                      "value": {
+                                        "kind": "NumericLiteral",
+                                        "line": 73,
+                                        "column": 38,
+                                        "value": 0
+                                      },
+                                      "line": 73,
+                                      "column": 25
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 74,
+                                          "column": 29,
+                                          "symbol": "h_px"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 74,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 74,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 74,
+                                            "column": 45,
+                                            "symbol": "top_v2"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 74,
+                                              "column": 54,
+                                              "symbol": "top_v2"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 74,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 74,
+                                            "column": 65
+                                          },
+                                          "line": 74,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 75,
+                                          "column": 29,
+                                          "symbol": "h_pz"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 75,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 75,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 75,
+                                            "column": 45,
+                                            "symbol": "top_v2"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 75,
+                                              "column": 54,
+                                              "symbol": "top_v2"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 75,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 75,
+                                            "column": 65
+                                          },
+                                          "line": 75,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 76,
+                                          "column": 29,
+                                          "symbol": "h_se"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 76,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 76,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 76,
+                                            "column": 45,
+                                            "symbol": "top_v2"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 76,
+                                              "column": 54,
+                                              "symbol": "top_v2"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 76,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 76,
+                                            "column": 65
+                                          },
+                                          "line": 76,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "VarDeclaration",
+                                      "identifier": "top_v3",
+                                      "constant": false,
+                                      "value": {
+                                        "kind": "NumericLiteral",
+                                        "line": 77,
+                                        "column": 38,
+                                        "value": 0
+                                      },
+                                      "line": 77,
+                                      "column": 25
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 78,
+                                          "column": 29,
+                                          "symbol": "h_nx"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 78,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 78,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 78,
+                                            "column": 45,
+                                            "symbol": "top_v3"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 78,
+                                              "column": 54,
+                                              "symbol": "top_v3"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 78,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 78,
+                                            "column": 65
+                                          },
+                                          "line": 78,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 79,
+                                          "column": 29,
+                                          "symbol": "h_pz"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 79,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 79,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 79,
+                                            "column": 45,
+                                            "symbol": "top_v3"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 79,
+                                              "column": 54,
+                                              "symbol": "top_v3"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 79,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 79,
+                                            "column": 65
+                                          },
+                                          "line": 79,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": ">",
+                                        "left": {
+                                          "kind": "Identifier",
+                                          "line": 80,
+                                          "column": 29,
+                                          "symbol": "h_sw"
+                                        },
+                                        "right": {
+                                          "kind": "Identifier",
+                                          "line": 80,
+                                          "column": 36,
+                                          "symbol": "currY"
+                                        },
+                                        "line": 80,
+                                        "column": 41
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "AssignmentExpr",
+                                          "assignee": {
+                                            "kind": "Identifier",
+                                            "line": 80,
+                                            "column": 45,
+                                            "symbol": "top_v3"
+                                          },
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "+",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 80,
+                                              "column": 54,
+                                              "symbol": "top_v3"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 80,
+                                              "column": 63,
+                                              "value": 1
+                                            },
+                                            "line": 80,
+                                            "column": 65
+                                          },
+                                          "line": 80,
+                                          "column": 52
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    },
+                                    {
+                                      "kind": "CallExpr",
+                                      "caller": {
+                                        "kind": "Identifier",
+                                        "line": 82,
+                                        "column": 25,
+                                        "symbol": "push"
+                                      },
+                                      "args": [
+                                        {
+                                          "kind": "Identifier",
+                                          "line": 82,
+                                          "column": 30,
+                                          "symbol": "voxels"
+                                        },
+                                        {
+                                          "kind": "ObjectLiteral",
+                                          "properties": [
+                                            {
+                                              "kind": "Property",
+                                              "key": "type",
+                                              "value": {
+                                                "kind": "StringLiteral",
+                                                "line": 83,
+                                                "column": 35,
+                                                "value": "block"
+                                              }
+                                            },
+                                            {
+                                              "kind": "Property",
+                                              "key": "x",
+                                              "value": {
+                                                "kind": "Identifier",
+                                                "line": 84,
+                                                "column": 32,
+                                                "symbol": "wrldX"
+                                              }
+                                            },
+                                            {
+                                              "kind": "Property",
+                                              "key": "y",
+                                              "value": {
+                                                "kind": "Identifier",
+                                                "line": 84,
+                                                "column": 42,
+                                                "symbol": "currY"
+                                              }
+                                            },
+                                            {
+                                              "kind": "Property",
+                                              "key": "z",
+                                              "value": {
+                                                "kind": "Identifier",
+                                                "line": 84,
+                                                "column": 52,
+                                                "symbol": "wrldZ"
+                                              }
+                                            },
+                                            {
+                                              "kind": "Property",
+                                              "key": "color",
+                                              "value": {
+                                                "kind": "Identifier",
+                                                "line": 85,
+                                                "column": 36,
+                                                "symbol": "color"
+                                              }
+                                            },
+                                            {
+                                              "kind": "Property",
+                                              "key": "ao",
+                                              "value": {
+                                                "kind": "ArrayLiteral",
+                                                "elements": [
+                                                  {
+                                                    "kind": "Identifier",
+                                                    "line": 86,
+                                                    "column": 34,
+                                                    "symbol": "top_v0"
+                                                  },
+                                                  {
+                                                    "kind": "Identifier",
+                                                    "line": 86,
+                                                    "column": 42,
+                                                    "symbol": "top_v3"
+                                                  },
+                                                  {
+                                                    "kind": "Identifier",
+                                                    "line": 86,
+                                                    "column": 50,
+                                                    "symbol": "top_v2"
+                                                  },
+                                                  {
+                                                    "kind": "Identifier",
+                                                    "line": 86,
+                                                    "column": 58,
+                                                    "symbol": "top_v1"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "line": 90,
+                                      "column": 25
+                                    },
+                                    {
+                                      "kind": "IfStmt",
+                                      "condition": {
+                                        "kind": "BinaryExpr",
+                                        "operator": "&&",
+                                        "left": {
+                                          "kind": "BinaryExpr",
+                                          "operator": "==",
+                                          "left": {
+                                            "kind": "Identifier",
+                                            "line": 90,
+                                            "column": 29,
+                                            "symbol": "currY"
+                                          },
+                                          "right": {
+                                            "kind": "Identifier",
+                                            "line": 90,
+                                            "column": 38,
+                                            "symbol": "h"
+                                          },
+                                          "line": 90,
+                                          "column": 40
+                                        },
+                                        "right": {
+                                          "kind": "BinaryExpr",
+                                          "operator": "==",
+                                          "left": {
+                                            "kind": "Identifier",
+                                            "line": 90,
+                                            "column": 43,
+                                            "symbol": "color"
+                                          },
+                                          "right": {
+                                            "kind": "StringLiteral",
+                                            "line": 90,
+                                            "column": 52,
+                                            "value": "#78e08f"
+                                          },
+                                          "line": 90,
+                                          "column": 61
+                                        },
+                                        "line": 90,
+                                        "column": 61
+                                      },
+                                      "thenBranch": [
+                                        {
+                                          "kind": "VarDeclaration",
+                                          "identifier": "randVal",
+                                          "constant": false,
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "*",
+                                            "left": {
+                                              "kind": "CallExpr",
+                                              "caller": {
+                                                "kind": "MemberExpr",
+                                                "object": {
+                                                  "kind": "Identifier",
+                                                  "line": 91,
+                                                  "column": 43,
+                                                  "symbol": "Math"
+                                                },
+                                                "property": {
+                                                  "kind": "Identifier",
+                                                  "line": 91,
+                                                  "column": 48,
+                                                  "symbol": "abs"
+                                                },
+                                                "computed": false,
+                                                "line": 91,
+                                                "column": 51
+                                              },
+                                              "args": [
+                                                {
+                                                  "kind": "CallExpr",
+                                                  "caller": {
+                                                    "kind": "MemberExpr",
+                                                    "object": {
+                                                      "kind": "Identifier",
+                                                      "line": 91,
+                                                      "column": 52,
+                                                      "symbol": "Math"
+                                                    },
+                                                    "property": {
+                                                      "kind": "Identifier",
+                                                      "line": 91,
+                                                      "column": 57,
+                                                      "symbol": "sin"
+                                                    },
+                                                    "computed": false,
+                                                    "line": 91,
+                                                    "column": 60
+                                                  },
+                                                  "args": [
+                                                    {
+                                                      "kind": "BinaryExpr",
+                                                      "operator": "+",
+                                                      "left": {
+                                                        "kind": "BinaryExpr",
+                                                        "operator": "*",
+                                                        "left": {
+                                                          "kind": "Identifier",
+                                                          "line": 91,
+                                                          "column": 61,
+                                                          "symbol": "wrldX"
+                                                        },
+                                                        "right": {
+                                                          "kind": "NumericLiteral",
+                                                          "line": 91,
+                                                          "column": 69,
+                                                          "value": 12.9898
+                                                        },
+                                                        "line": 91,
+                                                        "column": 77
+                                                      },
+                                                      "right": {
+                                                        "kind": "BinaryExpr",
+                                                        "operator": "*",
+                                                        "left": {
+                                                          "kind": "Identifier",
+                                                          "line": 91,
+                                                          "column": 79,
+                                                          "symbol": "wrldZ"
+                                                        },
+                                                        "right": {
+                                                          "kind": "NumericLiteral",
+                                                          "line": 91,
+                                                          "column": 87,
+                                                          "value": 78.233
+                                                        },
+                                                        "line": 91,
+                                                        "column": 93
+                                                      },
+                                                      "line": 91,
+                                                      "column": 93
+                                                    }
+                                                  ],
+                                                  "line": 91,
+                                                  "column": 94
+                                                }
+                                              ],
+                                              "line": 91,
+                                              "column": 96
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 91,
+                                              "column": 98,
+                                              "value": 43758.5453
+                                            },
+                                            "line": 92,
+                                            "column": 29
+                                          },
+                                          "line": 91,
+                                          "column": 29
+                                        },
+                                        {
+                                          "kind": "VarDeclaration",
+                                          "identifier": "rand",
+                                          "constant": false,
+                                          "value": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "-",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 92,
+                                              "column": 40,
+                                              "symbol": "randVal"
+                                            },
+                                            "right": {
+                                              "kind": "CallExpr",
+                                              "caller": {
+                                                "kind": "MemberExpr",
+                                                "object": {
+                                                  "kind": "Identifier",
+                                                  "line": 92,
+                                                  "column": 50,
+                                                  "symbol": "Math"
+                                                },
+                                                "property": {
+                                                  "kind": "Identifier",
+                                                  "line": 92,
+                                                  "column": 55,
+                                                  "symbol": "floor"
+                                                },
+                                                "computed": false,
+                                                "line": 92,
+                                                "column": 60
+                                              },
+                                              "args": [
+                                                {
+                                                  "kind": "Identifier",
+                                                  "line": 92,
+                                                  "column": 61,
+                                                  "symbol": "randVal"
+                                                }
+                                              ],
+                                              "line": 93,
+                                              "column": 29
+                                            },
+                                            "line": 93,
+                                            "column": 29
+                                          },
+                                          "line": 92,
+                                          "column": 29
+                                        },
+                                        {
+                                          "kind": "IfStmt",
+                                          "condition": {
+                                            "kind": "BinaryExpr",
+                                            "operator": "<",
+                                            "left": {
+                                              "kind": "Identifier",
+                                              "line": 93,
+                                              "column": 33,
+                                              "symbol": "rand"
+                                            },
+                                            "right": {
+                                              "kind": "NumericLiteral",
+                                              "line": 93,
+                                              "column": 40,
+                                              "value": 0.0075
+                                            },
+                                            "line": 93,
+                                            "column": 46
+                                          },
+                                          "thenBranch": [
+                                            {
+                                              "kind": "CallExpr",
+                                              "caller": {
+                                                "kind": "Identifier",
+                                                "line": 95,
+                                                "column": 33,
+                                                "symbol": "push"
+                                              },
+                                              "args": [
+                                                {
+                                                  "kind": "Identifier",
+                                                  "line": 95,
+                                                  "column": 38,
+                                                  "symbol": "voxels"
+                                                },
+                                                {
+                                                  "kind": "ObjectLiteral",
+                                                  "properties": [
+                                                    {
+                                                      "kind": "Property",
+                                                      "key": "type",
+                                                      "value": {
+                                                        "kind": "StringLiteral",
+                                                        "line": 95,
+                                                        "column": 54,
+                                                        "value": "tree"
+                                                      }
+                                                    },
+                                                    {
+                                                      "kind": "Property",
+                                                      "key": "x",
+                                                      "value": {
+                                                        "kind": "Identifier",
+                                                        "line": 95,
+                                                        "column": 65,
+                                                        "symbol": "wrldX"
+                                                      }
+                                                    },
+                                                    {
+                                                      "kind": "Property",
+                                                      "key": "y",
+                                                      "value": {
+                                                        "kind": "Identifier",
+                                                        "line": 95,
+                                                        "column": 75,
+                                                        "symbol": "h"
+                                                      }
+                                                    },
+                                                    {
+                                                      "kind": "Property",
+                                                      "key": "z",
+                                                      "value": {
+                                                        "kind": "Identifier",
+                                                        "line": 95,
+                                                        "column": 81,
+                                                        "symbol": "wrldZ"
+                                                      }
+                                                    },
+                                                    {
+                                                      "kind": "Property",
+                                                      "key": "rand",
+                                                      "value": {
+                                                        "kind": "Identifier",
+                                                        "line": 95,
+                                                        "column": 94,
+                                                        "symbol": "rand"
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              ],
+                                              "line": 96,
+                                              "column": 29
+                                            }
+                                          ],
+                                          "line": 0,
+                                          "column": 0
+                                        }
+                                      ],
+                                      "line": 0,
+                                      "column": 0
+                                    }
+                                  ],
+                                  "line": 0,
+                                  "column": 0
+                                },
+                                {
+                                  "kind": "AssignmentExpr",
+                                  "assignee": {
+                                    "kind": "Identifier",
+                                    "line": 99,
+                                    "column": 21,
+                                    "symbol": "currY"
+                                  },
+                                  "value": {
+                                    "kind": "BinaryExpr",
+                                    "operator": "+",
+                                    "left": {
+                                      "kind": "Identifier",
+                                      "line": 99,
+                                      "column": 29,
+                                      "symbol": "currY"
+                                    },
+                                    "right": {
+                                      "kind": "NumericLiteral",
+                                      "line": 99,
+                                      "column": 37,
+                                      "value": 1
+                                    },
+                                    "line": 100,
+                                    "column": 17
+                                  },
+                                  "line": 99,
+                                  "column": 27
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "AssignmentExpr",
+                              "assignee": {
+                                "kind": "Identifier",
+                                "line": 101,
+                                "column": 17,
+                                "symbol": "bz"
+                              },
+                              "value": {
+                                "kind": "BinaryExpr",
+                                "operator": "+",
+                                "left": {
+                                  "kind": "Identifier",
+                                  "line": 101,
+                                  "column": 22,
+                                  "symbol": "bz"
+                                },
+                                "right": {
+                                  "kind": "NumericLiteral",
+                                  "line": 101,
+                                  "column": 27,
+                                  "value": 1
+                                },
+                                "line": 102,
+                                "column": 13
+                              },
+                              "line": 101,
+                              "column": 20
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "AssignmentExpr",
+                          "assignee": {
+                            "kind": "Identifier",
+                            "line": 103,
+                            "column": 13,
+                            "symbol": "bx"
+                          },
+                          "value": {
+                            "kind": "BinaryExpr",
+                            "operator": "+",
+                            "left": {
+                              "kind": "Identifier",
+                              "line": 103,
+                              "column": 18,
+                              "symbol": "bx"
+                            },
+                            "right": {
+                              "kind": "NumericLiteral",
+                              "line": 103,
+                              "column": 23,
+                              "value": 1
+                            },
+                            "line": 104,
+                            "column": 9
+                          },
+                          "line": 103,
+                          "column": 16
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "CallExpr",
+                      "caller": {
+                        "kind": "Identifier",
+                        "line": 106,
+                        "column": 9,
+                        "symbol": "send"
+                      },
+                      "args": [
+                        {
+                          "kind": "ObjectLiteral",
+                          "properties": [
+                            {
+                              "kind": "Property",
+                              "key": "type",
+                              "value": {
+                                "kind": "StringLiteral",
+                                "line": 107,
+                                "column": 19,
+                                "value": "chunk_result"
+                              }
+                            },
+                            {
+                              "kind": "Property",
+                              "key": "x",
+                              "value": {
+                                "kind": "Identifier",
+                                "line": 108,
+                                "column": 16,
+                                "symbol": "wrldChunkX"
+                              }
+                            },
+                            {
+                              "kind": "Property",
+                              "key": "z",
+                              "value": {
+                                "kind": "Identifier",
+                                "line": 109,
+                                "column": 16,
+                                "symbol": "wrldChunkZ"
+                              }
+                            },
+                            {
+                              "kind": "Property",
+                              "key": "voxels",
+                              "value": {
+                                "kind": "Identifier",
+                                "line": 110,
+                                "column": 21,
+                                "symbol": "voxels"
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "line": 112,
+                      "column": 5
+                    }
+                  ],
+                  "line": 0,
+                  "column": 0
+                }
+              ],
+              "line": 0,
+              "column": 0
+            }
+          ],
+          "async": false,
+          "line": 113,
+          "column": 2
+        }
+      ],
+      "line": 114,
+      "column": 1
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

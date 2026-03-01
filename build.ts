@@ -1,6 +1,7 @@
 import { $ } from "bun";
 import pkg from "./package.json";
 import { existsSync } from "node:fs";
+import { rcedit } from "rcedit"; // Add this import at the top
 
 // 1. Configuration
 const entryPoint = "./src/main.ts";
@@ -57,6 +58,22 @@ for (const targetId of targets) {
 
     // Compile the bundled output into a single executable
     await $`bun build ${tempBundle} --compile --target=${targetId} --outfile=${binPath}`.quiet();
+
+    if (isWindows) {
+      console.log(`🔧 Patching Windows metadata for ${binPath}...`);
+      await rcedit(binPath, {
+        "product-version": version,
+        "version-string": {
+          CompanyName: "CursorScript",
+          FileDescription: "CursorScript Executable",
+          LegalCopyright: "© 2024 CursorScript. All rights reserved.",
+          OriginalFilename: "cursorx.exe",
+          ProductName: "CursorScript",
+        },
+        "file-version": version,
+        icon: "./icon.ico",
+      });
+    }
 
     // 4. Asset Management
     const libSource = `./lib`;

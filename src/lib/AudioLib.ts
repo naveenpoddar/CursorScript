@@ -13,13 +13,13 @@ const devPath = join(
   "..",
   "lib",
   "bass",
-  `bass.${suffix}`,
+  `this.bass.${suffix}`,
 );
 const buildPath = join(
   dirname(process.execPath),
   "lib",
   "bass",
-  `bass.${suffix}`,
+  `this.bass.${suffix}`,
 );
 
 // If compiled, prefer the library bundled with the executable
@@ -30,7 +30,9 @@ const libPath = isCompiled
     : buildPath;
 
 if (!existsSync(libPath)) {
-  console.error(`\n❌ Native Library Error: Could not find bass.${suffix}`);
+  console.error(
+    `\n❌ Native Library Error: Could not find this.bass.${suffix}`,
+  );
   console.error(`   Mode: ${isCompiled ? "Compiled" : "Development"}`);
   console.error(`   Searched Path: ${libPath}`);
   console.error(
@@ -43,61 +45,81 @@ const BASS_ATTRIB_FREQ = 1;
 const BASS_ATTRIB_VOL = 2;
 const BASS_SAMPLE_LOOP = 4;
 
-// Load the BASS library using Bun FFI
-const bass = dlopen(libPath, {
-  BASS_Init: {
-    args: [FFIType.i32, FFIType.u32, FFIType.u32, FFIType.ptr, FFIType.ptr],
-    returns: FFIType.i32,
-  },
-  BASS_StreamCreateFile: {
-    args: [FFIType.i32, FFIType.ptr, FFIType.u64, FFIType.u64, FFIType.u32],
-    returns: FFIType.u32,
-  },
-  BASS_ChannelPlay: {
-    args: [FFIType.u32, FFIType.i32],
-    returns: FFIType.i32,
-  },
-  BASS_ChannelPause: {
-    // <--- Add this
-    args: [FFIType.u32],
-    returns: FFIType.i32,
-  },
-  BASS_ChannelStop: {
-    args: [FFIType.u32],
-    returns: FFIType.i32,
-  },
-  BASS_ChannelSetAttribute: {
-    args: [FFIType.u32, FFIType.u32, FFIType.f32],
-    returns: FFIType.i32,
-  },
-  BASS_ChannelGetAttribute: {
-    args: [FFIType.u32, FFIType.u32, FFIType.ptr],
-    returns: FFIType.i32,
-  },
-  BASS_ChannelFlags: {
-    args: [FFIType.u32, FFIType.u32, FFIType.u32],
-    returns: FFIType.u32,
-  },
-});
-
-// Initialize BASS on default device (-1), 44100Hz
-const initResult = bass.symbols.BASS_Init(-1, 44100, 0, null, null);
-if (initResult === 0) {
-  // If init fails, we log it but don't throw immediately as it might be already initialized
-  console.warn(
-    "BASS_Init returned 0. Could be already initialized or audio device error.",
-  );
-}
-
 export interface PlayOptions {
   volume?: number; // 0.0 - 1.0
   loop?: boolean;
   pitch?: number;
 }
 
+function createAudioLibrary() {
+  // Load the BASS library using Bun FFI
+  const bass = dlopen(libPath, {
+    BASS_Init: {
+      args: [FFIType.i32, FFIType.u32, FFIType.u32, FFIType.ptr, FFIType.ptr],
+      returns: FFIType.i32,
+    },
+    BASS_StreamCreateFile: {
+      args: [FFIType.i32, FFIType.ptr, FFIType.u64, FFIType.u64, FFIType.u32],
+      returns: FFIType.u32,
+    },
+    BASS_ChannelPlay: {
+      args: [FFIType.u32, FFIType.i32],
+      returns: FFIType.i32,
+    },
+    BASS_ChannelPause: {
+      // <--- Add this
+      args: [FFIType.u32],
+      returns: FFIType.i32,
+    },
+    BASS_ChannelStop: {
+      args: [FFIType.u32],
+      returns: FFIType.i32,
+    },
+    BASS_ChannelSetAttribute: {
+      args: [FFIType.u32, FFIType.u32, FFIType.f32],
+      returns: FFIType.i32,
+    },
+    BASS_ChannelGetAttribute: {
+      args: [FFIType.u32, FFIType.u32, FFIType.ptr],
+      returns: FFIType.i32,
+    },
+    BASS_ChannelFlags: {
+      args: [FFIType.u32, FFIType.u32, FFIType.u32],
+      returns: FFIType.u32,
+    },
+  });
+
+  // Initialize BASS on default device (-1), 44100Hz
+  const initResult = bass.symbols.BASS_Init(-1, 44100, 0, null, null);
+  if (initResult === 0) {
+    // If init fails, we log it but don't throw immediately as it might be already initialized
+    console.warn(
+      "BASS_Init returned 0. Could be already initialized or audio device error.",
+    );
+  }
+
+  return bass;
+}
+
 class AudioL {
   // Store original frequencies so dynamic pitch changes don't compound
   private originalFreqs = new Map<number, number>();
+
+  private lib: ReturnType<typeof createAudioLibrary> = {} as any;
+  private initilized: boolean = false;
+
+  public get bass() {
+    if (!this.initilized) {
+      this.init();
+    }
+
+    return this.lib;
+  }
+
+  public init() {
+    this.lib = createAudioLibrary();
+    this.initilized = true;
+  }
 
   async loadAsync(path: string) {
     return new Promise<number>((resolve, reject) => {
@@ -113,7 +135,7 @@ class AudioL {
   load(path: string) {
     const pathBuffer = Buffer.from(path + "\0", "utf-8");
     // mem=0, file=pathBuffer, offset=0, length=0, flags=0
-    const handle = bass.symbols.BASS_StreamCreateFile(
+    const handle = this.bass.symbols.BASS_StreamCreateFile(
       0,
       ptr(pathBuffer),
       0n,
@@ -126,7 +148,7 @@ class AudioL {
     }
     // Save the original frequency immediately after loading
     const freqPtr = new Float32Array(1);
-    const success = bass.symbols.BASS_ChannelGetAttribute(
+    const success = this.bass.symbols.BASS_ChannelGetAttribute(
       handle,
       BASS_ATTRIB_FREQ,
       ptr(freqPtr),
@@ -144,11 +166,11 @@ class AudioL {
     this.setOptions(audioId, options);
 
     // Play the channel (restart=1 to restart if already playing)
-    bass.symbols.BASS_ChannelPlay(audioId, 1);
+    this.bass.symbols.BASS_ChannelPlay(audioId, 1);
   }
 
   pause(audioId: number) {
-    const result = bass.symbols.BASS_ChannelPause(audioId);
+    const result = this.bass.symbols.BASS_ChannelPause(audioId);
     return result !== 0; // Returns true if successful
   }
 
@@ -157,7 +179,7 @@ class AudioL {
    */
   resume(audioId: number) {
     // restart = 0 means continue from current position
-    const result = bass.symbols.BASS_ChannelPlay(audioId, 0);
+    const result = this.bass.symbols.BASS_ChannelPlay(audioId, 0);
     return result !== 0;
   }
 
@@ -169,7 +191,7 @@ class AudioL {
     const options = toNative(_options) as PlayOptions;
 
     if (options.volume != null) {
-      bass.symbols.BASS_ChannelSetAttribute(
+      this.bass.symbols.BASS_ChannelSetAttribute(
         audioId,
         BASS_ATTRIB_VOL,
         options.volume,
@@ -178,7 +200,7 @@ class AudioL {
 
     // Set looping flag
     if (options.loop != null) {
-      bass.symbols.BASS_ChannelFlags(
+      this.bass.symbols.BASS_ChannelFlags(
         audioId,
         options.loop ? BASS_SAMPLE_LOOP : 0,
         BASS_SAMPLE_LOOP,
@@ -188,7 +210,7 @@ class AudioL {
     // Set pitch based on the ORIGINAL frequency
     if (options.pitch != null) {
       const baseFreq = this.originalFreqs.get(audioId) || 44100;
-      bass.symbols.BASS_ChannelSetAttribute(
+      this.bass.symbols.BASS_ChannelSetAttribute(
         audioId,
         BASS_ATTRIB_FREQ,
         baseFreq * options.pitch,
@@ -200,7 +222,7 @@ class AudioL {
    * Stops the playing audio by its ID
    */
   stop(audioId: number) {
-    bass.symbols.BASS_ChannelStop(audioId);
+    this.bass.symbols.BASS_ChannelStop(audioId);
   }
 }
 

@@ -1,0 +1,113 @@
+Window.create(800, 600, "CursorScript Water Shader");
+let scene = Engine3D.createScene();
+
+// Initialize grid properties
+let gridSize = 32;
+let cellSize = 0.6;
+let vertices = [];
+let faces = [];
+
+// Center the grid
+let offset = -(gridSize * cellSize) / 2;
+
+// 1. Generate Grid Vertices (Flat Initial State)
+let z = 0;
+while (z < gridSize) {
+    let x = 0;
+    while (x < gridSize) {
+        push(vertices, {
+            x: offset + x * cellSize,
+            y: 0,
+            z: offset + z * cellSize
+        })
+        x = x + 1;
+    }
+    z = z + 1;
+}
+
+// 2. Generate Grid Faces (CCW winding for upward normal)
+z = 0;
+while (z < gridSize - 1) {
+    let x = 0;
+    while (x < gridSize - 1) {
+        let i = z * gridSize + x;
+
+        // Triangle 1: (x,z) -> (x,z+1) -> (x+1,z)
+        push(faces, [i, i + gridSize, i + 1]);
+        // Triangle 2: (x+1,z) -> (x,z+1) -> (x+1,z+1)
+        push(faces, [i + 1, i + gridSize, i + gridSize + 1]);
+
+        x = x + 1;
+    }
+    z = z + 1;
+}
+
+// 3. Create the High-Density Mesh
+// Brighter color and higher ambient for visibility
+let waterColor = "rgba(100, 180, 255, 0.9)";
+let waterMesh = Engine3D.createMesh(scene, vertices, faces, waterColor);
+Engine3D.setSolidMode(scene, waterMesh, true);
+Engine3D.setLight(scene, 0.5, 1, 0.5, 0.55); // Brighter ambient
+
+// Add a test cube in the center to confirm rendering works
+let testCube = Engine3D.createCube(scene, 1, "#ff0000");
+Engine3D.setPosition(scene, testCube, 0, 1, 0);
+
+// Seed the Noise Engine
+PerlinNoise.seed(time());
+
+// 4. State for Animation
+let timeTick = 0;
+
+// 5. Main Render/Update Loop
+Window.onUpdate(() -> {
+    timeTick = timeTick + 1;
+    let animTime = timeTick * 0.05;
+
+    // Dynamic Vertex Displacement (The __CURSOR_STR_3__ part)
+    let dynamicVerts = [];
+    let vz = 0;
+    while (vz < gridSize) {
+        let vx = 0;
+        while (vx < gridSize) {
+            let idx = vz * gridSize + vx;
+            let v = vertices[idx];
+
+            // Sum of Sines + Perlin Noise for natural water motion
+            let s1 = Math.sin(v.x * 1.2 + animTime) * 0.25;
+            let s2 = Math.cos(v.z * 0.9 + animTime * 0.8) * 0.2;
+            let p1 = PerlinNoise.noise2D(v.x * 0.4 + animTime * 0.2, v.z * 0.4) * 0.5;
+
+            let height = s1 + s2 + p1 - 0.4; // Zero centered
+
+            push(dynamicVerts, {
+                x: v.x, y: height, z: v.z
+            })
+            vx = vx + 1;
+        }
+        vz = vz + 1;
+    }
+
+    // Apply new vertex positions to the mesh
+    Engine3D.updateMeshVertices(scene, waterMesh, dynamicVerts);
+
+    // Slowly rotate camera around the scene
+    let camRad = 18;
+    let camX = Math.sin(animTime * 0.15) * camRad;
+    let camZ = Math.cos(animTime * 0.15) * camRad;
+
+    // Look at center (0,0,0) with a slight top-down angle
+    let yaw = (animTime * 0.15) * (180 / Math.PI) + 180;
+    Engine3D.setCamera(scene, camX, 8, camZ, -22, yaw, 0, 450);
+
+    // Draw Background Gradient (Sky/Depth)
+    Window.clear("#223344"); // Deep Ocean Black-Blue
+
+    // Render the 3D Scene
+    Engine3D.render(scene, 800, 600);
+
+    // Overlay Text
+    Window.setColor("white");
+    Window.drawText("CursorScript Water Surface", 20, 20, 28);
+    Window.drawText("Grid: 32x32, FPS: 60 (Simulated)", 20, 55, 16);
+})

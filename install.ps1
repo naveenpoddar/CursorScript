@@ -49,4 +49,21 @@ else {
 }
 
 Write-Host "✨ Done! All files are in $installDir" -ForegroundColor Green
+
+# 5. Set High Performance Graphics Preference (Windows Registry)
+Write-Host "🎮 Setting High Performance Graphics Preference..." -ForegroundColor Cyan
+$registryPath = "HKCU:\Software\Microsoft\DirectX\UserGpuPreferences"
+$exePath = "$installDir\cursorx.exe"
+
+try {
+    if (!(Test-Path $registryPath)) {
+        New-Item -Path $registryPath -Force | Out-Null
+    }
+    # GpuPreference=2; means High Performance
+    Set-ItemProperty -Path $registryPath -Name $exePath -Value "GpuPreference=2;" -ErrorAction Stop
+    Write-Host "🚀 High Performance mode enabled for $appName." -ForegroundColor Green
+} catch {
+    Write-Host "⚠️ Could not set graphics preference: $($_.Exception.Message)" -ForegroundColor Yellow
+}
+
 Write-Host "👉 Restart your terminal and type '$appName' to begin."

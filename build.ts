@@ -99,8 +99,9 @@ for (const targetId of targets) {
       await $`cp -r ${libSource} ${targetFolder}/`;
     }
 
+    console.log(`🔧 Compressing ${baseName}...`);
     // 5. Compression
-    await $`cd ${outDir} && 7z a -tzip -mx=9 -mfb=258 -mpass=15 ${baseName}.zip ${baseName}`.quiet();
+    await $`cd ${outDir} && 7z a -tzip -mx=9 -mmt=on ${baseName}.zip ${baseName}`.quiet();
     await $`rm -rf ${targetFolder}`;
 
     console.log("✅ Done");

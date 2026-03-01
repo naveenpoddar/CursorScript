@@ -10,6 +10,7 @@
   * [Global Functions](api/global_functions.md)
   * [JSON Library (Json) 📄](api/json.md)
   * [Lambda Functions (Anonymous Functions) λ](api/lambdas.md)
+  * [Server Library (Server) 💻](api/server.md)
   * [Math Library (Math)](api/math.md)
   * [Modules 📦](api/modules.md)
   * [Network Library (Network) 🌐](api/network.md)

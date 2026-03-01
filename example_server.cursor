@@ -1,0 +1,61 @@
+// A complete example of hosting a real website using CursorScript's ServerLib
+
+async fn main() {
+    let port = 8585;
+
+    // We can use the environment later or FileLib, but for now we'll read the HTML file manually 
+    // using the newly available tools or just run the server.
+
+    let msg = Server.start({
+        port: port
+    }, (req, server) -> {
+        print("Incoming request: " + req.method + " " + req.pathname);
+
+        // 1. Serve the homepage HTML
+        if (req.pathname == "/") {
+            let htmlContent = File.read("example_website.html");
+            return {
+                status: 200,
+                headers: {
+                    "Content-Type": "text/html"
+                },
+                body: htmlContent
+            };
+        }
+
+        // 2. Serve a JSON API endpoint for the front-end to call
+        if (req.pathname == "/api/data") {
+            return {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: {
+                    "status": "success",
+                    "message": "CursorScript backend is processing your request!",
+                    "time": time()
+                }
+            };
+        }
+
+        // 3. Fallback 404
+        return {
+            status: 404,
+            headers: {
+                "Content-Type": "text/plain"
+            },
+            body: "404 - Page Not Found"
+        };
+    });
+
+    print(msg);
+    print("🚀 Open your browser and go to http://localhost:" + str(port));
+    print("Press Ctrl+C to stop the server.");
+
+    // Keep the script running
+    while (true) {
+        await wait(1000000);
+    }
+}
+
+main();

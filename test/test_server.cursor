@@ -1,0 +1,56 @@
+// Test script for ServerLib
+async fn main() {
+    let port = 8080;
+    let serverMsg = Server.start({
+        port: port
+    }, (req, server) -> {
+        print("Received request:", req.method, req.pathname);
+
+        if (req.pathname == "/ping") {
+            return "pong";
+        }
+
+        if (req.pathname == "/json") {
+            return {
+                status: 200,
+                headers: {
+                    "X-Custom-Header": "CursorScript"
+                },
+                body: {
+                    "message": "Hello from CursorScript Server!"
+                }
+            };
+        }
+
+        return {
+            status: 404,
+            body: "Not Found"
+        };
+    });
+
+    print(serverMsg);
+
+    print("Waiting a bit before testing...");
+    await wait(1000);
+
+    print("Testing /ping endpoint...");
+    let pingRes = await Network.get("http://localhost:" + str(port) + "/ping");
+    print("Ping response:", pingRes);
+
+    print("Testing /json endpoint...");
+    let jsonRes = await Network.get("http://localhost:" + str(port) + "/json");
+    print("JSON response:", jsonRes);
+
+    print("Testing 404 endpoint...");
+    const (missingRes, missError) = await Network.get("http://localhost:" + str(port) + "/missing");
+
+    if (missError) {
+        print("Got expected error on /missing:", missError);
+    }
+
+    print("Stopping server...");
+    print(Server.stop());
+    print("Test complete.");
+}
+
+main();

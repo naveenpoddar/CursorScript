@@ -100,7 +100,7 @@ for (const targetId of targets) {
     }
 
     // 5. Compression
-    await $`cd ${outDir} && zip -r -9 ${baseName}.zip ${baseName}`.quiet();
+    await $`cd ${outDir} && 7z a -tzip -mx=9 -mfb=258 -mpass=15 ${baseName}.zip ${baseName}`.quiet();
     await $`rm -rf ${targetFolder}`;
 
     console.log("✅ Done");

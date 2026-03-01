@@ -25,8 +25,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
 
+      - name: Apt Update
+        run: sudo apt update
+
       - name: Install Dependencies
         run: bun install
+
+      - name: Install 7zip
+        run: sudo apt install p7zip-full p7zip-rar
 
       - name: Run Build Script
         # Pass the matrix target to your script

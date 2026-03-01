@@ -14,11 +14,13 @@ const devPath = join(
   "..",
   "..",
   "lib",
+  "raylib",
   `libraylib.${suffix}`,
 );
 const buildPath = join(
   dirname(process.execPath),
   "lib",
+  "raylib",
   `libraylib.${suffix}`,
 );
 

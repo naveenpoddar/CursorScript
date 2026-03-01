@@ -77,7 +77,7 @@ for (const targetId of targets) {
       await Bun.build({
         entrypoints: [tempBundle],
         compile: {
-          outfile: "./myapp",
+          outfile: binPath,
           target: targetId,
           windows: {
             icon: "./icon.ico",

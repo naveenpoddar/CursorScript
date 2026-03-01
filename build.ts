@@ -1,7 +1,6 @@
 import { $ } from "bun";
 import pkg from "./package.json";
 import { existsSync } from "node:fs";
-import { NtExecutable, NtExecutableResource, Resource } from "resedit";
 
 // 1. Configuration
 const entryPoint = "./src/main.ts";

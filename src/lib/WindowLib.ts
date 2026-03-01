@@ -14,12 +14,12 @@ const devPath = join(
   "..",
   "..",
   "lib",
-  `libraythis.lib.${suffix}`,
+  `libraylib.${suffix}`,
 );
 const buildPath = join(
   dirname(process.execPath),
   "lib",
-  `libraythis.lib.${suffix}`,
+  `libraylib.${suffix}`,
 );
 
 // If compiled, prefer the library bundled with the executable

@@ -13,13 +13,13 @@ const devPath = join(
   "..",
   "lib",
   "bass",
-  `this.bass.${suffix}`,
+  `bass.${suffix}`,
 );
 const buildPath = join(
   dirname(process.execPath),
   "lib",
   "bass",
-  `this.bass.${suffix}`,
+  `bass.${suffix}`,
 );
 
 // If compiled, prefer the library bundled with the executable

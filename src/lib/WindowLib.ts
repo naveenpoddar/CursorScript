@@ -219,7 +219,7 @@ function createWindowLibrary() {
   });
 }
 
-class _WindowL {
+export class _WindowL {
   private updateCallback: any = null;
   private fixedUpdateCallback: any = null;
   private activeColor: number = COLORS.white;
@@ -230,8 +230,13 @@ class _WindowL {
   public initilized: boolean = false;
   public lib: ReturnType<typeof createWindowLibrary> = {} as any;
 
+  constructor() {
+    global.windowLib = this;
+  }
+
   public init() {
     this.lib = createWindowLibrary();
+    global.windowLib = this;
     this.initilized = true;
   }
 

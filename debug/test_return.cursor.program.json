@@ -1,0 +1,93 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "VarDeclaration",
+      "identifier": "add",
+      "constant": false,
+      "value": {
+        "kind": "LambdaExpr",
+        "parameters": [
+          "a",
+          "b"
+        ],
+        "body": [
+          {
+            "kind": "ReturnStmt",
+            "value": {
+              "kind": "BinaryExpr",
+              "operator": "+",
+              "left": {
+                "kind": "Identifier",
+                "line": 2,
+                "column": 12,
+                "symbol": "a"
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 2,
+                "column": 16,
+                "symbol": "b"
+              },
+              "line": 2,
+              "column": 17
+            },
+            "line": 2,
+            "column": 12
+          }
+        ],
+        "async": false,
+        "line": 4,
+        "column": 1
+      },
+      "line": 1,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 4,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 4,
+          "column": 7,
+          "value": "Add result:"
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 4,
+            "column": 22,
+            "symbol": "add"
+          },
+          "args": [
+            {
+              "kind": "NumericLiteral",
+              "line": 4,
+              "column": 26,
+              "value": 5
+            },
+            {
+              "kind": "NumericLiteral",
+              "line": 4,
+              "column": 29,
+              "value": 7
+            }
+          ],
+          "line": 4,
+          "column": 31
+        }
+      ],
+      "line": 4,
+      "column": 32
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

@@ -54,17 +54,9 @@ class _Engine3D {
   private scenes: Map<number, Scene> = new Map();
   private nextSceneId = 1;
 
-  public lib: ReturnType<typeof createWindowLibrary> = {} as any;
-  public initilized: boolean = false;
-
   public get raylib() {
-    if (!this.initilized) this.init();
-    return this.lib;
-  }
-
-  public init() {
-    this.lib = createWindowLibrary();
-    this.initilized = true;
+    if (!global.windowLib.initilized) global.windowLib.init();
+    return global.windowLib.lib;
   }
 
   // ----- Vector Math Utility -----
@@ -812,7 +804,7 @@ class _Engine3D {
           let p2 = face.v[i + 1]!;
 
           if (this.raylib.symbols.DrawTriangleFan) {
-            const pts = new Float32Array([p0.x, p0.y, p1.x, p1.y, p2.x, p2.y]);
+            const pts = new Float32Array([p2.x, p2.y, p1.x, p1.y, p0.x, p0.y]);
             this.raylib.symbols.DrawTriangleFan(ptr(pts), 3, drawColor);
           }
         }
@@ -833,4 +825,6 @@ class _Engine3D {
   }
 }
 
-export const Engine3DL = ConvertTOMK_Object(new _Engine3D());
+export function CreateEngine3D() {
+  return ConvertTOMK_Object(new _Engine3D());
+}

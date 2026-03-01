@@ -11,6 +11,8 @@ declare global {
   var evaluate: (astNode: Stmt, env: any) => Promise<any>;
   var loadModule: (path: string) => Promise<Map<string, any>>;
   var currentEnv: Environment | null;
+
+  var windowLib: _WindowL;
 }
 
 global.evaluate = evaluate;
@@ -51,6 +53,7 @@ async function main() {
 
 import { readFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname, basename, resolve } from "path";
+import type { _WindowL, createWindowLibrary } from "./lib/WindowLib";
 
 global.loadModule = async (path: string) => {
   let relativePath = path;

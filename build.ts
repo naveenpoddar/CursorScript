@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import pkg from "./package.json";
 import { existsSync } from "node:fs";
-import { rcedit } from "rcedit"; // Add this import at the top
+import { NtExecutable, NtExecutableResource, Resource } from "resedit";
 
 // 1. Configuration
 const entryPoint = "./src/main.ts";
@@ -9,7 +9,7 @@ const outDir = "./dist";
 const appName = "cursorscript";
 const version = pkg.version;
 
-const ALL_TARGETS = [
+const ALL_TARGETS: Bun.Build.CompileTarget[] = [
   "bun-linux-x64",
   "bun-linux-arm64",
   "bun-darwin-x64",
@@ -18,7 +18,9 @@ const ALL_TARGETS = [
 ];
 
 const targetArg = process.argv.find((arg) => arg.startsWith("bun-"));
-const targets = targetArg ? [targetArg] : ALL_TARGETS;
+const targets = (
+  targetArg ? [targetArg] : ALL_TARGETS
+) as Bun.Build.CompileTarget[];
 
 console.log(`\n🚀 Bundling ${appName} v${version}...`);
 await $`rm -rf ${outDir} && mkdir -p ${outDir}`;
@@ -57,22 +59,39 @@ for (const targetId of targets) {
     await $`mkdir -p ${targetFolder}`;
 
     // Compile the bundled output into a single executable
-    await $`bun build ${tempBundle} --compile --target=${targetId} --outfile=${binPath}`.quiet();
-
     if (isWindows) {
       console.log(`🔧 Patching Windows metadata for ${binPath}...`);
-      await rcedit(binPath, {
-        "product-version": version,
-        "version-string": {
-          CompanyName: "CursorScript",
-          FileDescription: "CursorScript Executable",
-          LegalCopyright: "© 2024 CursorScript. All rights reserved.",
-          OriginalFilename: "cursorx.exe",
-          ProductName: "CursorScript",
+      // await rcedit(binPath, {
+      //   "product-version": version,
+      //   "version-string": {
+      //     CompanyName: "CursorScript",
+      //     FileDescription: "CursorScript Executable",
+      //     LegalCopyright: "© 2024 CursorScript. All rights reserved.",
+      //     OriginalFilename: "cursorx.exe",
+      //     ProductName: "CursorScript",
+      //   },
+      //   "file-version": version,
+      //   icon: "./icon.ico",
+      // });
+
+      await Bun.build({
+        entrypoints: [tempBundle],
+        compile: {
+          outfile: "./myapp",
+          target: targetId,
+          windows: {
+            icon: "./icon.ico",
+            // Additional Windows metadata:
+            title: "CursorScript Executable",
+            publisher: "NaveenPoddar",
+            version: version,
+            description: "CursorScript Executable",
+            copyright: "© 2024 CursorScript. All rights reserved.",
+          },
         },
-        "file-version": version,
-        icon: "./icon.ico",
       });
+    } else {
+      await $`bun build ${tempBundle} --compile --target=${targetId} --outfile=${binPath}`.quiet();
     }
 
     // 4. Asset Management

@@ -5,30 +5,6 @@ setlocal enabledelayedexpansion
 set HAS_CHANGES=0
 for /f "tokens=*" %%i in ('git status --porcelain') do set HAS_CHANGES=1
 
-if "!HAS_CHANGES!"=="1" (
-    echo ⚠️  You have uncommitted changes:
-    git status -s
-    echo.
-    set /p COMMIT_NOW="Stage and commit these changes before tagging? (y/n) [y]: "
-    if "!COMMIT_NOW!"=="" set COMMIT_NOW=y
-    
-    if /i "!COMMIT_NOW!"=="y" (
-        set DEFAULT_MSG=chore: prepare release
-        set /p MSG="Enter commit message [default: !DEFAULT_MSG!]: "
-        if "!MSG!"=="" set MSG=!DEFAULT_MSG!
-        
-        echo ➕ Staging changes...
-        git add .
-        echo 💾 Committing changes...
-        git commit -m "!MSG!"
-        echo ⬆️ Pushing changes to origin...
-        git push
-        echo.
-    ) else (
-        set /p CONTINUE="Continue tagging without committing? (y/n) [n]: "
-        if /i "!CONTINUE!" neq "y" exit /b 1
-    )
-)
 
 :check_commits
 :: Get the latest tag from git using version sort (most robust method)
@@ -76,6 +52,7 @@ for /f "tokens=1,2,3 delims=." %%a in ("%VERSION_NUM%") do (
     set PATCH=%%c
 )
 
+
 :: Ensure we have values
 if "!MAJOR!"=="" set MAJOR=0
 if "!MINOR!"=="" set MINOR=0
@@ -85,43 +62,67 @@ if "!PATCH!"=="" set PATCH=0
 set /a NEW_PATCH=!PATCH! + 1
 set SUGGESTED_TAG=v!MAJOR!.!MINOR!.!NEW_PATCH!
 
-echo.
-set /p NEW_TAG="Enter new version [default: %SUGGESTED_TAG%]: "
+:: Commit changes if there are any
+if "!HAS_CHANGES!"=="1" (
+    echo ⚠️  You have uncommitted changes:
+    git status -s
+    echo.
+    set /p COMMIT_NOW="Stage and commit these changes before tagging? (y/n) [y]: "
+    if "!COMMIT_NOW!"=="" set COMMIT_NOW=y
+    
+    if /i "!COMMIT_NOW!"=="y" (
+        set DEFAULT_MSG=chore: prepare release
+        set /p MSG="Enter commit message [default: !DEFAULT_MSG!]: "
+        if "!MSG!"=="" set MSG=!DEFAULT_MSG!
 
-:: If user pressed Enter, use the suggested tag
-if "!NEW_TAG!"=="" set NEW_TAG=%SUGGESTED_TAG%
+        echo.
+        set /p NEW_TAG="Enter new version [default: %SUGGESTED_TAG%]: "
 
-:: Strip 'v' for package.json version
-set PLAIN_VERSION=!NEW_TAG!
-if "!PLAIN_VERSION:~0,1!"=="v" set PLAIN_VERSION=!PLAIN_VERSION:~1!
+        :: If user pressed Enter, use the suggested tag
+        if "!NEW_TAG!"=="" set NEW_TAG=%SUGGESTED_TAG%
 
-echo 📝 Updating package.json to v!PLAIN_VERSION!...
-powershell -Command "$json = Get-Content package.json | ConvertFrom-Json; $json.version = '!PLAIN_VERSION!'; $json | ConvertTo-Json | Set-Content package.json"
+        :: Strip 'v' for package.json version
+        set PLAIN_VERSION=!NEW_TAG!
+        if "!PLAIN_VERSION:~0,1!"=="v" set PLAIN_VERSION=!PLAIN_VERSION:~1!
 
-echo 💾 Committing version bump...
-git add package.json
-git commit -m "chore: bump version to !NEW_TAG!"
-git push
+        echo 📝 Updating package.json to v!PLAIN_VERSION!...
+        powershell -Command "$json = Get-Content package.json | ConvertFrom-Json; $json.version = '!PLAIN_VERSION!'; $json | ConvertTo-Json | Set-Content package.json"
 
-echo.
-echo 🚀 Creating tag !NEW_TAG!...
-git tag !NEW_TAG!
+        echo ➕ Staging changes...
+        git add .
+        echo 💾 Committing changes...
+        git commit -m "!MSG!\nchore: bump version to !NEW_TAG!"
+        echo ⬆️ Pushing changes to origin...
+        git push
+        echo.
 
-if %ERRORLEVEL% NEQ 0 (
-    echo ❌ Failed to create tag. It might already exist.
-    pause
-    exit /b %ERRORLEVEL%
+
+
+        echo.
+        echo 🚀 Creating tag !NEW_TAG!...
+        git tag !NEW_TAG!
+
+                
+        if %ERRORLEVEL% NEQ 0 (
+            echo ❌ Failed to create tag. It might already exist.
+            pause
+            exit /b %ERRORLEVEL%
+        )
+                
+        echo ⬆️ Pushing tag !NEW_TAG! to GitHub...
+        git push origin !NEW_TAG!
+
+        if %ERRORLEVEL% NEQ 0 (
+            echo ❌ Failed to push tag to origin.
+            pause
+            exit /b %ERRORLEVEL%
+        )
+
+        echo.
+        echo ✨ Successfully published !NEW_TAG!
+        pause
+    ) else (
+        set /p CONTINUE="Continue tagging without committing? (y/n) [n]: "
+        if /i "!CONTINUE!" neq "y" exit /b 1
+    )
 )
-
-echo ⬆️ Pushing tag !NEW_TAG! to GitHub...
-git push origin !NEW_TAG!
-
-if %ERRORLEVEL% NEQ 0 (
-    echo ❌ Failed to push tag to origin.
-    pause
-    exit /b %ERRORLEVEL%
-)
-
-echo.
-echo ✨ Successfully published !NEW_TAG!
-pause

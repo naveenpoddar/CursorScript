@@ -24,7 +24,7 @@ export async function executeCallback(func: any, ...args: any[]) {
     // If it's a raw FunctionValue (internal call), evaluate it
     const runtimeArgs = args.map((a) => GetCursorXType(a)!);
 
-    const scope = new Environment(func.declarationEnv);
+    const scope = new Environment(func.declarationEnv, func.async);
 
     // Declare the passed arguments in the local scope
     if (func.parameters) {

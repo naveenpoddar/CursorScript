@@ -1,5 +1,5 @@
 import Parser from "../frontend/parser";
-import { createGlobalEnv } from "./environment";
+import { createGlobalEnv, default as Environment } from "./environment";
 import { evaluate } from "./interpreter";
 import {
   MK_NATIVE_FN,
@@ -32,22 +32,53 @@ global.evaluate = interpreterEvaluate;
 // @ts-ignore
 const worker = self as any;
 
+const messageQueue: any[] = [];
+let isInitialized = false;
+let workerEnv: any = null;
+
 worker.onmessage = async (event: MessageEvent) => {
   const msg = event.data;
   if (msg.type === "init") {
     await runWorker(msg.filePath, msg.threadId);
+    isInitialized = true;
+    // Process queued messages
+    while (messageQueue.length > 0) {
+      const qMsg = messageQueue.shift();
+      await handleIncomingMessage(qMsg);
+    }
+  } else if (msg.type === "message") {
+    if (!isInitialized) {
+      messageQueue.push(msg);
+    } else {
+      await handleIncomingMessage(msg);
+    }
   }
 };
+
+async function handleIncomingMessage(msg: any) {
+  if (!workerEnv) return;
+  const onMessageCallback = workerEnv.lookupVar("onMessageCallback");
+  if (
+    onMessageCallback &&
+    (onMessageCallback.type === "function" ||
+      onMessageCallback.type === "native-fn")
+  ) {
+    const runtimeData = deserializeToRuntimeValue(msg.data);
+    await executeCallback(onMessageCallback, [runtimeData], workerEnv);
+  }
+}
 
 async function runWorker(filePath: string, threadId: number) {
   try {
     const parser = new Parser();
     const env = createGlobalEnv();
+    workerEnv = env;
     env.currentFile = resolve(filePath);
     global.currentEnv = env;
 
     // Helper for high-level info
     env.declareVar("id", MK_NUMBER(threadId), true);
+    env.declareVar("onMessageCallback", MK_NULL(), false);
     const ThreadObj = env.lookupVar("Thread") as any;
 
     const sendMessageFn = MK_NATIVE_FN((args) => {
@@ -61,7 +92,7 @@ async function runWorker(filePath: string, threadId: number) {
 
     const setOnMessageFn = MK_NATIVE_FN((args) => {
       const callback = args[0];
-      env.declareVar("onMessageCallback", callback!, false);
+      env.assignVar("onMessageCallback", callback!);
       return MK_NULL();
     });
 
@@ -72,22 +103,6 @@ async function runWorker(filePath: string, threadId: number) {
 
     env.declareVar("send", sendMessageFn, true);
     env.declareVar("onMessage", setOnMessageFn, true);
-
-    // Handle messages coming TO the worker
-    worker.onmessage = (event: MessageEvent) => {
-      const msg = event.data;
-      if (msg.type === "message") {
-        const onMessageCallback = env.lookupVar("onMessageCallback");
-        if (
-          onMessageCallback &&
-          (onMessageCallback.type === "function" ||
-            onMessageCallback.type === "native-fn")
-        ) {
-          const runtimeData = deserializeToRuntimeValue(msg.data);
-          executeCallback(onMessageCallback, [runtimeData], env);
-        }
-      }
-    };
 
     if (!existsSync(filePath)) {
       worker.postMessage({
@@ -100,28 +115,26 @@ async function runWorker(filePath: string, threadId: number) {
     const input = readFileSync(filePath, "utf-8");
     const program = parser.produceAST(input, filePath);
 
-    evaluate(program, env);
+    await evaluate(program, env);
     worker.postMessage({ type: "done" });
   } catch (e) {
     worker.postMessage({ type: "error", error: String(e) });
   }
 }
 
-function executeCallback(func: any, args: any[] = [], parentEnv: any) {
-  import("./environment").then(({ default: Environment }) => {
-    if (func.type === "native-fn") {
-      func.call(args, parentEnv);
-    } else if (func.type === "function") {
-      const fn = func as FunctionValue;
-      const scope = new Environment(fn.declarationEnv);
+async function executeCallback(func: any, args: any[] = [], parentEnv: any) {
+  if (func.type === "native-fn") {
+    return await func.call(args, parentEnv);
+  } else if (func.type === "function") {
+    const fn = func as FunctionValue;
+    const scope = new Environment(fn.declarationEnv, fn.async);
 
-      for (let i = 0; i < fn.parameters.length; i++) {
-        scope.declareVar(fn.parameters[i]!, args[i] || MK_NULL(), false);
-      }
-
-      for (const stmt of fn.body) {
-        global.evaluate(stmt, scope);
-      }
+    for (let i = 0; i < fn.parameters.length; i++) {
+      scope.declareVar(fn.parameters[i]!, args[i] || MK_NULL(), false);
     }
-  });
+
+    for (const stmt of fn.body) {
+      await global.evaluate(stmt, scope);
+    }
+  }
 }

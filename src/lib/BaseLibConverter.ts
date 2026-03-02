@@ -31,6 +31,8 @@ export default function ConvertTOMK_Object(obj: any) {
 
     for (const name of methodNames) {
       if (name === "constructor" || propertiesMap.has(name)) continue;
+      const descriptor = Object.getOwnPropertyDescriptor(proto, name);
+      if (descriptor && descriptor.get) continue; // Skip getters, we only want methods
 
       const method = obj[name] as Function;
       // We create a wrapper function that intercepts the execution
@@ -48,7 +50,7 @@ export default function ConvertTOMK_Object(obj: any) {
                 // Convert native args back to CursorX types
                 const runtimeArgs = nativeArgs.map((a) => GetCursorXType(a)!);
 
-                const scope = new Environment(fn.declarationEnv);
+                const scope = new Environment(fn.declarationEnv, fn.async);
                 for (let i = 0; i < fn.parameters.length; i++) {
                   scope.declareVar(
                     fn.parameters[i]!,

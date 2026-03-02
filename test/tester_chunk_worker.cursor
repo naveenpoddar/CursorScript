@@ -1,0 +1,113 @@
+// --- 1. Perlin Noise Setup ---
+// The seed must be the same as the main thread or passed via message
+// For simplicity, we'll just use a fixed seed or receive it during init
+let seedValue = 0
+
+onMessage((msg) -> {
+    if (msg.type == "init") {
+        seedValue = msg.seed
+        PerlinNoise.seed(seedValue)
+        print("ChunkWorker initialized with seed: " + str(seedValue))
+    } else if (msg.type == "generate") {
+        let wrldChunkX = msg.x
+        let wrldChunkZ = msg.z
+        // print("Generating chunk: " + str(wrldChunkX) + ", " + str(wrldChunkZ))
+        
+        // --- Terrain Generation Logic ---
+        let getHeight = (x, z) -> {
+            let scale1 = 0.015
+            let scale2 = 0.05
+            let scale3 = 0.1
+            
+            let h1 = PerlinNoise.noise2D(x * scale1, z * scale1) * 35 
+            let h2 = PerlinNoise.noise2D(x * scale2, z * scale2) * 12
+            let h3 = PerlinNoise.noise2D(x * scale3, z * scale3) * 4
+            
+            let combined = h1 + h2 + h3 + 12
+            Math.round(combined)
+        }
+
+        let voxels = []
+        
+        // Generate 16x16 blocks for this chunk
+        let bx = 0
+        while (bx < 16) {
+            let bz = 0
+            while (bz < 16) {
+                let wrldX = (wrldChunkX * 16) + bx
+                let wrldZ = (wrldChunkZ * 16) + bz
+                
+                let h = getHeight(wrldX, wrldZ)
+                let h_nx = getHeight(wrldX - 1, wrldZ)
+                let h_px = getHeight(wrldX + 1, wrldZ)
+                let h_nz = getHeight(wrldX, wrldZ - 1)
+                let h_pz = getHeight(wrldX, wrldZ + 1)
+                let h_nw = getHeight(wrldX - 1, wrldZ - 1)
+                let h_ne = getHeight(wrldX + 1, wrldZ - 1)
+                let h_sw = getHeight(wrldX - 1, wrldZ + 1)
+                let h_se = getHeight(wrldX + 1, wrldZ + 1)
+
+                let dirtDepth = 3 + Math.floor(Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 3)
+                let currY = 0
+                
+                while (currY <= h) {
+                    let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz)
+                    
+                    if (isExposed) {
+                        let color = "#7f8c8d" // Stone
+                        if (currY == h) { 
+                            color = "#78e08f" // Grass
+                        } else if (currY > h - dirtDepth) {
+                            color = "#d35400" // Dirt
+                        }
+                        
+                        // AO Calculation
+                        let top_v0 = 0 
+                        if (h_nx > currY) { top_v0 = top_v0 + 1 }
+                        if (h_nz > currY) { top_v0 = top_v0 + 1 }
+                        if (h_nw > currY) { top_v0 = top_v0 + 1 }
+                        let top_v1 = 0
+                        if (h_px > currY) { top_v1 = top_v1 + 1 }
+                        if (h_nz > currY) { top_v1 = top_v1 + 1 }
+                        if (h_ne > currY) { top_v1 = top_v1 + 1 }
+                        let top_v2 = 0
+                        if (h_px > currY) { top_v2 = top_v2 + 1 }
+                        if (h_pz > currY) { top_v2 = top_v2 + 1 }
+                        if (h_se > currY) { top_v2 = top_v2 + 1 }
+                        let top_v3 = 0
+                        if (h_nx > currY) { top_v3 = top_v3 + 1 }
+                        if (h_pz > currY) { top_v3 = top_v3 + 1 }
+                        if (h_sw > currY) { top_v3 = top_v3 + 1 }
+
+                        push(voxels, {
+                            type: "block",
+                            x: wrldX, y: currY, z: wrldZ,
+                            color: color,
+                            ao: [top_v0, top_v3, top_v2, top_v1]
+                        })
+
+                        // Trees (optimized generation in worker)
+                        if (currY == h && color == "#78e08f") {
+                            let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453
+                            let rand = randVal - Math.floor(randVal)
+                            if (rand < 0.0075) {
+                                // Add tree parts
+                                push(voxels, { type: "tree", x: wrldX, y: h, z: wrldZ, rand: rand })
+                            }
+                        }
+                    }
+                    currY = currY + 1
+                }
+                bz = bz + 1
+            }
+            bx = bx + 1
+        }
+        
+        send({
+            type: "chunk_result",
+            x: wrldChunkX,
+            z: wrldChunkZ,
+            voxels: voxels
+        })
+    }
+})

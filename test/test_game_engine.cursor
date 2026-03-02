@@ -1,562 +1,643 @@
-Window.create(800, 600, "Minecraft Clone (CursorScript)")
-let scene = Engine3D.createScene()
+Window.create(800, 600, "Minecraft Clone (CursorScript)");
+let scene = Engine3D.createScene();
 
 // Seed the random noise engine
-let seed = time()
-PerlinNoise.seed(seed)
+let seed = time();
+PerlinNoise.seed(seed);
 
 // --- Multi-threaded Chunk Generation ---
-let chunkWorker = Thread.spawn("./test/chunk_worker.cursor", { smol: true, name: "TerrainGen" })
-chunkWorker.send({ type: "init", seed: seed })
+let chunkWorker = Thread.spawn("./test/tester_chunk_worker.cursor", {
+    smol: true, name: "TerrainGen"
+})
+chunkWorker.send({
+    type: "init", seed: seed
+})
 
-let pendingChunks = [] // Chunks requested from worker
+let pendingChunks = []; // Chunks requested from worker
 
 // 1. Terrain Generation
 // --- Removed getHeight from main thread to save CPU ---
 
 // 2. Setup Sun/Light
-Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45)
-let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C") // Sun Core
-let sunGlow1 = Engine3D.createCube(scene, 40, "rgba(255, 232, 124, 0.4)") // Inner Glow
+Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45);
+let sunMesh = Engine3D.createCube(scene, 20, "#FFE87C"); // Sun Core
+let sunGlow1 = Engine3D.createCube(scene, 40, "rgba(255, 232, 124, 0.4)"); // Inner Glow
 
-let moonMesh = Engine3D.createCube(scene, 15, "#E0E0FF") // Moon Core (Blueish White)
-let moonGlow = Engine3D.createCube(scene, 30, "rgba(100, 100, 255, 0.2)") // Moon Glow
+let moonMesh = Engine3D.createCube(scene, 15, "#E0E0FF"); // Moon Core (Blueish White)
+let moonGlow = Engine3D.createCube(scene, 30, "rgba(100, 100, 255, 0.2)"); // Moon Glow
 
-Engine3D.setGlowMode(scene, sunMesh, true)
-Engine3D.setGlowMode(scene, sunGlow1, true)
-Engine3D.setGlowMode(scene, moonMesh, true)
-Engine3D.setGlowMode(scene, moonGlow, true)
+Engine3D.setGlowMode(scene, sunMesh, true);
+Engine3D.setGlowMode(scene, sunGlow1, true);
+Engine3D.setGlowMode(scene, moonMesh, true);
+Engine3D.setGlowMode(scene, moonGlow, true);
 
 // Enable Ambient Occlusion (explicitly enabled in the scene)
-Engine3D.setSceneAO(scene, true, 0.5)
+Engine3D.setSceneAO(scene, true, 0.5);
 
-let selectorMesh = Engine3D.createCube(scene, 1.05, "rgba(255, 255, 255, 0.3)")
-Engine3D.setSolidMode(scene, selectorMesh, false)
+let selectorMesh = Engine3D.createCube(scene, 1.05, "rgba(255, 255, 255, 0.3)");
+Engine3D.setSolidMode(scene, selectorMesh, false);
 
 // 3. Player Properties
-let px = 0
-let py = 50
-let pz = -8
+let px = 0;
+let py = 50;
+let pz = -8;
 
-let yaw = 0
-let pitch = 0
-let speed = 0.1
-let yVel = 0
-let isGrounded = false
-let breakCooldown = 0
-let sunTime = 1.0 // Start at daytime
+let yaw = 0;
+let pitch = 0;
+let speed = 0.1;
+let yVel = 0;
+let isGrounded = false;
+let breakCooldown = 0;
+let sunTime = 1.0; // Start at daytime
 
 // --- Hotbar & Inventory ---
-let selectedSlot = 0
-let hotbar = ["#78e08f", "#d35400", "#7f8c8d", "#86592d", "#228B22"] 
-let hotbarNames = ["Grass", "Dirt", "Stone", "Wood", "Leaf"]
+let selectedSlot = 0;
+let hotbar = ["#78e08f", "#d35400", "#7f8c8d", "#86592d", "#228B22"];
+let hotbarNames = ["Grass", "Dirt", "Stone", "Wood", "Leaf"];
 
-let loadedCols = []
-let viewDist = 3
-let chunkQueue = [] 
-let chunkProcessIdx = 0 
-let voxelBatchSize = 80 // Faster with spatial grid
+let loadedCols = [];
+let viewDist = 3;
+let chunkQueue = [];
+let chunkProcessIdx = 0;
+let voxelBatchSize = 80; // Faster with spatial grid
 
 // Handle results from worker
 chunkWorker.onMessage((msg) -> {
     if (msg.type == "chunk_result") {
         // Just queue it! Don't block the main thread.
-        push(chunkQueue, msg)
+        push(chunkQueue, msg);
     }
 })
 
 // --- Global Rendering State ---
-let skyColor = "rgba(135, 206, 235, 1)"
-let skyR = 135
-let skyG = 206
-let skyB = 235
-let dlX = 0; let dlY = 0; let dlZ = 0; let ambient = 0.45; let lr = 1.0; let lg = 1.0; let lb = 0.9
+let skyColor = "rgba(135, 206, 235, 1)";
+let skyR = 135;
+let skyG = 206;
+let skyB = 235;
+let dlX = 0; let dlY = 0; let dlZ = 0; let ambient = 0.45; let lr = 1.0; let lg = 1.0; let lb = 0.9;
 
-let sunX = 0; let sunY = 0; let sunZ = 0
-let moonX = 0; let moonY = 0; let moonZ = 0
+let sunX = 0; let sunY = 0; let sunZ = 0;
+let moonX = 0; let moonY = 0; let moonZ = 0;
 
 // --- Collision Helper ---
-let checkSolid = (tx, ty, tz) -> Engine3D.checkSolid(scene, tx, ty, tz)
+let checkSolid = (tx, ty, tz) -> Engine3D.checkSolid(scene, tx, ty, tz);
 
 // Lock cursor for FPS view!
-Window.disableCursor()
+Window.disableCursor();
 
 // 4. Physics Loop (Fixed step for stability)
 Window.onFixedUpdate(() -> {
     // Convert degrees to radians for mathematical sin/cos
-    let yawRad = yaw * (Math.PI / 180)
+    let yawRad = yaw * (Math.PI / 180);
 
     // --- Crouch & Speed ---
-    let isCrouching = Window.getKeyDown("LeftShift")
-    let moveSpeed = speed
-    let camHeight = 2.5
+    let isCrouching = Window.getKeyDown("LeftShift");
+    let moveSpeed = speed;
+    let camHeight = 2.5;
     if (isCrouching) {
-        moveSpeed = speed * 0.45
-        camHeight = 1.9 // Lower camera when crouching
+        moveSpeed = speed * 0.45;
+        camHeight = 1.9; // Lower camera when crouching
     }
-    
+
     // --- FPS Movement (WASD with Horizontal Collision) ---
-    let moveX = 0
-    let moveZ = 0
+    let moveX = 0;
+    let moveZ = 0;
     if (Window.getKeyDown("W")) {
-        moveX = moveX + Math.sin(yawRad) * moveSpeed
-        moveZ = moveZ + Math.cos(yawRad) * moveSpeed
+        moveX = moveX + Math.sin(yawRad) * moveSpeed;
+        moveZ = moveZ + Math.cos(yawRad) * moveSpeed;
     }
     if (Window.getKeyDown("S")) {
-        moveX = moveX - Math.sin(yawRad) * moveSpeed
-        moveZ = moveZ - Math.cos(yawRad) * moveSpeed
+        moveX = moveX - Math.sin(yawRad) * moveSpeed;
+        moveZ = moveZ - Math.cos(yawRad) * moveSpeed;
     }
     if (Window.getKeyDown("A")) {
-        moveX = moveX - Math.cos(yawRad) * moveSpeed
-        moveZ = moveZ + Math.sin(yawRad) * moveSpeed
+        moveX = moveX - Math.cos(yawRad) * moveSpeed;
+        moveZ = moveZ + Math.sin(yawRad) * moveSpeed;
     }
     if (Window.getKeyDown("D")) {
-        moveX = moveX + Math.cos(yawRad) * moveSpeed
-        moveZ = moveZ - Math.sin(yawRad) * moveSpeed
+        moveX = moveX + Math.cos(yawRad) * moveSpeed;
+        moveZ = moveZ - Math.sin(yawRad) * moveSpeed;
     }
 
     // Try X Move
-    let testX = px + moveX
-    let testZ = pz + moveZ
-    let floorY = Engine3D.getTopBlockY(scene, px, pz, py - camHeight + 0.1)
+    let testX = px + moveX;
+    let testZ = pz + moveZ;
+    let floorY = Engine3D.getTopBlockY(scene, px, pz, py - camHeight + 0.1);
 
     // --- Shift Lock (Don't fall off edge) ---
     if (isCrouching && isGrounded) {
-        let fX = Engine3D.getTopBlockY(scene, testX, pz, floorY + 0.1)
-        if (fX < floorY - 0.5) { testX = px }
-        let fZ = Engine3D.getTopBlockY(scene, px, testZ, floorY + 0.1)
-        if (fZ < floorY - 0.5) { testZ = pz }
+        let fX = Engine3D.getTopBlockY(scene, testX, pz, floorY + 0.1);
+        if (fX < floorY - 0.5) {
+            testX = px;
+        }
+        let fZ = Engine3D.getTopBlockY(scene, px, testZ, floorY + 0.1);
+        if (fZ < floorY - 0.5) {
+            testZ = pz;
+        }
     }
 
     // --- Horizontal Collision (Improved Bounding Box) ---
-    let r = 0.3 // Player radius
+    let r = 0.3; // Player radius
     // We check at two heights: foot level and head level relative to the block we are standing on.
     // If we are standing on floorY, blocks at floorY+1 and floorY+2 are obstacles.
-    let h1 = floorY + 1.0
-    let h2 = floorY + 2.0
-    
-    let isColX = checkSolid(testX + r, h1, pz + r) || checkSolid(testX + r, h1, pz - r) ||
-                 checkSolid(testX - r, h1, pz + r) || checkSolid(testX - r, h1, pz - r) ||
-                 checkSolid(testX + r, h2, pz + r) || checkSolid(testX + r, h2, pz - r) ||
-                 checkSolid(testX - r, h2, pz + r) || checkSolid(testX - r, h2, pz - r)
+    let h1 = floorY + 1.0;
+    let h2 = floorY + 2.0;
 
-    if (isColX == false) { px = testX }
+    let isColX = checkSolid(testX + r, h1, pz + r) || checkSolid(testX + r, h1, pz - r) ||
+    checkSolid(testX - r, h1, pz + r) || checkSolid(testX - r, h1, pz - r) ||
+    checkSolid(testX + r, h2, pz + r) || checkSolid(testX + r, h2, pz - r) ||
+    checkSolid(testX - r, h2, pz + r) || checkSolid(testX - r, h2, pz - r);
+
+    if (isColX == false) {
+        px = testX;
+    }
 
     let isColZ = checkSolid(px + r, h1, testZ + r) || checkSolid(px - r, h1, testZ + r) ||
-                 checkSolid(px + r, h1, testZ - r) || checkSolid(px - r, h1, testZ - r) ||
-                 checkSolid(px + r, h2, testZ + r) || checkSolid(px - r, h2, testZ + r) ||
-                 checkSolid(px + r, h2, testZ - r) || checkSolid(px - r, h2, testZ - r)
+    checkSolid(px + r, h1, testZ - r) || checkSolid(px - r, h1, testZ - r) ||
+    checkSolid(px + r, h2, testZ + r) || checkSolid(px - r, h2, testZ + r) ||
+    checkSolid(px + r, h2, testZ - r) || checkSolid(px - r, h2, testZ - r);
 
-    if (isColZ == false) { pz = testZ }
+    if (isColZ == false) {
+        pz = testZ;
+    }
 
     // --- Auto Jump (Step Up) ---
     if (isGrounded && yVel <= 0 && (isColX || isColZ) && isCrouching == false) {
-        // We only step up if the "chest" area is clear (1.6 blocks above floor)
-        let canStep = checkSolid(testX, floorY + 1.6, testZ) == false
+        // We only step up if the __CURSOR_STR_26__ area is clear (1.6 blocks above floor)
+        let canStep = checkSolid(testX, floorY + 1.6, testZ) == false;
         if (canStep) {
-            yVel = 0.14 // Small hop to clear the step
-            isGrounded = false
+            yVel = 0.14; // Small hop to clear the step
+            isGrounded = false;
         }
     }
-    
+
     // --- Vertical Physics ---
-    yVel = yVel - 0.015
-    let newPy = py + yVel
-    
+    yVel = yVel - 0.015;
+    let newPy = py + yVel;
+
     // Floor detection at current/new pos
     // We check from current py down to newPy to catch blocks we pass through
-    let checkHeight = py - camHeight + 0.5 
-    if (newPy < py) { checkHeight = py - camHeight + 0.5 }
-    
-    let f1 = Engine3D.getTopBlockY(scene, px + r, pz + r, checkHeight)
-    let f2 = Engine3D.getTopBlockY(scene, px - r, pz + r, checkHeight)
-    let f3 = Engine3D.getTopBlockY(scene, px + r, pz - r, checkHeight)
-    let f4 = Engine3D.getTopBlockY(scene, px - r, pz - r, checkHeight)
-    
-    let newFloorY = f1
-    if (f2 > newFloorY) { newFloorY = f2 }
-    if (f3 > newFloorY) { newFloorY = f3 }
-    if (f4 > newFloorY) { newFloorY = f4 }
-    
-    floorY = newFloorY
+    let checkHeight = py - camHeight + 0.5;
+    if (newPy < py) {
+        checkHeight = py - camHeight + 0.5;
+    }
+
+    let f1 = Engine3D.getTopBlockY(scene, px + r, pz + r, checkHeight);
+    let f2 = Engine3D.getTopBlockY(scene, px - r, pz + r, checkHeight);
+    let f3 = Engine3D.getTopBlockY(scene, px + r, pz - r, checkHeight);
+    let f4 = Engine3D.getTopBlockY(scene, px - r, pz - r, checkHeight);
+
+    let newFloorY = f1;
+    if (f2 > newFloorY) {
+        newFloorY = f2;
+    }
+    if (f3 > newFloorY) {
+        newFloorY = f3;
+    }
+    if (f4 > newFloorY) {
+        newFloorY = f4;
+    }
+
+    floorY = newFloorY;
 
     if (newPy <= floorY + camHeight) {
-        newPy = floorY + camHeight
-        yVel = 0
-        isGrounded = true
+        newPy = floorY + camHeight;
+        yVel = 0;
+        isGrounded = true;
     } else {
-        isGrounded = false
+        isGrounded = false;
     }
 
     if (Window.getKeyDown("Space") && isGrounded == true) {
-        yVel = 0.28 // Fixed jump force
-        isGrounded = false
+        yVel = 0.28; // Fixed jump force
+        isGrounded = false;
     }
-    py = newPy
+    py = newPy;
 
-    
     // --- Hotbar Switching ---
-    if (Window.getKeyDown("One")) { selectedSlot = 0 }
-    if (Window.getKeyDown("Two")) { selectedSlot = 1 }
-    if (Window.getKeyDown("Three")) { selectedSlot = 2 }
-    if (Window.getKeyDown("Four")) { selectedSlot = 3 }
-    if (Window.getKeyDown("Five")) { selectedSlot = 4 }
+    if (Window.getKeyDown("One")) {
+        selectedSlot = 0;
+    }
+    if (Window.getKeyDown("Two")) {
+        selectedSlot = 1;
+    }
+    if (Window.getKeyDown("Three")) {
+        selectedSlot = 2;
+    }
+    if (Window.getKeyDown("Four")) {
+        selectedSlot = 3;
+    }
+    if (Window.getKeyDown("Five")) {
+        selectedSlot = 4;
+    }
 
     // --- Target Raycast (Every Frame) ---
-    let pitchRad = pitch * (Math.PI / 180)
-    let dx = Math.sin(yawRad) * Math.cos(pitchRad)
-    let dy = -Math.sin(pitchRad)
-    let dz = Math.cos(yawRad) * Math.cos(pitchRad)
+    let pitchRad = pitch * (Math.PI / 180);
+    let dx = Math.sin(yawRad) * Math.cos(pitchRad);
+    let dy = -Math.sin(pitchRad);
+    let dz = Math.cos(yawRad) * Math.cos(pitchRad);
 
-    let ray = Engine3D.raycast(scene, px, py, pz, dx, dy, dz, 6)
-    let hit = ray.hit
-    let targetX = ray.x; let targetY = ray.y; let targetZ = ray.z
-    let bx_prev = ray.px; let by_prev = ray.py; let bz_prev = ray.pz
-    let hitBlockId = ray.meshId
-    
+    let ray = Engine3D.raycast(scene, px, py, pz, dx, dy, dz, 6);
+    let hit = ray.hit;
+    let targetX = ray.x; let targetY = ray.y; let targetZ = ray.z;
+    let bx_prev = ray.px; let by_prev = ray.py; let bz_prev = ray.pz;
+    let hitBlockId = ray.meshId;
+
     if (hit == true) {
-        Engine3D.setPosition(scene, selectorMesh, targetX, targetY, targetZ)
+        Engine3D.setPosition(scene, selectorMesh, targetX, targetY, targetZ);
     } else {
-        Engine3D.setPosition(scene, selectorMesh, 0, -9999, 0)
+        Engine3D.setPosition(scene, selectorMesh, 0, -9999, 0);
     }
 
     // --- Interaction Logic ---
-    if (breakCooldown > 0) { breakCooldown = breakCooldown - 1 }
-    let isClickL = Window.getMouseButton("left")
-    let isClickR = Window.getMouseButton("right")
+    if (breakCooldown > 0) {
+        breakCooldown = breakCooldown - 1;
+    }
+    let isClickL = Window.getMouseButton("left");
+    let isClickR = Window.getMouseButton("right");
 
     if (hit == true && breakCooldown == 0 && (isClickL || isClickR)) {
-        breakCooldown = 12
+        breakCooldown = 12;
         if (isClickL) {
-            Engine3D.deleteMesh(scene, hitBlockId)
+            Engine3D.deleteMesh(scene, hitBlockId);
         } else if (isClickR) {
-            let nColor = hotbar[selectedSlot]
-            let cube = Engine3D.createCube(scene, 1, nColor)
-            Engine3D.setPosition(scene, cube, bx_prev, by_prev, bz_prev)
-            Engine3D.setSolidMode(scene, cube, true)
-            Engine3D.setFaceAO(scene, cube, 5, 0, 0, 0, 0)
-            
-            let findCi = 0
+            let nColor = hotbar[selectedSlot];
+            let cube = Engine3D.createCube(scene, 1, nColor);
+            Engine3D.setPosition(scene, cube, bx_prev, by_prev, bz_prev);
+            Engine3D.setSolidMode(scene, cube, true);
+            Engine3D.setFaceAO(scene, cube, 5, 0, 0, 0, 0);
+
+            let findCi = 0;
             while (findCi < len(loadedCols)) {
                 if (loadedCols[findCi].x == Math.floor(bx_prev / 16) && loadedCols[findCi].z == Math.floor(bz_prev / 16)) {
-                    push(loadedCols[findCi].meshes, { id: cube, x: bx_prev, y: by_prev, z: bz_prev })
+                    push(loadedCols[findCi].meshes, {
+                        id: cube, x: bx_prev, y: by_prev, z: bz_prev
+                    })
                 }
-                findCi = findCi + 1
+                findCi = findCi + 1;
             }
         }
     }
-    
-    // --- Realtime Celestial & Lighting ---
-    sunTime = sunTime + 0.002
-    let sDist = 180
-    let sDistZ = 80 // slight offset
-    
-    sunX = Math.sin(sunTime) * sDist
-    sunY = Math.cos(sunTime) * sDist
-    sunZ = sDistZ
-    
-    // Moon is on the opposite side
-    moonX = -sunX
-    moonY = -sunY
-    moonZ = -sunZ // Pointing back
-    
-    ambient = 0.08 // Night base
-    let sunFactor = (sunY + 20) / 100 // 0 at horizon/night, 1 at peak day
-    if (sunFactor < 0) { sunFactor = 0 }
-    if (sunFactor > 1) { sunFactor = 1 }
 
-    ambient = 0.08 + (sunFactor * 0.37) // Transitions from 0.08 to 0.45
-    
+    // --- Realtime Celestial & Lighting ---
+    sunTime = sunTime + 0.002;
+    let sDist = 180;
+    let sDistZ = 80; // slight offset
+
+    sunX = Math.sin(sunTime) * sDist;
+    sunY = Math.cos(sunTime) * sDist;
+    sunZ = sDistZ;
+
+    // Moon is on the opposite side
+    moonX = -sunX;
+    moonY = -sunY;
+    moonZ = -sunZ; // Pointing back
+
+    ambient = 0.08; // Night base
+    let sunFactor = (sunY + 20) / 100; // 0 at horizon/night, 1 at peak day
+    if (sunFactor < 0) {
+        sunFactor = 0;
+    }
+    if (sunFactor > 1) {
+        sunFactor = 1;
+    }
+
+    ambient = 0.08 + (sunFactor * 0.37); // Transitions from 0.08 to 0.45
+
     // Light Direction: Point to moon at night, sun at day
     if (sunY < 0) {
-        dlX = moonX; dlY = moonY; dlZ = moonZ
+        dlX = moonX; dlY = moonY; dlZ = moonZ;
         // Blueish Moonlight
-        lr = 0.1; lg = 0.1; lb = 0.3
+        lr = 0.1; lg = 0.1; lb = 0.3;
     } else {
-        dlX = sunX; dlY = sunY; dlZ = sunZ
+        dlX = sunX; dlY = sunY; dlZ = sunZ;
         // Warm Sunlight lerping from Orange to White
-        let sunsetFactor = sunY / 40
-        if (sunsetFactor > 1) { sunsetFactor = 1 }
-        let sunColor = Game.lerpColor("rgba(255, 100, 0, 1)", "rgba(255, 255, 230, 1)", sunsetFactor)
+        let sunsetFactor = sunY / 40;
+        if (sunsetFactor > 1) {
+            sunsetFactor = 1;
+        }
+        let sunColor = Game.lerpColor("rgba(255, 100, 0, 1)", "rgba(255, 255, 230, 1)", sunsetFactor);
         // Extract components from rgba string for Engine3D.setLightColor
         // Since our lerpColor returns rgba(r, g, b, a), we can just use the color directly if we update Engine3D
         // But for now, let's just use manual lerps for light color to keep it simple for the engine
-        lr = 1.0; lg = 0.3 + (sunsetFactor * 0.7); lb = 0.0 + (sunsetFactor * 0.9)
+        lr = 1.0; lg = 0.3 + (sunsetFactor * 0.7); lb = 0.0 + (sunsetFactor * 0.9);
     }
 
     // Sky Color using lerpColor
-    skyColor = Game.lerpColor("rgba(8, 12, 26, 1)", "rgba(135, 206, 235, 1)", sunFactor)
-    
-    Engine3D.setLight(scene, dlX, dlY, dlZ, ambient)
-    Engine3D.setLightColor(scene, lr, lg, lb)
+    skyColor = Game.lerpColor("rgba(8, 12, 26, 1)", "rgba(135, 206, 235, 1)", sunFactor);
+
+    Engine3D.setLight(scene, dlX, dlY, dlZ, ambient);
+    Engine3D.setLightColor(scene, lr, lg, lb);
 
     // Keep Sun/Moon in the sky relative to player
-    let renderSunY = sunY
-    if (sunY < -20) { renderSunY = -9999 }
-    let renderMoonY = moonY
-    if (moonY < -20) { renderMoonY = -9999 }
-    
-    Engine3D.setPosition(scene, sunMesh, px + sunX, py + renderSunY, pz + sunZ)
-    Engine3D.setPosition(scene, sunGlow1, px + sunX, py + renderSunY, pz + sunZ)
-    
-    Engine3D.setPosition(scene, moonMesh, px + moonX, py + renderMoonY, pz + moonZ)
-    Engine3D.setPosition(scene, moonGlow, px + moonX, py + renderMoonY, pz + moonZ)
-    
+    let renderSunY = sunY;
+    if (sunY < -20) {
+        renderSunY = -9999;
+    }
+    let renderMoonY = moonY;
+    if (moonY < -20) {
+        renderMoonY = -9999;
+    }
+
+    Engine3D.setPosition(scene, sunMesh, px + sunX, py + renderSunY, pz + sunZ);
+    Engine3D.setPosition(scene, sunGlow1, px + sunX, py + renderSunY, pz + sunZ);
+
+    Engine3D.setPosition(scene, moonMesh, px + moonX, py + renderMoonY, pz + moonZ);
+    Engine3D.setPosition(scene, moonGlow, px + moonX, py + renderMoonY, pz + moonZ);
+
     // Billboard Celestial objects
-    Engine3D.setRotation(scene, sunMesh, pitch, -yaw, 0)
-    Engine3D.setRotation(scene, sunGlow1, pitch, -yaw, 0)
-    Engine3D.setRotation(scene, moonMesh, pitch, -yaw, 0)
-    Engine3D.setRotation(scene, moonGlow, pitch, -yaw, 0)
+    Engine3D.setRotation(scene, sunMesh, pitch, -yaw, 0);
+    Engine3D.setRotation(scene, sunGlow1, pitch, -yaw, 0);
+    Engine3D.setRotation(scene, moonMesh, pitch, -yaw, 0);
+    Engine3D.setRotation(scene, moonGlow, pitch, -yaw, 0);
 })
 
 // 5. Render & Input Loop
 Window.onUpdate(() -> {
     // --- FPS Mouselook ---
-    let dx = Window.getMouseDeltaX()
-    let dy = Window.getMouseDeltaY()
-    yaw = yaw + (dx * 0.1)
-    pitch = pitch + (dy * 0.1)
-    if (pitch > 90) { pitch = 90 }
-    if (pitch < -90) { pitch = -90 }
+    let dx = Window.getMouseDeltaX();
+    let dy = Window.getMouseDeltaY();
+    yaw = yaw + (dx * 0.1);
+    pitch = pitch + (dy * 0.1);
+    if (pitch > 90) {
+        pitch = 90;
+    }
+    if (pitch < -90) {
+        pitch = -90;
+    }
 
     // --- Mouse Wheel Hotbar Switching ---
-    let wheel = Window.getMouseWheel()
-    if (wheel > 0) { 
-        selectedSlot = selectedSlot - 1 
-        if (selectedSlot < 0) { selectedSlot = 4 }
+    let wheel = Window.getMouseWheel();
+    if (wheel > 0) {
+        selectedSlot = selectedSlot - 1;
+        if (selectedSlot < 0) {
+            selectedSlot = 4;
+        }
     }
-    if (wheel < 0) { 
-        selectedSlot = selectedSlot + 1 
-        if (selectedSlot > 4) { selectedSlot = 0 } 
+    if (wheel < 0) {
+        selectedSlot = selectedSlot + 1;
+        if (selectedSlot > 4) {
+            selectedSlot = 0;
+        }
     }
 
     // --- Dynamic Terrain System (Chunk Loading) ---
-    let cx = Math.floor(px)
-    let cz = Math.floor(pz)
-    
+    let cx = Math.floor(px);
+    let cz = Math.floor(pz);
+
     // Calculate current chunk coordinates
-    let chunkX = Math.floor(cx / 16)
-    let chunkZ = Math.floor(cz / 16)
+    let chunkX = Math.floor(cx / 16);
+    let chunkZ = Math.floor(cz / 16);
 
     // Unload far chunks
-    let i = 0
+    let i = 0;
     while (i < len(loadedCols)) {
-        let col = loadedCols[i]
-        let dist = Math.abs(col.x - chunkX) + Math.abs(col.z - chunkZ)
+        let col = loadedCols[i];
+        let dist = Math.abs(col.x - chunkX) + Math.abs(col.z - chunkZ);
         if (dist > viewDist * 1.6) {
-            let j = 0
+            let j = 0;
             while (j < len(col.meshes)) {
-                Engine3D.deleteMesh(scene, col.meshes[j].id)
-                j = j + 1
+                Engine3D.deleteMesh(scene, col.meshes[j].id);
+                j = j + 1;
             }
             // Array fast remove using pop
-            let lenCols = len(loadedCols)
-            loadedCols[i] = loadedCols[lenCols - 1]
-            pop(loadedCols)
+            let lenCols = len(loadedCols);
+            loadedCols[i] = loadedCols[lenCols - 1];
+            pop(loadedCols);
         } else {
-            i = i + 1
+            i = i + 1;
         }
     }
 
     // --- Incremental Chunk Processing ---
     if (len(chunkQueue) > 0) {
-        let currentChunk = chunkQueue[0]
-        let voxels = currentChunk.voxels
-        let wrldChunkX = currentChunk.x
-        let wrldChunkZ = currentChunk.z
-        
+        let currentChunk = chunkQueue[0];
+        let voxels = currentChunk.voxels;
+        let wrldChunkX = currentChunk.x;
+        let wrldChunkZ = currentChunk.z;
+
         // Find existing colMeshes or create new
-        let colMeshes = []
-        let ci = 0
-        let found = false
+        let colMeshes = [];
+        let ci = 0;
+        let found = false;
         while (ci < len(loadedCols)) {
             if (loadedCols[ci].x == wrldChunkX && loadedCols[ci].z == wrldChunkZ) {
-                colMeshes = loadedCols[ci].meshes
-                found = true
+                colMeshes = loadedCols[ci].meshes;
+                found = true;
             }
-            ci = ci + 1
+            ci = ci + 1;
         }
         if (found == false) {
-            push(loadedCols, { x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes })
+            push(loadedCols, {
+                x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes
+            })
         }
 
-        let processedThisFrame = 0
+        let processedThisFrame = 0;
         while (processedThisFrame < voxelBatchSize && chunkProcessIdx < len(voxels)) {
-            let v = voxels[chunkProcessIdx]
+            let v = voxels[chunkProcessIdx];
             if (v.type == "block") {
-                let cube = Engine3D.createCube(scene, 1, v.color)
-                Engine3D.setPosition(scene, cube, v.x, v.y, v.z)
-                Engine3D.setSolidMode(scene, cube, true)
-                Engine3D.setFaceAO(scene, cube, 5, v.ao[0], v.ao[1], v.ao[2], v.ao[3])
-                push(colMeshes, { id: cube, x: v.x, y: v.y, z: v.z })
+                let cube = Engine3D.createCube(scene, 1, v.color);
+                Engine3D.setPosition(scene, cube, v.x, v.y, v.z);
+                Engine3D.setSolidMode(scene, cube, true);
+                Engine3D.setFaceAO(scene, cube, 5, v.ao[0], v.ao[1], v.ao[2], v.ao[3]);
+                push(colMeshes, {
+                    id: cube, x: v.x, y: v.y, z: v.z
+                })
             } else if (v.type == "tree") {
                 // ... same tree logic ...
-                let rand = v.rand
-                let treeHeight = 3 + Math.floor(rand * 100) % 5
-                let leafColor = "#228B22"; let trunkColor = "#8B4513"
-                let varSeed = Math.floor(rand * 1000) % 4
-                if (varSeed == 0) { leafColor = "#006400"; treeHeight = treeHeight + 1 }
-                if (varSeed == 1) { trunkColor = "#F5DEB3"; leafColor = "#9ACD32" }
-                if (varSeed == 2) { leafColor = "#FF8C00" }
-                if (varSeed == 3) { leafColor = "#FFB7C5" }
-                
-                let ty = 1; while (ty <= treeHeight) {
-                    let trunk = Engine3D.createCube(scene, 1, trunkColor)
-                    Engine3D.setPosition(scene, trunk, v.x, v.y + ty, v.z)
-                    Engine3D.setSolidMode(scene, trunk, true)
-                    push(colMeshes, { id: trunk, x: v.x, y: v.y + ty, z: v.z }); ty = ty + 1
+                let rand = v.rand;
+                let treeHeight = 3 + Math.floor(rand * 100) % 5;
+                let leafColor = "#228B22"; let trunkColor = "#8B4513";
+                let varSeed = Math.floor(rand * 1000) % 4;
+                if (varSeed == 0) {
+                    leafColor = "#006400"; treeHeight = treeHeight + 1;
                 }
-                let leafSpread = 1; if (treeHeight > 5) { leafSpread = 2 }
+                if (varSeed == 1) {
+                    trunkColor = "#F5DEB3"; leafColor = "#9ACD32";
+                }
+                if (varSeed == 2) {
+                    leafColor = "#FF8C00";
+                }
+                if (varSeed == 3) {
+                    leafColor = "#FFB7C5";
+                }
+
+                let ty = 1; while (ty <= treeHeight) {
+                    let trunk = Engine3D.createCube(scene, 1, trunkColor);
+                    Engine3D.setPosition(scene, trunk, v.x, v.y + ty, v.z);
+                    Engine3D.setSolidMode(scene, trunk, true);
+                    push(colMeshes, {
+                        id: trunk, x: v.x, y: v.y + ty, z: v.z
+                    }); ty = ty + 1
+                }
+                let leafSpread = 1; if (treeHeight > 5) {
+                    leafSpread = 2;
+                }
                 let lx = -leafSpread; while (lx <= leafSpread) {
                     let lz = -leafSpread; while (lz <= leafSpread) {
                         let ly = treeHeight - 1; while (ly <= treeHeight + 1) {
-                            let leaf = Engine3D.createCube(scene, 1, leafColor)
-                            Engine3D.setPosition(scene, leaf, v.x + lx, v.y + ly, v.z + lz)
-                            Engine3D.setSolidMode(scene, leaf, true)
-                            push(colMeshes, { id: leaf, x: v.x + lx, y: v.y + ly, z: v.z + lz }); ly = ly + 1
+                            let leaf = Engine3D.createCube(scene, 1, leafColor);
+                            Engine3D.setPosition(scene, leaf, v.x + lx, v.y + ly, v.z + lz);
+                            Engine3D.setSolidMode(scene, leaf, true);
+                            push(colMeshes, {
+                                id: leaf, x: v.x + lx, y: v.y + ly, z: v.z + lz
+                            }); ly = ly + 1
                         }
-                        lz = lz + 1
+                        lz = lz + 1;
                     }
-                    lx = lx + 1
+                    lx = lx + 1;
                 }
             }
-            chunkProcessIdx = chunkProcessIdx + 1
-            processedThisFrame = processedThisFrame + 1
+            chunkProcessIdx = chunkProcessIdx + 1;
+            processedThisFrame = processedThisFrame + 1;
         }
 
         // Check if chunk is finished
         if (chunkProcessIdx >= len(voxels)) {
             // Remove from queue
-            let qi = 0
+            let qi = 0;
             while (qi < len(chunkQueue) - 1) {
-                chunkQueue[qi] = chunkQueue[qi + 1]
-                qi = qi + 1
+                chunkQueue[qi] = chunkQueue[qi + 1];
+                qi = qi + 1;
             }
-            pop(chunkQueue)
-            chunkProcessIdx = 0
-            
+            pop(chunkQueue);
+            chunkProcessIdx = 0;
+
             // Remove from pending
-            let pi = 0
+            let pi = 0;
             while (pi < len(pendingChunks)) {
                 if (pendingChunks[pi].x == wrldChunkX && pendingChunks[pi].z == wrldChunkZ) {
-                    pendingChunks[pi] = pendingChunks[len(pendingChunks) - 1]
-                    pop(pendingChunks)
+                    pendingChunks[pi] = pendingChunks[len(pendingChunks) - 1];
+                    pop(pendingChunks);
                 } else {
-                    pi = pi + 1
+                    pi = pi + 1;
                 }
             }
         }
     }
 
     // Load near chunks (Request from Worker)
-    let candidates = []
-    let ox = -viewDist
+    let candidates = [];
+    let ox = -viewDist;
     while (ox <= viewDist) {
-        let oz = -viewDist
+        let oz = -viewDist;
         while (oz <= viewDist) {
-            let wrldChunkX = chunkX + ox
-            let wrldChunkZ = chunkZ + oz
-            let dSq = ox * ox + oz * oz
-            
+            let wrldChunkX = chunkX + ox;
+            let wrldChunkZ = chunkZ + oz;
+            let dSq = ox * ox + oz * oz;
+
             if (dSq <= viewDist * viewDist * 1.5) {
-                let isLoaded = false
-                let k = 0
+                let isLoaded = false;
+                let k = 0;
                 while (k < len(loadedCols)) {
-                    if (loadedCols[k].x == wrldChunkX && loadedCols[k].z == wrldChunkZ) { isLoaded = true }
-                    k = k + 1
+                    if (loadedCols[k].x == wrldChunkX && loadedCols[k].z == wrldChunkZ) {
+                        isLoaded = true;
+                    }
+                    k = k + 1;
                 }
-                
+
                 if (isLoaded == false) {
-                    let isPending = false
-                    let pk = 0
+                    let isPending = false;
+                    let pk = 0;
                     while (pk < len(pendingChunks)) {
-                        if (pendingChunks[pk].x == wrldChunkX && pendingChunks[pk].z == wrldChunkZ) { isPending = true }
-                        pk = pk + 1
+                        if (pendingChunks[pk].x == wrldChunkX && pendingChunks[pk].z == wrldChunkZ) {
+                            isPending = true;
+                        }
+                        pk = pk + 1;
                     }
                     if (isPending == false) {
-                        push(candidates, { x: wrldChunkX, z: wrldChunkZ, d: dSq })
+                        push(candidates, {
+                            x: wrldChunkX, z: wrldChunkZ, d: dSq
+                        })
                     }
                 }
             }
-            oz = oz + 1
+            oz = oz + 1;
         }
-        ox = ox + 1
+        ox = ox + 1;
     }
 
     // Sort candidates by distance (closest first)
     // CursorScript sort is custom? No, let's use a simple selection sort for now 
     // since candidates count is small (usually < 25)
-    let ci = 0
+    let ci = 0;
     while (ci < len(candidates)) {
-        let minJ = ci
-        let j = ci + 1
+        let minJ = ci;
+        let j = ci + 1;
         while (j < len(candidates)) {
-            if (candidates[j].d < candidates[minJ].d) { minJ = j }
-            j = j + 1
+            if (candidates[j].d < candidates[minJ].d) {
+                minJ = j;
+            }
+            j = j + 1;
         }
-        let temp = candidates[ci]
-        candidates[ci] = candidates[minJ]
-        candidates[minJ] = temp
-        
+        let temp = candidates[ci];
+        candidates[ci] = candidates[minJ];
+        candidates[minJ] = temp;
+
         // Only request a few per frame to avoid flooding the worker
-        if (ci < 2) { 
-            push(pendingChunks, { x: candidates[ci].x, z: candidates[ci].z })
-            chunkWorker.send({ type: "generate", x: candidates[ci].x, z: candidates[ci].z })
+        if (ci < 2) {
+            push(pendingChunks, {
+                x: candidates[ci].x, z: candidates[ci].z
+            })
+            chunkWorker.send({
+                type: "generate", x: candidates[ci].x, z: candidates[ci].z
+            })
         }
-        ci = ci + 1
+        ci = ci + 1;
     }
 
     // Update Camera position in Engine
     // Note: camera FOV is set to 400
-    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 300)
-    
+    Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 300);
+
     // --- Rendering ---
-    Window.clear(skyColor) // Dynamic Sky Color matching time of day
-    Engine3D.render(scene, 800, 600)
-    
+    Window.clear(skyColor); // Dynamic Sky Color matching time of day
+    Engine3D.render(scene, 800, 600);
+
     // --- UIOverlay ---
-    Window.setColor("black")
-    Window.drawText("Minecraft Infinite Procedural World!", 10, 10, 20)
-    Window.drawText("WASD to move, Mouse to look freely! (ESC to exit)", 10, 35, 16)
-    Window.drawText("Space/Shift to fly up/down", 10, 55, 16)
-    Window.drawText("X: " + str(cx) + " Z: " + str(cz) + " Loaded Chunks: " + str(len(loadedCols)), 10, 80, 16)
-    
+    Window.setColor("black");
+    Window.drawText("Minecraft Infinite Procedural World!", 10, 10, 20);
+    Window.drawText("WASD to move, Mouse to look freely! (ESC to exit)", 10, 35, 16);
+    Window.drawText("Space/Shift to fly up/down", 10, 55, 16);
+    Window.drawText("X: " + str(cx) + " Z: " + str(cz) + " Loaded Chunks: " + str(len(loadedCols)), 10, 80, 16);
+
     // Quick Crosshair
-    Window.setColor("white")
-    Window.drawRect(400 - 2, 300 - 10, 4, 20)
-    Window.drawRect(400 - 10, 300 - 2, 20, 4)
+    Window.setColor("white");
+    Window.drawRect(400 - 2, 300 - 10, 4, 20);
+    Window.drawRect(400 - 10, 300 - 2, 20, 4);
 
     // --- Hotbar UI ---
-    let hw = 300
-    let hh = 40
-    let hx = 400 - (hw / 2)
-    let hy = 600 - hh - 15
-    
+    let hw = 300;
+    let hh = 40;
+    let hx = 400 - (hw / 2);
+    let hy = 600 - hh - 15;
+
     // Background
-    Window.setColor("rgba(0, 0, 0, 0.5)")
-    Window.drawRect(hx, hy, hw, hh)
-    
-    let si = 0
+    Window.setColor("rgba(0, 0, 0, 0.5)");
+    Window.drawRect(hx, hy, hw, hh);
+
+    let si = 0;
     while (si < 5) {
-        let slotX = hx + (si * (hw / 5)) + 5
-        let slotY = hy + 5
-        let sw = (hw / 5) - 10
-        let sh = hh - 10
-        
+        let slotX = hx + (si * (hw / 5)) + 5;
+        let slotY = hy + 5;
+        let sw = (hw / 5) - 10;
+        let sh = hh - 10;
+
         // Slot border
         if (si == selectedSlot) {
-            Window.setColor("white")
-            Window.drawRect(slotX - 2, slotY - 2, sw + 4, sh + 4)
-            Window.drawText(hotbarNames[si], hx + (hw/2) - 30, hy - 25, 18)
+            Window.setColor("white");
+            Window.drawRect(slotX - 2, slotY - 2, sw + 4, sh + 4);
+            Window.drawText(hotbarNames[si], hx + (hw/2) - 30, hy - 25, 18);
         } else {
-            Window.setColor("gray")
-            Window.drawRect(slotX - 1, slotY - 1, sw + 2, sh + 2)
+            Window.setColor("gray");
+            Window.drawRect(slotX - 1, slotY - 1, sw + 2, sh + 2);
         }
-        
+
         // Slot Color Icon
-        Window.setColor(hotbar[si])
-        Window.drawRect(slotX, slotY, sw, sh)
-        
-        si = si + 1
+        Window.setColor(hotbar[si]);
+        Window.drawRect(slotX, slotY, sw, sh);
+
+        si = si + 1;
     }
 })

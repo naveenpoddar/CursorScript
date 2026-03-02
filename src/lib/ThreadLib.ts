@@ -45,11 +45,11 @@ class _CursorThread {
 
     this.worker.postMessage({ type: "init", filePath, threadId: this.id });
 
-    this.worker.onmessage = (event: MessageEvent) => {
+    this.worker.onmessage = async (event: MessageEvent) => {
       const msg = event.data;
       if (msg.type === "message" && this.onMessageCallback) {
         const runtimeData = deserializeToRuntimeValue(msg.data);
-        this.executeCallback(this.onMessageCallback, [runtimeData]);
+        await this.executeCallback(this.onMessageCallback, [runtimeData]);
       } else if (msg.type === "log") {
         console.log(`[Thread-${this.id}]`, msg.data);
       } else if (msg.type === "done") {
@@ -58,7 +58,9 @@ class _CursorThread {
         this.status = "error";
         console.error(`[Thread-${this.id} Error]`, msg.error);
         if (this.onErrorCallback) {
-          this.executeCallback(this.onErrorCallback, [MK_STRING(msg.error)]);
+          await this.executeCallback(this.onErrorCallback, [
+            MK_STRING(msg.error),
+          ]);
         }
       }
     };
@@ -108,14 +110,14 @@ class _CursorThread {
     return MK_OBJECT(info);
   }
 
-  private executeCallback(func: any, args: any[] = []) {
+  private async executeCallback(func: any, args: any[] = []) {
     if (typeof func === "function") {
       // If it's a wrapped function from BaseLibConverter
-      func(...args);
+      await func(...args);
     } else if (func && func.type === "function") {
       // Internal FunctionValue
       const fn = func as FunctionValue;
-      const scope = new Environment(fn.declarationEnv);
+      const scope = new Environment(fn.declarationEnv, fn.async);
 
       // Map args
       for (let i = 0; i < fn.parameters.length; i++) {
@@ -123,7 +125,7 @@ class _CursorThread {
       }
 
       for (const stmt of fn.body) {
-        global.evaluate(stmt, scope);
+        await global.evaluate(stmt, scope);
       }
     }
   }

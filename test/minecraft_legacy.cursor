@@ -13,18 +13,7 @@ const audioId = Audio.load("C:\Users\podda\Downloads\song.mp3");
 // Seed the random noise engine
 PerlinNoise.seed(rand(111111, 999999));
 
-let getHeight = (x, z) -> {
-    let scale1 = 0.015;
-    let scale2 = 0.05;
-    let scale3 = 0.1;
-
-    let h1 = PerlinNoise.noise2D(x * scale1, z * scale1) * 35;
-    let h2 = PerlinNoise.noise2D(x * scale2, z * scale2) * 12;
-    let h3 = PerlinNoise.noise2D(x * scale3, z * scale3) * 4;
-
-    let combined = h1 + h2 + h3 + 12;
-    Math.round(combined);
-}
+// (getHeight removed, now handled by workers)
 
 // 2. Setup Sun/Light
 Engine3D.setLight(scene, 0.5, 1, 0.5, 0.45);
@@ -47,7 +36,7 @@ Engine3D.setSolidMode(scene, selectorMesh, false);
 
 // 3. Player Properties
 let px = 0;
-let py = 50;
+let py = 100;
 let pz = -8;
 
 let yaw = 0;
@@ -306,6 +295,136 @@ Window.onFixedUpdate(() -> {
     Engine3D.setRotation(scene, moonGlow, pitch, -yaw, 0);
 })
 
+// --- Multi-threaded Chunk Loading ---
+let worldSeed = rand(111111, 999999);
+PerlinNoise.seed(worldSeed);
+
+let chunkWorkers = [];
+let maxWorkers = Math.round(viewDist * 2);
+let pendingChunks = []; // {x, z}
+let loadingChunks = []; // {x, z}
+let lastUnloadTime = 0;
+
+// Initialize workers
+let wi = 0;
+while (wi < maxWorkers) {
+    let worker = Thread.spawn("./test/chunk_worker.cursor", {
+        smol: false
+    });
+    worker.isBusy = false;
+
+    worker.onMessage(async (data) -> {
+        let wrldChunkX = data.wrldChunkX;
+        let wrldChunkZ = data.wrldChunkZ;
+        let blocks = data.blocks;
+        let colMeshes = [];
+
+        let bi = 0;
+        let blockCount = len(blocks);
+        print("Worker Result for Chunk:", wrldChunkX, wrldChunkZ, "Blocks:", blockCount);
+        if (blockCount > 0) {
+            let firstB = blocks[0];
+            print("  Example block at:", firstB.x, firstB.y, firstB.z);
+        }
+        while (bi < blockCount) {
+            let b = blocks[bi];
+            if (b.type == "tree") {
+                let treeHeight = b.height;
+                let wrldX = b.x;
+                let h = b.y;
+                let wrldZ = b.z;
+
+                let ty = 1;
+                while (ty <= treeHeight) {
+                    let trunk = Engine3D.createCube(scene, 1, "#8B4513");
+                    Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ);
+                    Engine3D.setSolidMode(scene, trunk, true);
+                    push(colMeshes, {
+                        id: trunk, x: wrldX, y: h + ty, z: wrldZ
+                    });
+                    ty = ty + 1;
+                }
+                let leafSpread = 1;
+                if (treeHeight > 5) {
+                    leafSpread = 2;
+                }
+                let lx = -leafSpread;
+                while (lx <= leafSpread) {
+                    let lz = -leafSpread;
+                    while (lz <= leafSpread) {
+                        let maxLy = treeHeight + 1; let minLy = treeHeight - 1;
+                        if (leafSpread == 2) {
+                            minLy = treeHeight - 2;
+                        }
+                        let ly = minLy;
+                        while (ly <= maxLy) {
+                            let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy;
+                            if (isCorner == false) {
+                                let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy;
+                                if (isOuterCorner == false) {
+                                    let leaf = Engine3D.createCube(scene, 1, "#228B22");
+                                    Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz);
+                                    Engine3D.setSolidMode(scene, leaf, true);
+                                    push(colMeshes, {
+                                        id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz
+                                    });
+                                }
+                            }
+                            ly = ly + 1;
+                        }
+                        lz = lz + 1;
+                    }
+                    lx = lx + 1;
+                }
+            } else {
+                let color = "#7f8c8d";
+                if (b.type == "grass") {
+                    color = "#78e08f";
+                }
+                else if (b.type == "dirt") {
+                    color = "#d35400";
+                }
+                let cube = Engine3D.createCube(scene, 1, color);
+                Engine3D.setPosition(scene, cube, b.x, b.y, b.z);
+                Engine3D.setSolidMode(scene, cube, true);
+                Engine3D.setFaceAO(scene, cube, 5, b.ao[0], b.ao[1], b.ao[2], b.ao[3]);
+                push(colMeshes, {
+                    id: cube, x: b.x, y: b.y, z: b.z
+                });
+            }
+            bi = bi + 1;
+            // Yield every 50 blocks to keep UI responsive
+            if (bi % 50 == 0) {
+                await wait(0);
+            }
+        }
+
+        push(loadedCols, {
+            x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes
+        });
+
+        // Remove from loadingChunks
+        let lcx = 0;
+        let foundLoading = false;
+        while (lcx < len(loadingChunks)) {
+            if (loadingChunks[lcx].x == wrldChunkX && loadingChunks[lcx].z == wrldChunkZ) {
+                loadingChunks[lcx] = loadingChunks[len(loadingChunks) - 1];
+                pop(loadingChunks);
+                foundLoading = true;
+                lcx = 9999;
+            }
+            lcx = lcx + 1;
+        }
+
+        print("Successfully loaded chunk:", wrldChunkX, wrldChunkZ, "LoadedCount:", len(loadedCols), "Remaining Loading:", len(loadingChunks));
+        worker.isBusy = false;
+    });
+
+    print("Spawned Worker", wi);
+    push(chunkWorkers, worker);
+    wi = wi + 1;
+}
+
 // 5. Render & Input Loop
 Window.onUpdate(() -> {
     // --- FPS Mouselook ---
@@ -338,13 +457,12 @@ Window.onUpdate(() -> {
     // --- Dynamic Terrain System (Chunk Loading) ---
     let cx = Math.floor(px);
     let cz = Math.floor(pz);
-
-    // Calculate current chunk coordinates
     let chunkX = Math.floor(cx / 16);
     let chunkZ = Math.floor(cz / 16);
 
-    // 1. Unload far chunks (Throttled to every 30 frames/approx 0.5s)
-    if (Math.floor(time() / 500) % 2 == 0) {
+    // 1. Unload far chunks (Every 2 seconds)
+    if (time() - lastUnloadTime > 2000) {
+        lastUnloadTime = time();
         let i = 0;
         let lenCols = len(loadedCols);
         while (i < lenCols) {
@@ -356,7 +474,6 @@ Window.onUpdate(() -> {
                     Engine3D.deleteMesh(scene, col.meshes[j].id);
                     j = j + 1;
                 }
-                // Array fast remove
                 loadedCols[i] = loadedCols[lenCols - 1];
                 pop(loadedCols);
                 lenCols = lenCols - 1;
@@ -366,40 +483,58 @@ Window.onUpdate(() -> {
         }
     }
 
-    // 2. Find the closest unloaded chunk (Prioritize player's current position)
-    let bestOx = -999;
-    let bestOz = -999;
-    let minD = 999;
-
+    // 2. Queue missing chunks
     let ox = -viewDist;
     while (ox <= viewDist) {
         let oz = -viewDist;
         while (oz <= viewDist) {
             let d = Math.abs(ox) + Math.abs(oz);
-            // Search for the closest unloaded chunk within radial distance
-            if (d <= viewDist * 1.5 && d < minD) {
-                let wrldChunkX = chunkX + ox;
-                let wrldChunkZ = chunkZ + oz;
+            if (d <= viewDist * 1.5) {
+                let wX = chunkX + ox;
+                let wZ = chunkZ + oz;
 
                 let isLoaded = false;
                 let k = 0;
                 let lenLoaded = len(loadedCols);
                 while (k < lenLoaded) {
-                    if (loadedCols[k].x == wrldChunkX && loadedCols[k].z == wrldChunkZ) {
+                    let lCol = loadedCols[k];
+                    // Defensive integer check
+                    if (Math.round(lCol.x) == Math.round(wX) && Math.round(lCol.z) == Math.round(wZ)) {
                         isLoaded = true;
-                        k = lenLoaded; // Early exit
+                        k = lenLoaded;
                     }
                     k = k + 1;
                 }
 
                 if (isLoaded == false) {
-                    minD = d;
-                    bestOx = ox;
-                    bestOz = oz;
-                    // If we found the exact chunk the player is in, we can stop searching for better
-                    if (d == 0) {
-                        ox = viewDist + 1; // Break outer loop
-                        oz = viewDist + 1; // Break inner loop
+                    // Check if already in pending
+                    let isPending = false;
+                    let p = 0;
+                    while (p < len(pendingChunks)) {
+                        if (pendingChunks[p].x == wX && pendingChunks[p].z == wZ) {
+                            isPending = true;
+                            p = len(pendingChunks);
+                        }
+                        p = p + 1;
+                    }
+
+                    if (isPending == false) {
+                        // Check if already loading/dispatched
+                        let isLoading = false;
+                        let l = 0;
+                        while (l < len(loadingChunks)) {
+                            if (loadingChunks[l].x == wX && loadingChunks[l].z == wZ) {
+                                isLoading = true;
+                                l = len(loadingChunks);
+                            }
+                            l = l + 1;
+                        }
+
+                        if (isLoading == false) {
+                            push(pendingChunks, {
+                                x: wX, z: wZ, dist: d
+                            });
+                        }
                     }
                 }
             }
@@ -408,182 +543,58 @@ Window.onUpdate(() -> {
         ox = ox + 1;
     }
 
-    // 3. Load the best chunk found (Throttled to ONE per frame)
-    if (bestOx != -999) {
-        let wrldChunkX = chunkX + bestOx;
-        let wrldChunkZ = chunkZ + bestOz;
-        let colMeshes = [];
+    // Sort pending by distance (closest first)
+    // Custom sort not available? We'll just pick the closest each frame.
 
-        // --- PRE-CALCULATE HEIGHTS FOR ENTIRE CHUNK + AO BORDER ---
-        let heightCache = [];
-        let hxi = -1;
-        while (hxi <= 16) {
-            let hzi = -1;
-            while (hzi <= 16) {
-                push(heightCache, getHeight(wrldChunkX * 16 + hxi, wrldChunkZ * 16 + hzi));
-                hzi = hzi + 1;
-            }
-            hxi = hxi + 1;
-        }
-
-        // Helper for local lookup
-        let getH = (lx, lz) -> {
-            return heightCache[(lx + 1) * 18 + (lz + 1)];
-        }
-
-        // Generate 16x16 blocks for this chunk
-        let bx = 0;
-        while (bx < 16) {
-            let bz = 0;
-            while (bz < 16) {
-                let wrldX = (wrldChunkX * 16) + bx;
-                let wrldZ = (wrldChunkZ * 16) + bz;
-
-                let h = getH(bx, bz);
-                let h_nx = getH(bx - 1, bz);
-                let h_px = getH(bx + 1, bz);
-                let h_nz = getH(bx, bz - 1);
-                let h_pz = getH(bx, bz + 1);
-
-                let h_nw = getH(bx - 1, bz - 1);
-                let h_ne = getH(bx + 1, bz - 1);
-                let h_sw = getH(bx - 1, bz + 1);
-                let h_se = getH(bx + 1, bz + 1);
-
-                // Random value for dirt depth and trees (per column)
-                let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453;
-                let rV = randVal - Math.floor(randVal);
-
-                let dirtDepth = 3 + Math.floor(rV * 3);
-                let currY = 0;
-
-                while (currY <= h) {
-                    let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz);
-
-                    if (isExposed) {
-                        let color = "#7f8c8d"; // Stone
-                        if (currY == h) {
-                            color = "#78e08f"; // Grass
-                        }
-                        else if (currY > h - dirtDepth) {
-                            color = "#d35400"; // Dirt
-                        }
-
-                        let cube = Engine3D.createCube(scene, 1, color);
-                        Engine3D.setPosition(scene, cube, wrldX, currY, wrldZ);
-                        Engine3D.setSolidMode(scene, cube, true);
-
-                        // AO Calculation
-                        let top_v0 = 0; if (h_nx > currY) {
-                            top_v0 = top_v0 + 1;
-                        } if (h_nz > currY) {
-                            top_v0 = top_v0 + 1;
-                        } if (h_nw > currY) {
-                            top_v0 = top_v0 + 1;
-                        }
-                        let top_v1 = 0; if (h_px > currY) {
-                            top_v1 = top_v1 + 1;
-                        } if (h_nz > currY) {
-                            top_v1 = top_v1 + 1;
-                        } if (h_ne > currY) {
-                            top_v1 = top_v1 + 1;
-                        }
-                        let top_v2 = 0; if (h_px > currY) {
-                            top_v2 = top_v2 + 1;
-                        } if (h_pz > currY) {
-                            top_v2 = top_v2 + 1;
-                        } if (h_se > currY) {
-                            top_v2 = top_v2 + 1;
-                        }
-                        let top_v3 = 0; if (h_nx > currY) {
-                            top_v3 = top_v3 + 1;
-                        } if (h_pz > currY) {
-                            top_v3 = top_v3 + 1;
-                        } if (h_sw > currY) {
-                            top_v3 = top_v3 + 1;
-                        }
-
-                        Engine3D.setFaceAO(scene, cube, 5, top_v0, top_v3, top_v2, top_v1);
-                        push(colMeshes, {
-                            id: cube, x: wrldX, y: currY, z: wrldZ
-                        })
-
-                        // Tree Spawning
-                        if (currY == h && color == "#78e08f") {
-                            if (rV < 0.0075) {
-                                let treeHeight = 3 + Math.floor(rV * 100) % 5;
-                                let ty = 1;
-                                while (ty <= treeHeight) {
-                                    let trunk = Engine3D.createCube(scene, 1, "#8B4513");
-                                    Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ);
-                                    Engine3D.setSolidMode(scene, trunk, true);
-                                    push(colMeshes, {
-                                        id: trunk, x: wrldX, y: h + ty, z: wrldZ
-                                    })
-                                    ty = ty + 1;
-                                }
-                                let leafSpread = 1;
-                                if (treeHeight > 5) {
-                                    leafSpread = 2;
-                                }
-                                let lx = -leafSpread;
-                                while (lx <= leafSpread) {
-                                    let lz = -leafSpread;
-                                    while (lz <= leafSpread) {
-                                        let maxLy = treeHeight + 1;
-                                        let minLy = treeHeight - 1;
-                                        if (leafSpread == 2) {
-                                            minLy = treeHeight - 2;
-                                        }
-                                        let ly = minLy;
-                                        while (ly <= maxLy) {
-                                            let isCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == maxLy;
-                                            if (isCorner == false) {
-                                                let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy;
-                                                if (isOuterCorner == false) {
-                                                    let leaf = Engine3D.createCube(scene, 1, "#228B22");
-                                                    Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz);
-                                                    Engine3D.setSolidMode(scene, leaf, true);
-                                                    push(colMeshes, {
-                                                        id: leaf, x: wrldX + lx, y: h + ly, z: wrldZ + lz
-                                                    })
-                                                }
-                                            }
-                                            ly = ly + 1;
-                                        }
-                                        lz = lz + 1;
-                                    }
-                                    lx = lx + 1;
-                                }
-                            }
-                        }
-                    }
-                    currY = currY + 1;
+    // 3. Dispatch to workers
+    let w = 0;
+    while (w < maxWorkers && len(pendingChunks) > 0) {
+        if (chunkWorkers[w].isBusy == false) {
+            // Find closest pending
+            let closestIdx = 0;
+            let minDist = 999;
+            let pi = 0;
+            while (pi < len(pendingChunks)) {
+                if (pendingChunks[pi].dist < minDist) {
+                    minDist = pendingChunks[pi].dist;
+                    closestIdx = pi;
                 }
-                bz = bz + 1;
+                pi = pi + 1;
             }
-            bx = bx + 1;
-        }
 
-        push(loadedCols, {
-            x: wrldChunkX, z: wrldChunkZ, meshes: colMeshes
-        })
+            let task = pendingChunks[closestIdx];
+            // Remove from pending
+            pendingChunks[closestIdx] = pendingChunks[len(pendingChunks) - 1];
+            pop(pendingChunks);
+
+            // Track as loading
+            push(loadingChunks, {
+                x: task.x, z: task.z
+            });
+
+            print("Dispatching chunk:", task.x, task.z, "to worker", w, "Pending:", len(pendingChunks), "Loading:", len(loadingChunks));
+            chunkWorkers[w].isBusy = true;
+            chunkWorkers[w].send({
+                wrldChunkX: task.x,
+                wrldChunkZ: task.z,
+                seed: worldSeed
+            });
+        }
+        w = w + 1;
     }
 
     // Update Camera position in Engine
-    // Note: camera FOV is set to 400
     Engine3D.setCamera(scene, px, py, pz, pitch, yaw, 0, 300);
 
     // --- Rendering ---
-    Window.clear(skyColor); // Dynamic Sky Color matching time of day;
+    Window.clear(skyColor);
     Engine3D.render(scene, 800, 600);
 
     // --- UIOverlay ---
     Window.setColor("black");
-    Window.drawText("Minecraft Infinite Procedural World!", 10, 10, 20);
+    Window.drawText("Minecraft Multi-threaded Procedural World!", 10, 10, 20);
     Window.drawText("WASD to move, Mouse to look freely! (ESC to exit)", 10, 35, 16);
-    Window.drawText("Space/Shift to fly up/down", 10, 55, 16);
-    Window.drawText("X: " + str(cx) + " Z: " + str(cz) + " Loaded Chunks: " + str(len(loadedCols)), 10, 80, 16);
+    Window.drawText("X: " + str(cx) + " Z: " + str(cz) + " Loaded: " + str(len(loadedCols)) + " Pending: " + str(len(pendingChunks)) + " Loading: " + str(len(loadingChunks)), 10, 80, 16);
 
     // Quick Crosshair
     Window.setColor("white");
@@ -595,8 +606,6 @@ Window.onUpdate(() -> {
     let hh = 40;
     let hx = 400 - (hw / 2);
     let hy = 600 - hh - 15;
-
-    // Background
     Window.setColor("rgba(0, 0, 0, 0.5)");
     Window.drawRect(hx, hy, hw, hh);
 
@@ -606,8 +615,6 @@ Window.onUpdate(() -> {
         let slotY = hy + 5;
         let sw = (hw / 5) - 10;
         let sh = hh - 10;
-
-        // Slot border
         if (si == selectedSlot) {
             Window.setColor("white");
             Window.drawRect(slotX - 2, slotY - 2, sw + 4, sh + 4);
@@ -616,11 +623,8 @@ Window.onUpdate(() -> {
             Window.setColor("gray");
             Window.drawRect(slotX - 1, slotY - 1, sw + 2, sh + 2);
         }
-
-        // Slot Color Icon
         Window.setColor(hotbar[si]);
         Window.drawRect(slotX, slotY, sw, sh);
-
         si = si + 1;
     }
 })

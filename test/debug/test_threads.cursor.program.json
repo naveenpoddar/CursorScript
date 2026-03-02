@@ -1,0 +1,297 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 1,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 1,
+          "column": 7,
+          "value": "Main Thread: Starting..."
+        }
+      ],
+      "line": 3,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "worker",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 3,
+            "column": 14,
+            "symbol": "Thread"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 3,
+            "column": 21,
+            "symbol": "spawn"
+          },
+          "computed": false,
+          "line": 3,
+          "column": 26
+        },
+        "args": [
+          {
+            "kind": "StringLiteral",
+            "line": 3,
+            "column": 27,
+            "value": "./test/worker_test.cursor"
+          },
+          {
+            "kind": "ObjectLiteral",
+            "properties": [
+              {
+                "kind": "Property",
+                "key": "name",
+                "value": {
+                  "kind": "StringLiteral",
+                  "line": 4,
+                  "column": 11,
+                  "value": "Calculator"
+                }
+              },
+              {
+                "kind": "Property",
+                "key": "smol",
+                "value": {
+                  "kind": "Identifier",
+                  "line": 5,
+                  "column": 11,
+                  "symbol": "true"
+                }
+              }
+            ]
+          }
+        ],
+        "line": 8,
+        "column": 1
+      },
+      "line": 3,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 8,
+          "column": 1,
+          "symbol": "worker"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 8,
+          "column": 8,
+          "symbol": "onMessage"
+        },
+        "computed": false,
+        "line": 8,
+        "column": 17
+      },
+      "args": [
+        {
+          "kind": "LambdaExpr",
+          "parameters": [
+            "data"
+          ],
+          "body": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 9,
+                "column": 5,
+                "symbol": "print"
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 9,
+                  "column": 11,
+                  "value": "Main Received:"
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 9,
+                  "column": 29,
+                  "symbol": "data"
+                }
+              ],
+              "line": 10,
+              "column": 1
+            }
+          ],
+          "async": false,
+          "line": 10,
+          "column": 2
+        }
+      ],
+      "line": 12,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 12,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 12,
+          "column": 7,
+          "value": "Sending task to worker..."
+        }
+      ],
+      "line": 13,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 13,
+          "column": 1,
+          "symbol": "worker"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 13,
+          "column": 8,
+          "symbol": "send"
+        },
+        "computed": false,
+        "line": 13,
+        "column": 12
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 13,
+          "column": 13,
+          "value": "Calculate 10 + 20"
+        }
+      ],
+      "line": 20,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "start",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "Identifier",
+          "line": 20,
+          "column": 13,
+          "symbol": "time"
+        },
+        "args": [],
+        "line": 21,
+        "column": 1
+      },
+      "line": 20,
+      "column": 1
+    },
+    {
+      "kind": "WhileStmt",
+      "condition": {
+        "kind": "BinaryExpr",
+        "operator": "<",
+        "left": {
+          "kind": "BinaryExpr",
+          "operator": "-",
+          "left": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "Identifier",
+              "line": 21,
+              "column": 8,
+              "symbol": "time"
+            },
+            "args": [],
+            "line": 21,
+            "column": 15
+          },
+          "right": {
+            "kind": "Identifier",
+            "line": 21,
+            "column": 17,
+            "symbol": "start"
+          },
+          "line": 21,
+          "column": 23
+        },
+        "right": {
+          "kind": "NumericLiteral",
+          "line": 21,
+          "column": 25,
+          "value": 1000
+        },
+        "line": 21,
+        "column": 29
+      },
+      "body": []
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 25,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 25,
+          "column": 7,
+          "value": "Main Thread: Finished operations. Exiting now..."
+        }
+      ],
+      "line": 26,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 26,
+        "column": 1,
+        "symbol": "exit"
+      },
+      "args": [
+        {
+          "kind": "NumericLiteral",
+          "line": 26,
+          "column": 6,
+          "value": 0
+        }
+      ],
+      "line": 27,
+      "column": 1
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

@@ -1,3 +1,1 @@
-feat: implement ServerLib wrapper for web server logic
-
-Adds ServerLib.ts, test scripts, examples and documentation for the new built-in backend HTTP Server utility wrapping Bun.serve()
+fix: resolve DatabaseLib AST memory leak and add remote MongoDB test

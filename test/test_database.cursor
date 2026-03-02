@@ -1,0 +1,67 @@
+// Test script for DatabaseLib (SQLite & MongoDB)
+
+print("Starting DatabaseLib Tests...");
+
+let dbPath = "test_script.db";
+
+// Remove the test DB if it exists (assuming it won't crash if it doesn't...)
+let fileExists = File.exists(dbPath);
+if (fileExists) {
+    File.write(dbPath, "");
+}
+
+let db = Database.sqlite(dbPath);
+print("SQLite Database initialized.");
+
+db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER)");
+print("Table 'users' created.");
+
+let res1 = db.execute("INSERT INTO users (name, age) VALUES (?, ?)", ["Alice", 25]);
+print("Inserted Alice. ID:", res1.lastInsertRowid);
+
+let res2 = db.execute("INSERT INTO users (name, age) VALUES (?, ?)", ["Bob", 30]);
+print("Inserted Bob. ID:", res2.lastInsertRowid);
+
+let users = db.query("SELECT * FROM users WHERE age >= ?", [25]);
+print("Found", len(users), "users:");
+print(users);
+
+db.close();
+print("SQLite tests completed gracefully.");
+
+print("\n--- MongoDB Tests ---");
+print("Note: If you don't have a MongoDB server running locally at mongodb://127.0.0.1:27017, this test will fail after a timeout.");
+
+async fn testMongo() {
+    let url = "mongodb+srv://dharmm420:Shanu_1234@jarvis.m7ryzgk.mongodb.net/";
+    let mongo = Database.mongodb(url);
+    print("MongoDB driver loaded initially. Attempting connection to:", url);
+
+    await mongo.connect();
+    print("MongoDB connected successfully.");
+
+    let res = await mongo.insertOne("testdb", "users", {
+        name: "Charlie", script: "CursorScript"
+    });
+    print("Mongo Inserted ID:", res.insertedId);
+
+    let result = await mongo.find("testdb", "users", {
+        name: "Charlie"
+    });
+    print("Mongo Found records:");
+    print(result);
+    // Cleanup the remote database to not bloat it during test
+    let del = await mongo.deleteOne("testdb", "users", {
+        name: "Charlie"
+    });
+    print("Cleaned up", del.deletedCount, "records");
+
+    await mongo.close();
+}
+
+async fn main() {
+    await testMongo();
+    print("\nAll database tests done!");
+}
+
+main();

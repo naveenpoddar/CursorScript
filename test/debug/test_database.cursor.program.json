@@ -1,0 +1,1152 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 3,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 3,
+          "column": 7,
+          "value": "Starting DatabaseLib Tests..."
+        }
+      ],
+      "line": 3,
+      "column": 39
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "dbPath",
+      "constant": false,
+      "value": {
+        "kind": "StringLiteral",
+        "line": 5,
+        "column": 14,
+        "value": "test_script.db"
+      },
+      "line": 5,
+      "column": 1
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "fileExists",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 8,
+            "column": 18,
+            "symbol": "File"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 8,
+            "column": 23,
+            "symbol": "exists"
+          },
+          "computed": false,
+          "line": 8,
+          "column": 29
+        },
+        "args": [
+          {
+            "kind": "Identifier",
+            "line": 8,
+            "column": 30,
+            "symbol": "dbPath"
+          }
+        ],
+        "line": 8,
+        "column": 37
+      },
+      "line": 8,
+      "column": 1
+    },
+    {
+      "kind": "IfStmt",
+      "condition": {
+        "kind": "Identifier",
+        "line": 9,
+        "column": 5,
+        "symbol": "fileExists"
+      },
+      "thenBranch": [
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 10,
+              "column": 5,
+              "symbol": "File"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 10,
+              "column": 10,
+              "symbol": "write"
+            },
+            "computed": false,
+            "line": 10,
+            "column": 15
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 10,
+              "column": 16,
+              "symbol": "dbPath"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 10,
+              "column": 24,
+              "value": ""
+            }
+          ],
+          "line": 10,
+          "column": 27
+        }
+      ],
+      "line": 0,
+      "column": 0
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "db",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 13,
+            "column": 10,
+            "symbol": "Database"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 13,
+            "column": 19,
+            "symbol": "sqlite"
+          },
+          "computed": false,
+          "line": 13,
+          "column": 25
+        },
+        "args": [
+          {
+            "kind": "Identifier",
+            "line": 13,
+            "column": 26,
+            "symbol": "dbPath"
+          }
+        ],
+        "line": 13,
+        "column": 33
+      },
+      "line": 13,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 14,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 14,
+          "column": 7,
+          "value": "SQLite Database initialized."
+        }
+      ],
+      "line": 14,
+      "column": 38
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 16,
+          "column": 1,
+          "symbol": "db"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 16,
+          "column": 4,
+          "symbol": "execute"
+        },
+        "computed": false,
+        "line": 16,
+        "column": 11
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 16,
+          "column": 12,
+          "value": "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER)"
+        }
+      ],
+      "line": 16,
+      "column": 110
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 17,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 17,
+          "column": 7,
+          "value": "Table 'users' created."
+        }
+      ],
+      "line": 17,
+      "column": 32
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "res1",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 19,
+            "column": 12,
+            "symbol": "db"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 19,
+            "column": 15,
+            "symbol": "execute"
+          },
+          "computed": false,
+          "line": 19,
+          "column": 22
+        },
+        "args": [
+          {
+            "kind": "StringLiteral",
+            "line": 19,
+            "column": 23,
+            "value": "INSERT INTO users (name, age) VALUES (?, ?)"
+          },
+          {
+            "kind": "ArrayLiteral",
+            "elements": [
+              {
+                "kind": "StringLiteral",
+                "line": 19,
+                "column": 71,
+                "value": "Alice"
+              },
+              {
+                "kind": "NumericLiteral",
+                "line": 19,
+                "column": 80,
+                "value": 25
+              }
+            ]
+          }
+        ],
+        "line": 19,
+        "column": 84
+      },
+      "line": 19,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 20,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 20,
+          "column": 7,
+          "value": "Inserted Alice. ID:"
+        },
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 20,
+            "column": 30,
+            "symbol": "res1"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 20,
+            "column": 35,
+            "symbol": "lastInsertRowid"
+          },
+          "computed": false,
+          "line": 20,
+          "column": 50
+        }
+      ],
+      "line": 20,
+      "column": 51
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "res2",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 22,
+            "column": 12,
+            "symbol": "db"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 22,
+            "column": 15,
+            "symbol": "execute"
+          },
+          "computed": false,
+          "line": 22,
+          "column": 22
+        },
+        "args": [
+          {
+            "kind": "StringLiteral",
+            "line": 22,
+            "column": 23,
+            "value": "INSERT INTO users (name, age) VALUES (?, ?)"
+          },
+          {
+            "kind": "ArrayLiteral",
+            "elements": [
+              {
+                "kind": "StringLiteral",
+                "line": 22,
+                "column": 71,
+                "value": "Bob"
+              },
+              {
+                "kind": "NumericLiteral",
+                "line": 22,
+                "column": 78,
+                "value": 30
+              }
+            ]
+          }
+        ],
+        "line": 22,
+        "column": 82
+      },
+      "line": 22,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 23,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 23,
+          "column": 7,
+          "value": "Inserted Bob. ID:"
+        },
+        {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 23,
+            "column": 28,
+            "symbol": "res2"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 23,
+            "column": 33,
+            "symbol": "lastInsertRowid"
+          },
+          "computed": false,
+          "line": 23,
+          "column": 48
+        }
+      ],
+      "line": 23,
+      "column": 49
+    },
+    {
+      "kind": "VarDeclaration",
+      "identifier": "users",
+      "constant": false,
+      "value": {
+        "kind": "CallExpr",
+        "caller": {
+          "kind": "MemberExpr",
+          "object": {
+            "kind": "Identifier",
+            "line": 25,
+            "column": 13,
+            "symbol": "db"
+          },
+          "property": {
+            "kind": "Identifier",
+            "line": 25,
+            "column": 16,
+            "symbol": "query"
+          },
+          "computed": false,
+          "line": 25,
+          "column": 21
+        },
+        "args": [
+          {
+            "kind": "StringLiteral",
+            "line": 25,
+            "column": 22,
+            "value": "SELECT * FROM users WHERE age >= ?"
+          },
+          {
+            "kind": "ArrayLiteral",
+            "elements": [
+              {
+                "kind": "NumericLiteral",
+                "line": 25,
+                "column": 61,
+                "value": 25
+              }
+            ]
+          }
+        ],
+        "line": 25,
+        "column": 65
+      },
+      "line": 25,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 26,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 26,
+          "column": 7,
+          "value": "Found"
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 26,
+            "column": 16,
+            "symbol": "len"
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 26,
+              "column": 20,
+              "symbol": "users"
+            }
+          ],
+          "line": 26,
+          "column": 26
+        },
+        {
+          "kind": "StringLiteral",
+          "line": 26,
+          "column": 28,
+          "value": "users:"
+        }
+      ],
+      "line": 26,
+      "column": 37
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 27,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "Identifier",
+          "line": 27,
+          "column": 7,
+          "symbol": "users"
+        }
+      ],
+      "line": 27,
+      "column": 13
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "MemberExpr",
+        "object": {
+          "kind": "Identifier",
+          "line": 29,
+          "column": 1,
+          "symbol": "db"
+        },
+        "property": {
+          "kind": "Identifier",
+          "line": 29,
+          "column": 4,
+          "symbol": "close"
+        },
+        "computed": false,
+        "line": 29,
+        "column": 9
+      },
+      "args": [],
+      "line": 29,
+      "column": 11
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 30,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 30,
+          "column": 7,
+          "value": "SQLite tests completed gracefully."
+        }
+      ],
+      "line": 30,
+      "column": 44
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 32,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 32,
+          "column": 7,
+          "value": "\n--- MongoDB Tests ---"
+        }
+      ],
+      "line": 32,
+      "column": 33
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 33,
+        "column": 1,
+        "symbol": "print"
+      },
+      "args": [
+        {
+          "kind": "StringLiteral",
+          "line": 33,
+          "column": 7,
+          "value": "Note: If you don't have a MongoDB server running locally at mongodb://127.0.0.1:27017, this test will fail after a timeout."
+        }
+      ],
+      "line": 33,
+      "column": 133
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "testMongo",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "url",
+          "constant": false,
+          "value": {
+            "kind": "StringLiteral",
+            "line": 36,
+            "column": 15,
+            "value": "mongodb+srv://dharmm420:Shanu_1234@jarvis.m7ryzgk.mongodb.net/"
+          },
+          "line": 36,
+          "column": 5
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "mongo",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 37,
+                "column": 17,
+                "symbol": "Database"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 37,
+                "column": 26,
+                "symbol": "mongodb"
+              },
+              "computed": false,
+              "line": 37,
+              "column": 33
+            },
+            "args": [
+              {
+                "kind": "Identifier",
+                "line": 37,
+                "column": 34,
+                "symbol": "url"
+              }
+            ],
+            "line": 37,
+            "column": 38
+          },
+          "line": 37,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 38,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 38,
+              "column": 11,
+              "value": "MongoDB driver loaded initially. Attempting connection to:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 38,
+              "column": 73,
+              "symbol": "url"
+            }
+          ],
+          "line": 38,
+          "column": 77
+        },
+        {
+          "kind": "AwaitExpr",
+          "argument": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 40,
+                "column": 11,
+                "symbol": "mongo"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 40,
+                "column": 17,
+                "symbol": "connect"
+              },
+              "computed": false,
+              "line": 40,
+              "column": 24
+            },
+            "args": [],
+            "line": 40,
+            "column": 26
+          },
+          "line": 40,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 41,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 41,
+              "column": 11,
+              "value": "MongoDB connected successfully."
+            }
+          ],
+          "line": 41,
+          "column": 45
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "res",
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 43,
+                  "column": 21,
+                  "symbol": "mongo"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 43,
+                  "column": 27,
+                  "symbol": "insertOne"
+                },
+                "computed": false,
+                "line": 43,
+                "column": 36
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 43,
+                  "column": 37,
+                  "value": "testdb"
+                },
+                {
+                  "kind": "StringLiteral",
+                  "line": 43,
+                  "column": 47,
+                  "value": "users"
+                },
+                {
+                  "kind": "ObjectLiteral",
+                  "properties": [
+                    {
+                      "kind": "Property",
+                      "key": "name",
+                      "value": {
+                        "kind": "StringLiteral",
+                        "line": 44,
+                        "column": 15,
+                        "value": "Charlie"
+                      }
+                    },
+                    {
+                      "kind": "Property",
+                      "key": "script",
+                      "value": {
+                        "kind": "StringLiteral",
+                        "line": 44,
+                        "column": 34,
+                        "value": "CursorScript"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "line": 45,
+              "column": 7
+            },
+            "line": 43,
+            "column": 15
+          },
+          "line": 43,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 46,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 46,
+              "column": 11,
+              "value": "Mongo Inserted ID:"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 46,
+                "column": 33,
+                "symbol": "res"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 46,
+                "column": 37,
+                "symbol": "insertedId"
+              },
+              "computed": false,
+              "line": 46,
+              "column": 47
+            }
+          ],
+          "line": 46,
+          "column": 48
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "result",
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 48,
+                  "column": 24,
+                  "symbol": "mongo"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 48,
+                  "column": 30,
+                  "symbol": "find"
+                },
+                "computed": false,
+                "line": 48,
+                "column": 34
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 48,
+                  "column": 35,
+                  "value": "testdb"
+                },
+                {
+                  "kind": "StringLiteral",
+                  "line": 48,
+                  "column": 45,
+                  "value": "users"
+                },
+                {
+                  "kind": "ObjectLiteral",
+                  "properties": [
+                    {
+                      "kind": "Property",
+                      "key": "name",
+                      "value": {
+                        "kind": "StringLiteral",
+                        "line": 49,
+                        "column": 15,
+                        "value": "Charlie"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "line": 50,
+              "column": 7
+            },
+            "line": 48,
+            "column": 18
+          },
+          "line": 48,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 51,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 51,
+              "column": 11,
+              "value": "Mongo Found records:"
+            }
+          ],
+          "line": 51,
+          "column": 34
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 52,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "Identifier",
+              "line": 52,
+              "column": 11,
+              "symbol": "result"
+            }
+          ],
+          "line": 52,
+          "column": 18
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "del",
+          "constant": false,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 54,
+                  "column": 21,
+                  "symbol": "mongo"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 54,
+                  "column": 27,
+                  "symbol": "deleteOne"
+                },
+                "computed": false,
+                "line": 54,
+                "column": 36
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 54,
+                  "column": 37,
+                  "value": "testdb"
+                },
+                {
+                  "kind": "StringLiteral",
+                  "line": 54,
+                  "column": 47,
+                  "value": "users"
+                },
+                {
+                  "kind": "ObjectLiteral",
+                  "properties": [
+                    {
+                      "kind": "Property",
+                      "key": "name",
+                      "value": {
+                        "kind": "StringLiteral",
+                        "line": 55,
+                        "column": 15,
+                        "value": "Charlie"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "line": 56,
+              "column": 7
+            },
+            "line": 54,
+            "column": 15
+          },
+          "line": 54,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 57,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 57,
+              "column": 11,
+              "value": "Cleaned up"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 57,
+                "column": 25,
+                "symbol": "del"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 57,
+                "column": 29,
+                "symbol": "deletedCount"
+              },
+              "computed": false,
+              "line": 57,
+              "column": 41
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 57,
+              "column": 43,
+              "value": "records"
+            }
+          ],
+          "line": 57,
+          "column": 53
+        },
+        {
+          "kind": "AwaitExpr",
+          "argument": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 59,
+                "column": 11,
+                "symbol": "mongo"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 59,
+                "column": 17,
+                "symbol": "close"
+              },
+              "computed": false,
+              "line": 59,
+              "column": 22
+            },
+            "args": [],
+            "line": 59,
+            "column": 24
+          },
+          "line": 59,
+          "column": 5
+        }
+      ],
+      "async": true,
+      "line": 35,
+      "column": 1
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "main",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "AwaitExpr",
+          "argument": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "Identifier",
+              "line": 63,
+              "column": 11,
+              "symbol": "testMongo"
+            },
+            "args": [],
+            "line": 63,
+            "column": 22
+          },
+          "line": 63,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 64,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 64,
+              "column": 11,
+              "value": "\nAll database tests done!"
+            }
+          ],
+          "line": 64,
+          "column": 40
+        }
+      ],
+      "async": true,
+      "line": 62,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 67,
+        "column": 1,
+        "symbol": "main"
+      },
+      "args": [],
+      "line": 67,
+      "column": 7
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

@@ -11,6 +11,7 @@
   * [JSON Library (Json) 📄](api/json.md)
   * [Lambda Functions (Anonymous Functions) λ](api/lambdas.md)
   * [Server Library (Server) 💻](api/SERVER.md)
+  * [Database Library (Database) 🗄️](api/DATABASE.md)
   * [Math Library (Math)](api/math.md)
   * [Modules 📦](api/modules.md)
   * [Network Library (Network) 🌐](api/network.md)

@@ -25,6 +25,7 @@ import { AudioLib } from "../lib/AudioLib";
 import { DateTimeLib } from "../lib/DateTimeLib";
 import { StringLib } from "../lib/StringLib";
 import { TerminalLib } from "../lib/TerminalLib";
+import { DatabaseL } from "../lib/DatabaseLib";
 
 export function createGlobalEnv() {
   const env = new Environment();
@@ -307,6 +308,7 @@ export function createGlobalEnv() {
   env.declareVar("Audio", AudioLib, true);
   env.declareVar("DateTime", DateTimeLib, true);
   env.declareVar("Terminal", TerminalLib, true);
+  env.declareVar("Database", DatabaseL, true);
 
   env.declareVar(
     "env",

@@ -34,7 +34,7 @@ Welcome to the CursorScript API documentation. This index provides links to deta
 * [Crypto Library](api/crypto.md) - Hashing, encryption, and UUIDs.
 * [JSON Library](api/json.md) - Serializing and deserializing data.
 * [File Library](api/file.md) - Filesystem read/write operations.
-* [Server Library](api/server.md) - HTTP and WebSocket server support.
+* [Server Library](api/SERVER.md) - HTTP and WebSocket server support.
 
 ---
 

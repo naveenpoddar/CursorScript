@@ -33,7 +33,7 @@ print("\n--- MongoDB Tests ---");
 print("Note: If you don't have a MongoDB server running locally at mongodb://127.0.0.1:27017, this test will fail after a timeout.");
 
 async fn testMongo() {
-    let url = "mongodb+srv://dharmm420:Shanu_1234@jarvis.m7ryzgk.mongodb.net/";
+    let url = "ur_database_url";
     let mongo = Database.mongodb(url);
     print("MongoDB driver loaded initially. Attempting connection to:", url);
 

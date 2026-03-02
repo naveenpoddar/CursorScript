@@ -9,30 +9,41 @@ jobs:
   # JOB 1: Parallel Compilation
   build:
     name: Build ${{ matrix.target }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target:
-          [
-            bun-linux-x64,
-            bun-linux-arm64,
-            bun-darwin-x64,
-            bun-darwin-arm64,
-            bun-windows-x64-baseline,
-          ]
+        include:
+          - target: bun-linux-x64
+            os: ubuntu-latest
+          - target: bun-linux-arm64
+            os: ubuntu-latest
+          - target: bun-darwin-x64
+            os: macos-latest
+          - target: bun-darwin-arm64
+            os: macos-latest
+          - target: bun-windows-x64-baseline
+            os: windows-latest
 
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
 
-      - name: Apt Update
-        run: sudo apt update
-
       - name: Install Dependencies
         run: bun install
 
-      - name: Install 7zip
-        run: sudo apt install p7zip-full p7zip-rar
+      # Only run apt commands on Linux runners
+      - name: Install 7zip (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install p7zip-full p7zip-rar
+
+      # Use brew for macOS runners
+      - name: Install 7zip (macOS)
+        if: runner.os == 'macOS'
+        run: brew install p7zip
+
+      # (Windows already has 7z pre-installed in the GitHub Actions environment)
 
       - name: Run Build Script
         # Pass the matrix target to your script

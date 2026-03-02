@@ -3,11 +3,11 @@ let scene = Engine3D.createScene();
 
 const audioId = Audio.load("C:\Users\podda\Downloads\song.mp3");
 
-Audio.play(audioId, {
-    volume: 1, // 0.0 to 1.0
-    loop: true, // true or false
-    pitch: rand(1, 1.1) // acts as a frequency multiplier
-})
+// Audio.play(audioId, {
+//     volume: 1, // 0.0 to 1.0
+//     loop: true, // true or false
+//     pitch: rand(1, 1.1) // acts as a frequency multiplier
+// })
 
 // 1. Terrain Generation
 // Seed the random noise engine
@@ -64,7 +64,7 @@ let hotbar = ["#78e08f", "#d35400", "#7f8c8d", "#86592d", "#228B22"];
 let hotbarNames = ["Grass", "Dirt", "Stone", "Wood", "Leaf"];
 
 let loadedCols = [];
-let viewDist = 2; // Optimized for software rendering performance;
+let viewDist = 4; // Reset to a more standard value;
 
 // --- Global Rendering State ---
 let skyColor = "rgba(135, 206, 235, 1)";
@@ -149,12 +149,17 @@ Window.onFixedUpdate(() -> {
     // Floor detection
     let floorY = Engine3D.getTopBlockY(scene, px, pz, py - 1.5);
 
-    if (newPy <= floorY + 2.5) {
+    if (floorY > -500 && newPy <= floorY + 2.5) {
         newPy = floorY + 2.5;
         yVel = 0;
         isGrounded = true;
     } else {
         isGrounded = false;
+        // Basic safety: don't fall forever before world loads
+        if (newPy < 10 && floorY < -500) {
+            newPy = 35;
+            yVel = 0;
+        }
     }
 
     if (Window.getKeyDown("Space") && isGrounded == true) {
@@ -370,9 +375,11 @@ Window.onUpdate(() -> {
             if (Math.abs(ox) + Math.abs(oz) <= viewDist * 1.5) {
                 let isLoaded = false;
                 let k = 0;
-                while (k < len(loadedCols)) {
+                let lenLoaded = len(loadedCols);
+                while (k < lenLoaded) {
                     if (loadedCols[k].x == wrldChunkX && loadedCols[k].z == wrldChunkZ) {
                         isLoaded = true;
+                        k = lenLoaded; // Early exit
                     }
                     k = k + 1;
                 }
@@ -404,16 +411,17 @@ Window.onUpdate(() -> {
                             let currY = 0;
 
                             while (currY <= h) {
-                                // Performance Culling (Aggressive):
-                                // Only render top 2 layers (surface + immediate underground) or cliff sides
+                                // Performance Culling:
+                                // Only render top 2 layers or exposed faces
                                 let isExposed = (currY >= h - 1 || currY > h_nx || currY > h_px || currY > h_nz || currY > h_pz);
 
                                 if (isExposed) {
-                                    let color = "#7f8c8d"; // Default: Stone
+                                    let color = "#7f8c8d";
                                     if (currY == h) {
-                                        color = "#78e08f"; // Grass Top;
-                                    } else if (currY > h - dirtDepth) {
-                                        color = "#d35400"; // Dirt Layer;
+                                        color = "#78e08f";
+                                    }
+                                    else if (currY > h - dirtDepth) {
+                                        color = "#d35400";
                                     }
 
                                     let cube = Engine3D.createCube(scene, 1, color);
@@ -467,30 +475,15 @@ Window.onUpdate(() -> {
                                         id: cube, x: wrldX, y: currY, z: wrldZ
                                     })
 
-                                    // Tree Generation (Only on grass surface)
+                                    // Trees
                                     if (currY == h && color == "#78e08f") {
                                         let randVal = Math.abs(Math.sin(wrldX * 12.9898 + wrldZ * 78.233)) * 43758.5453;
-                                        let rand = randVal - Math.floor(randVal);
-                                        if (rand < 0.0075) {
-                                            let treeHeight = 3 + Math.floor(rand * 100) % 5;
-                                            let leafColor = "#228B22"; let trunkColor = "#8B4513";
-                                            let varSeed = Math.floor(rand * 1000) % 4;
-                                            if (varSeed == 0) {
-                                                leafColor = "#006400"; treeHeight = treeHeight + 1;
-                                            }
-                                            if (varSeed == 1) {
-                                                trunkColor = "#F5DEB3"; leafColor = "#9ACD32";
-                                            }
-                                            if (varSeed == 2) {
-                                                leafColor = "#FF8C00";
-                                            }
-                                            if (varSeed == 3) {
-                                                leafColor = "#FFB7C5";
-                                            }
-
+                                        let rV = randVal - Math.floor(randVal);
+                                        if (rV < 0.0075) {
+                                            let treeHeight = 3 + Math.floor(rV * 100) % 5;
                                             let ty = 1;
                                             while (ty <= treeHeight) {
-                                                let trunk = Engine3D.createCube(scene, 1, trunkColor);
+                                                let trunk = Engine3D.createCube(scene, 1, "#8B4513");
                                                 Engine3D.setPosition(scene, trunk, wrldX, h + ty, wrldZ);
                                                 Engine3D.setSolidMode(scene, trunk, true);
                                                 push(colMeshes, {
@@ -516,7 +509,7 @@ Window.onUpdate(() -> {
                                                         if (isCorner == false) {
                                                             let isOuterCorner = Math.abs(lx) == leafSpread && Math.abs(lz) == leafSpread && ly == minLy;
                                                             if (isOuterCorner == false) {
-                                                                let leaf = Engine3D.createCube(scene, 1, leafColor);
+                                                                let leaf = Engine3D.createCube(scene, 1, "#228B22");
                                                                 Engine3D.setPosition(scene, leaf, wrldX + lx, h + ly, wrldZ + lz);
                                                                 Engine3D.setSolidMode(scene, leaf, true);
                                                                 push(colMeshes, {

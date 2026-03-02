@@ -4,7 +4,9 @@ async fn main() {
     let serverMsg = Server.start({
         port: port
     }, (req, server) -> {
-        print("Received request:", req.method, req.pathname);
+        Terminal.bold();
+        Terminal.color("blue");
+        Terminal.println("Received request: " + req.method + " " + req.pathname);
 
         if (req.pathname == "/ping") {
             return "pong";
@@ -49,7 +51,7 @@ async fn main() {
     }
 
     print("Stopping server...");
-    print(Server.stop());
+    // print(Server.stop());
     print("Test complete.");
 }
 

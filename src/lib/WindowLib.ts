@@ -9,8 +9,20 @@ import { existsSync } from "node:fs";
 // 1. Dynamic Path Loading (Detects .dll, .so, or .dylib automatically)
 const isCompiled = Bun.main === process.execPath;
 
-const devPath = join(import.meta.dir, "..", "..", "lib", `libraylib.${suffix}`);
-const buildPath = join(dirname(process.execPath), "lib", `libraylib.${suffix}`);
+const devPath = join(
+  import.meta.dir,
+  "..",
+  "..",
+  "lib",
+  "raylib",
+  `libraylib.${suffix}`,
+);
+const buildPath = join(
+  dirname(process.execPath),
+  "lib",
+  "raylib",
+  `libraylib.${suffix}`,
+);
 
 // If compiled, prefer the library bundled with the executable
 const libPath = isCompiled
@@ -21,7 +33,7 @@ const libPath = isCompiled
 
 if (!existsSync(libPath)) {
   console.error(
-    `\n❌ Native Library Error: Could not find libraylib.${suffix}`,
+    `\n❌ Native Library Error: Could not find libraythis.lib.${suffix}`,
   );
   console.error(`   Mode: ${isCompiled ? "Compiled" : "Development"}`);
   console.error(`   Searched Path: ${libPath}`);
@@ -29,63 +41,6 @@ if (!existsSync(libPath)) {
     `   Please ensure the 'lib' folder exists next to the ${isCompiled ? "executable" : "source folder"}.\n`,
   );
 }
-
-const lib = dlopen(libPath, {
-  InitWindow: {
-    args: [FFIType.i32, FFIType.i32, FFIType.cstring],
-    returns: FFIType.void,
-  },
-  WindowShouldClose: { args: [], returns: FFIType.bool },
-  CloseWindow: { args: [], returns: FFIType.void },
-  BeginDrawing: { args: [], returns: FFIType.void },
-  EndDrawing: { args: [], returns: FFIType.void },
-  BeginBlendMode: { args: [FFIType.i32], returns: FFIType.void },
-  EndBlendMode: { args: [], returns: FFIType.void },
-  SetTargetFPS: { args: [FFIType.i32], returns: FFIType.void },
-  ClearBackground: { args: [FFIType.u32], returns: FFIType.void },
-  DrawRectangle: {
-    args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
-    returns: FFIType.void,
-  },
-  DrawTriangleFan: {
-    args: [
-      FFIType.ptr, // point to array of Vector2 structs
-      FFIType.i32, // pointCount
-      FFIType.u32, // color
-    ],
-    returns: FFIType.void,
-  },
-  DrawLine: {
-    args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
-    returns: FFIType.void,
-  },
-  DrawCircle: {
-    args: [FFIType.i32, FFIType.i32, FFIType.f32, FFIType.u32],
-    returns: FFIType.void,
-  },
-  DrawText: {
-    args: [FFIType.cstring, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
-    returns: FFIType.void,
-  },
-  GetMouseX: { args: [], returns: FFIType.i32 },
-  GetMouseY: { args: [], returns: FFIType.i32 },
-  IsKeyDown: { args: [FFIType.i32], returns: FFIType.bool },
-  IsMouseButtonPressed: { args: [FFIType.i32], returns: FFIType.bool },
-  IsMouseButtonDown: { args: [FFIType.i32], returns: FFIType.bool },
-  MeasureText: { args: [FFIType.cstring, FFIType.i32], returns: FFIType.i32 },
-  DisableCursor: { args: [], returns: FFIType.void },
-  EnableCursor: { args: [], returns: FFIType.void },
-  GetMouseDelta: { args: [], returns: FFIType.f64 }, // Packs the 8-byte Vector2 struct
-  GetMouseWheelMove: { args: [], returns: FFIType.f32 },
-  ToggleFullscreen: { args: [], returns: FFIType.void },
-  SetConfigFlags: { args: [FFIType.u32], returns: FFIType.void },
-  GetMonitorWidth: { args: [FFIType.i32], returns: FFIType.i32 },
-  GetMonitorHeight: { args: [FFIType.i32], returns: FFIType.i32 },
-  GetCurrentMonitor: { args: [], returns: FFIType.i32 },
-  GetScreenWidth: { args: [], returns: FFIType.i32 },
-  GetScreenHeight: { args: [], returns: FFIType.i32 },
-});
-
 // Color utility (Raylib uses RGBA as a single u32)
 const COLORS = {
   black: 0xff000000,
@@ -191,7 +146,80 @@ const MOUSE: Record<string, number> = {
   back: 6,
 };
 
-class _WindowL {
+// Explicitly define the flags
+const FLAG_VSYNC_HINT = 0x00000040; // 64
+const FLAG_WINDOW_RESIZABLE = 0x00000004; // 4 (Note: This is often 4, not 8!)
+const FLAG_FULLSCREEN_MODE = 0x00000002; // 2
+const FLAG_WINDOW_HIGHDPI = 0x00002000; // 8192
+
+function createWindowLibrary() {
+  return dlopen(libPath, {
+    InitWindow: {
+      args: [FFIType.i32, FFIType.i32, FFIType.cstring],
+      returns: FFIType.void,
+    },
+    WindowShouldClose: { args: [], returns: FFIType.bool },
+    CloseWindow: { args: [], returns: FFIType.void },
+    BeginDrawing: { args: [], returns: FFIType.void },
+    EndDrawing: { args: [], returns: FFIType.void },
+    BeginBlendMode: { args: [FFIType.i32], returns: FFIType.void },
+    EndBlendMode: { args: [], returns: FFIType.void },
+    SetTargetFPS: { args: [FFIType.i32], returns: FFIType.void },
+    ClearBackground: { args: [FFIType.u32], returns: FFIType.void },
+    DrawRectangle: {
+      args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
+      returns: FFIType.void,
+    },
+    DrawTriangleFan: {
+      args: [
+        FFIType.ptr, // point to array of Vector2 structs
+        FFIType.i32, // pointCount
+        FFIType.u32, // color
+      ],
+      returns: FFIType.void,
+    },
+    DrawLine: {
+      args: [FFIType.i32, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
+      returns: FFIType.void,
+    },
+    DrawCircle: {
+      args: [FFIType.i32, FFIType.i32, FFIType.f32, FFIType.u32],
+      returns: FFIType.void,
+    },
+    DrawText: {
+      args: [
+        FFIType.cstring,
+        FFIType.i32,
+        FFIType.i32,
+        FFIType.i32,
+        FFIType.u32,
+      ],
+      returns: FFIType.void,
+    },
+    GetMouseX: { args: [], returns: FFIType.i32 },
+    GetMouseY: { args: [], returns: FFIType.i32 },
+    IsKeyDown: { args: [FFIType.i32], returns: FFIType.bool },
+    IsMouseButtonPressed: { args: [FFIType.i32], returns: FFIType.bool },
+    IsMouseButtonDown: { args: [FFIType.i32], returns: FFIType.bool },
+    MeasureText: {
+      args: [FFIType.cstring, FFIType.i32],
+      returns: FFIType.i32,
+    },
+    DisableCursor: { args: [], returns: FFIType.void },
+    EnableCursor: { args: [], returns: FFIType.void },
+    GetMouseDelta: { args: [], returns: FFIType.f64 }, // Packs the 8-byte Vector2 struct
+    GetMouseWheelMove: { args: [], returns: FFIType.f32 },
+    ToggleFullscreen: { args: [], returns: FFIType.void },
+    SetConfigFlags: { args: [FFIType.u32], returns: FFIType.void },
+    GetMonitorWidth: { args: [FFIType.i32], returns: FFIType.i32 },
+    GetMonitorHeight: { args: [FFIType.i32], returns: FFIType.i32 },
+    GetCurrentMonitor: { args: [], returns: FFIType.i32 },
+    GetScreenWidth: { args: [], returns: FFIType.i32 },
+    GetScreenHeight: { args: [], returns: FFIType.i32 },
+  });
+}
+
+export class _WindowL {
   private updateCallback: any = null;
   private fixedUpdateCallback: any = null;
   private activeColor: number = COLORS.white;
@@ -199,49 +227,79 @@ class _WindowL {
   private accumulatedTime: number = 0;
   private readonly fixedTimeStep: number = 0.01666; // ~60Hz fixed update
 
-  public create(width: any, height: any, title: any, fullscreen: any = false) {
+  public initilized: boolean = false;
+  public lib: ReturnType<typeof createWindowLibrary> = {} as any;
+
+  constructor() {
+    global.windowLib = this;
+  }
+
+  public init() {
+    this.lib = createWindowLibrary();
+    global.windowLib = this;
+    this.initilized = true;
+  }
+
+  public create(width: any, height: any, title: any, _fullscreen: any) {
+    if (!this.initilized) this.init();
+    if (!this.lib) return console.error("WindowLib failed to initialize");
+
     const w = requireNumber(width);
     const h = requireNumber(height);
     const t = requireString(title);
 
-    lib.symbols.SetConfigFlags(8 | (fullscreen ? 2 : 0));
+    const fullscreen = _fullscreen ?? false;
+
+    let flags = FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI;
+
+    if (fullscreen) {
+      flags |= FLAG_FULLSCREEN_MODE;
+    }
+
+    // Set the flags BEFORE InitWindow
+    this.lib.symbols.SetConfigFlags(flags);
 
     // C-strings in FFI require a null terminator
-    lib.symbols.InitWindow(w, h, Buffer.from(t + "\0"));
-    lib.symbols.SetTargetFPS(144);
+    this.lib.symbols.InitWindow(w, h, Buffer.from(t + "\0"));
 
+    // Safety: If it's STILL going fullscreen, force it back after Init
+    if (!fullscreen) {
+      // You might need to export 'ClearWindowState' from your dlopen if this persists
+    }
+
+    this.lib.symbols.SetTargetFPS(60);
     // Start the Game Loop
     this.gameLoop();
   }
 
   public toggleFullscreen() {
-    lib.symbols.ToggleFullscreen();
+    this.lib.symbols.ToggleFullscreen();
   }
 
   public getMonitorWidth(monitor: any = 0) {
-    return lib.symbols.GetMonitorWidth(requireNumber(monitor));
+    return this.lib.symbols.GetMonitorWidth(requireNumber(monitor));
   }
 
   public getMonitorHeight(monitor: any = 0) {
-    return lib.symbols.GetMonitorHeight(requireNumber(monitor));
+    return this.lib.symbols.GetMonitorHeight(requireNumber(monitor));
   }
 
   public getCurrentMonitor() {
-    return lib.symbols.GetCurrentMonitor();
+    return this.lib.symbols.GetCurrentMonitor();
   }
 
   public getWidth() {
-    return lib.symbols.GetScreenWidth();
+    return this.lib.symbols.GetScreenWidth();
   }
 
   public getHeight() {
-    return lib.symbols.GetScreenHeight();
+    return this.lib.symbols.GetScreenHeight();
   }
 
   private gameLoop() {
     const tick = async () => {
-      if (lib.symbols.WindowShouldClose()) {
-        lib.symbols.CloseWindow();
+      if (this.lib.symbols.WindowShouldClose()) {
+        this.lib.symbols.CloseWindow();
         process.exit(0);
       }
 
@@ -265,7 +323,7 @@ class _WindowL {
       }
 
       // --- 2. Update Loop (Render & Input) ---
-      lib.symbols.BeginDrawing();
+      this.lib.symbols.BeginDrawing();
       try {
         if (this.updateCallback) {
           await executeCallback(this.updateCallback);
@@ -273,7 +331,7 @@ class _WindowL {
       } catch (e) {
         console.error("Runtime Error in update callback:", e);
       }
-      lib.symbols.EndDrawing();
+      this.lib.symbols.EndDrawing();
 
       // Uses Bun's high-efficiency tick
       setImmediate(tick);
@@ -339,7 +397,7 @@ class _WindowL {
   }
 
   public clear(color: any) {
-    lib.symbols.ClearBackground(this.parseColor(color));
+    this.lib.symbols.ClearBackground(this.parseColor(color));
   }
 
   public setColor(color: any) {
@@ -347,7 +405,7 @@ class _WindowL {
   }
 
   public drawRect(x: any, y: any, w: any, h: any) {
-    lib.symbols.DrawRectangle(
+    this.lib.symbols.DrawRectangle(
       requireNumber(x),
       requireNumber(y),
       requireNumber(w),
@@ -365,7 +423,7 @@ class _WindowL {
       requireNumber(x3),
       requireNumber(y3),
     ]);
-    lib.symbols.DrawTriangleFan(ptr(points), 3, this.activeColor);
+    this.lib.symbols.DrawTriangleFan(ptr(points), 3, this.activeColor);
   }
 
   public drawQuad(
@@ -388,11 +446,11 @@ class _WindowL {
       requireNumber(x4),
       requireNumber(y4),
     ]);
-    lib.symbols.DrawTriangleFan(ptr(points), 4, this.activeColor);
+    this.lib.symbols.DrawTriangleFan(ptr(points), 4, this.activeColor);
   }
 
   public drawLine(startX: any, startY: any, endX: any, endY: any) {
-    lib.symbols.DrawLine(
+    this.lib.symbols.DrawLine(
       requireNumber(startX),
       requireNumber(startY),
       requireNumber(endX),
@@ -402,7 +460,7 @@ class _WindowL {
   }
 
   public drawCircle(x: any, y: any, r: any) {
-    lib.symbols.DrawCircle(
+    this.lib.symbols.DrawCircle(
       requireNumber(x),
       requireNumber(y),
       requireNumber(r),
@@ -411,7 +469,7 @@ class _WindowL {
   }
 
   public drawText(text: any, x: any, y: any, size: any = 20) {
-    lib.symbols.DrawText(
+    this.lib.symbols.DrawText(
       Buffer.from(requireString(text) + "\0"),
       requireNumber(x),
       requireNumber(y),
@@ -421,36 +479,36 @@ class _WindowL {
   }
 
   public getMouseX() {
-    return lib.symbols.GetMouseX();
+    return this.lib.symbols.GetMouseX();
   }
   public getMouseY() {
-    return lib.symbols.GetMouseY();
+    return this.lib.symbols.GetMouseY();
   }
 
   public disableCursor() {
-    lib.symbols.DisableCursor();
+    this.lib.symbols.DisableCursor();
   }
 
   public enableCursor() {
-    lib.symbols.EnableCursor();
+    this.lib.symbols.EnableCursor();
   }
 
   public getMouseDeltaX() {
-    let delta = lib.symbols.GetMouseDelta() as number;
+    let delta = this.lib.symbols.GetMouseDelta() as number;
     let buf = new Float64Array([delta]);
     let f32 = new Float32Array(buf.buffer);
     return f32[0];
   }
 
   public getMouseDeltaY() {
-    let delta = lib.symbols.GetMouseDelta() as number;
+    let delta = this.lib.symbols.GetMouseDelta() as number;
     let buf = new Float64Array([delta]);
     let f32 = new Float32Array(buf.buffer);
     return f32[1];
   }
 
   public getMouseWheel() {
-    return lib.symbols.GetMouseWheelMove();
+    return this.lib.symbols.GetMouseWheelMove();
   }
 
   public getKeyDown(key: any) {
@@ -464,7 +522,7 @@ class _WindowL {
         k = (firstArg as any).value;
     }
 
-    return lib.symbols.IsKeyDown(KEYS[k] || 0);
+    return this.lib.symbols.IsKeyDown(KEYS[k] || 0);
   }
 
   public getMouseButton(button: any) {
@@ -479,11 +537,11 @@ class _WindowL {
         btnName = (firstArg as any).value;
     }
 
-    return lib.symbols.IsMouseButtonPressed(MOUSE[btnName] || 0);
+    return this.lib.symbols.IsMouseButtonPressed(MOUSE[btnName] || 0);
   }
 
   public measureText(text: any, size: any) {
-    return lib.symbols.MeasureText(
+    return this.lib.symbols.MeasureText(
       Buffer.from(requireString(text) + "\0"),
       requireNumber(size),
     );
@@ -497,4 +555,5 @@ export function createWindowLib() {
 export function parseColor(color: any): number {
   return (new _WindowL() as any).parseColor(color);
 }
-export { lib, COLORS };
+
+export { COLORS, createWindowLibrary };

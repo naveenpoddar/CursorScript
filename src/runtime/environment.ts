@@ -1,6 +1,6 @@
 import { MathL } from "../lib/MathLib";
 import { GameL } from "../lib/GameLib";
-import { Engine3DL } from "../lib/Engine3D";
+import { CreateEngine3D } from "../lib/Engine3D";
 import { PerlinNoiseL } from "../lib/PerlinNoise";
 import { createWindowLib } from "../lib/WindowLib";
 import { ServerL } from "../lib/ServerLib";
@@ -293,12 +293,12 @@ export function createGlobalEnv() {
     true,
   );
 
+  env.declareVar("Window", createWindowLib(), true);
   env.declareVar("String", StringLib, true);
   env.declareVar("Math", MathL, true);
   env.declareVar("Game", GameL, true);
-  env.declareVar("Engine3D", Engine3DL, true);
   env.declareVar("PerlinNoise", PerlinNoiseL, true);
-  env.declareVar("Window", createWindowLib(), true);
+  env.declareVar("Engine3D", CreateEngine3D(), true);
   env.declareVar("Server", ServerL, true);
   env.declareVar("Network", NetworkL, true);
   env.declareVar("Thread", ThreadL, true);

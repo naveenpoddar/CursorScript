@@ -1,0 +1,4 @@
+let add2 = (a, b) -> {
+    a + b;
+}
+print("Add2 result:", add2(5, 7));

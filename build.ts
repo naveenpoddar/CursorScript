@@ -8,7 +8,7 @@ const outDir = "./dist";
 const appName = "cursorscript";
 const version = pkg.version;
 
-const ALL_TARGETS = [
+const ALL_TARGETS: Bun.Build.CompileTarget[] = [
   "bun-linux-x64",
   "bun-linux-arm64",
   "bun-darwin-x64",
@@ -17,7 +17,9 @@ const ALL_TARGETS = [
 ];
 
 const targetArg = process.argv.find((arg) => arg.startsWith("bun-"));
-const targets = targetArg ? [targetArg] : ALL_TARGETS;
+const targets = (
+  targetArg ? [targetArg] : ALL_TARGETS
+) as Bun.Build.CompileTarget[];
 
 console.log(`\n🚀 Bundling ${appName} v${version}...`);
 await $`rm -rf ${outDir} && mkdir -p ${outDir}`;
@@ -56,7 +58,40 @@ for (const targetId of targets) {
     await $`mkdir -p ${targetFolder}`;
 
     // Compile the bundled output into a single executable
-    await $`bun build ${tempBundle} --compile --target=${targetId} --outfile=${binPath}`.quiet();
+    if (isWindows) {
+      console.log(`🔧 Patching Windows metadata for ${binPath}...`);
+      // await rcedit(binPath, {
+      //   "product-version": version,
+      //   "version-string": {
+      //     CompanyName: "CursorScript",
+      //     FileDescription: "CursorScript Executable",
+      //     LegalCopyright: "© 2024 CursorScript. All rights reserved.",
+      //     OriginalFilename: "cursorx.exe",
+      //     ProductName: "CursorScript",
+      //   },
+      //   "file-version": version,
+      //   icon: "./icon.ico",
+      // });
+
+      await Bun.build({
+        entrypoints: [tempBundle],
+        compile: {
+          outfile: binPath,
+          target: targetId,
+          windows: {
+            icon: "./icon.ico",
+            // Additional Windows metadata:
+            title: "CursorScript Executable",
+            publisher: "NaveenPoddar",
+            version: version,
+            description: "CursorScript Executable",
+            copyright: "© 2024 CursorScript. All rights reserved.",
+          },
+        },
+      });
+    } else {
+      await $`bun build ${tempBundle} --compile --target=${targetId} --outfile=${binPath}`.quiet();
+    }
 
     // 4. Asset Management
     const libSource = `./lib`;
@@ -64,8 +99,9 @@ for (const targetId of targets) {
       await $`cp -r ${libSource} ${targetFolder}/`;
     }
 
+    console.log(`🔧 Compressing ${baseName}...`);
     // 5. Compression
-    await $`cd ${outDir} && zip -r -9 ${baseName}.zip ${baseName}`.quiet();
+    await $`cd ${outDir} && 7z a -tzip -mx=7 -mmt=on ${baseName}.zip ${baseName}`.quiet();
     await $`rm -rf ${targetFolder}`;
 
     console.log("✅ Done");

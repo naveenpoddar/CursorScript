@@ -1,0 +1,64 @@
+async fn main() {
+    let db = Database.sqlite(":memory:");
+    print("--- Phase 2 Features Test ---");
+
+    // 1. Timestamps & Soft Deletes
+    db.execute("CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, created_at TEXT, updated_at TEXT, deleted_at TEXT)");
+    db.enableTimestamps("posts");
+    db.enableSoftDelete("posts");
+
+    let postRes = db.insert("posts", {
+        title: "Hello Phase 2", content: "Testing timestamps"
+    });
+    print("Inserted Post ID:", postRes.lastInsertRowid);
+    let post = db.findOne("posts", "id=?", [postRes.lastInsertRowid]);
+    print("Post timestamps auto-generated?", post.created_at != null, post.created_at);
+
+    db.delete("posts", "id=?", [postRes.lastInsertRowid]);
+    let postAfterDelete = db.findOne("posts", "id=?", [postRes.lastInsertRowid]);
+    print("Post after soft delete (should be null):", postAfterDelete);
+
+    let allTrashed = db.onlyTrashed("posts");
+    print("Total trashed posts:", len(allTrashed));
+
+    db.restore("posts", "id=?", [postRes.lastInsertRowid]);
+    let postAfterRestore = db.findOne("posts", "id=?", [postRes.lastInsertRowid]);
+    print("Post recovered?", postAfterRestore != null);
+
+    // 2. Pagination
+    db.insert("posts", {
+        title: "A", content: "A"
+    });
+    db.insert("posts", {
+        title: "B", content: "B"
+    });
+    db.insert("posts", {
+        title: "C", content: "C"
+    });
+    let pageData = db.paginate("posts", 1, 2, {
+        orderBy: "id ASC"
+    });
+    print("Pagination Page 1 (Expected 2 items, total 4):", len(pageData.data), "Total pages:", pageData.pages, "Total items:", pageData.total);
+
+    // 3. JSON Columns
+    db.execute("CREATE TABLE game_states (id INTEGER PRIMARY KEY, data TEXT)");
+    db.insertJSON("game_states", {
+        id: 1, data: {
+            level: 5, items: ["sword", "shield"]
+        } });
+        let state = db.getJSON("game_states", "data", "id=?", [1]);
+        print("JSON Game State Level:", state.level);
+
+        // 4. Cache
+        db.enableCache({
+            ttl: 5000
+        });
+        db.cacheQuery("SELECT * FROM posts");
+        db.cacheQuery("SELECT * FROM posts");
+        let stats = db.getCacheStats();
+        print("Cache Stats expected 1 hit, 1 miss:", stats);
+
+        db.close();
+    }
+
+    main();

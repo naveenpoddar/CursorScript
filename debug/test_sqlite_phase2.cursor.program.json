@@ -1,0 +1,1533 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "FunctionDeclaration",
+      "name": "main",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "db",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 2,
+                "column": 14,
+                "symbol": "Database"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 2,
+                "column": 23,
+                "symbol": "sqlite"
+              },
+              "computed": false,
+              "line": 2,
+              "column": 29
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 2,
+                "column": 30,
+                "value": ":memory:"
+              }
+            ],
+            "line": 2,
+            "column": 41
+          },
+          "line": 2,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 3,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 3,
+              "column": 11,
+              "value": "--- Phase 2 Features Test ---"
+            }
+          ],
+          "line": 3,
+          "column": 43
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 6,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 6,
+              "column": 8,
+              "symbol": "execute"
+            },
+            "computed": false,
+            "line": 6,
+            "column": 15
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 6,
+              "column": 16,
+              "value": "CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, created_at TEXT, updated_at TEXT, deleted_at TEXT)"
+            }
+          ],
+          "line": 6,
+          "column": 153
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 7,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 7,
+              "column": 8,
+              "symbol": "enableTimestamps"
+            },
+            "computed": false,
+            "line": 7,
+            "column": 24
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 7,
+              "column": 25,
+              "value": "posts"
+            }
+          ],
+          "line": 7,
+          "column": 33
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 8,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 8,
+              "column": 8,
+              "symbol": "enableSoftDelete"
+            },
+            "computed": false,
+            "line": 8,
+            "column": 24
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 8,
+              "column": 25,
+              "value": "posts"
+            }
+          ],
+          "line": 8,
+          "column": 33
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "postRes",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 10,
+                "column": 19,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 10,
+                "column": 22,
+                "symbol": "insert"
+              },
+              "computed": false,
+              "line": 10,
+              "column": 28
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 10,
+                "column": 29,
+                "value": "posts"
+              },
+              {
+                "kind": "ObjectLiteral",
+                "properties": [
+                  {
+                    "kind": "Property",
+                    "key": "title",
+                    "value": {
+                      "kind": "StringLiteral",
+                      "line": 11,
+                      "column": 16,
+                      "value": "Hello Phase 2"
+                    }
+                  },
+                  {
+                    "kind": "Property",
+                    "key": "content",
+                    "value": {
+                      "kind": "StringLiteral",
+                      "line": 11,
+                      "column": 42,
+                      "value": "Testing timestamps"
+                    }
+                  }
+                ]
+              }
+            ],
+            "line": 12,
+            "column": 7
+          },
+          "line": 10,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 13,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 13,
+              "column": 11,
+              "value": "Inserted Post ID:"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 13,
+                "column": 32,
+                "symbol": "postRes"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 13,
+                "column": 40,
+                "symbol": "lastInsertRowid"
+              },
+              "computed": false,
+              "line": 13,
+              "column": 55
+            }
+          ],
+          "line": 13,
+          "column": 56
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "post",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 14,
+                "column": 16,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 14,
+                "column": 19,
+                "symbol": "findOne"
+              },
+              "computed": false,
+              "line": 14,
+              "column": 26
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 14,
+                "column": 27,
+                "value": "posts"
+              },
+              {
+                "kind": "StringLiteral",
+                "line": 14,
+                "column": 36,
+                "value": "id=?"
+              },
+              {
+                "kind": "ArrayLiteral",
+                "elements": [
+                  {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 14,
+                      "column": 45,
+                      "symbol": "postRes"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 14,
+                      "column": 53,
+                      "symbol": "lastInsertRowid"
+                    },
+                    "computed": false,
+                    "line": 14,
+                    "column": 68
+                  }
+                ]
+              }
+            ],
+            "line": 14,
+            "column": 70
+          },
+          "line": 14,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 15,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 15,
+              "column": 11,
+              "value": "Post timestamps auto-generated?"
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "!=",
+              "left": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 15,
+                  "column": 46,
+                  "symbol": "post"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 15,
+                  "column": 51,
+                  "symbol": "created_at"
+                },
+                "computed": false,
+                "line": 15,
+                "column": 62
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 15,
+                "column": 65,
+                "symbol": "null"
+              },
+              "line": 15,
+              "column": 69
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 15,
+                "column": 71,
+                "symbol": "post"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 15,
+                "column": 76,
+                "symbol": "created_at"
+              },
+              "computed": false,
+              "line": 15,
+              "column": 86
+            }
+          ],
+          "line": 15,
+          "column": 87
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 17,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 17,
+              "column": 8,
+              "symbol": "delete"
+            },
+            "computed": false,
+            "line": 17,
+            "column": 14
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 17,
+              "column": 15,
+              "value": "posts"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 17,
+              "column": 24,
+              "value": "id=?"
+            },
+            {
+              "kind": "ArrayLiteral",
+              "elements": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 17,
+                    "column": 33,
+                    "symbol": "postRes"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 17,
+                    "column": 41,
+                    "symbol": "lastInsertRowid"
+                  },
+                  "computed": false,
+                  "line": 17,
+                  "column": 56
+                }
+              ]
+            }
+          ],
+          "line": 17,
+          "column": 58
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "postAfterDelete",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 18,
+                "column": 27,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 18,
+                "column": 30,
+                "symbol": "findOne"
+              },
+              "computed": false,
+              "line": 18,
+              "column": 37
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 18,
+                "column": 38,
+                "value": "posts"
+              },
+              {
+                "kind": "StringLiteral",
+                "line": 18,
+                "column": 47,
+                "value": "id=?"
+              },
+              {
+                "kind": "ArrayLiteral",
+                "elements": [
+                  {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 18,
+                      "column": 56,
+                      "symbol": "postRes"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 18,
+                      "column": 64,
+                      "symbol": "lastInsertRowid"
+                    },
+                    "computed": false,
+                    "line": 18,
+                    "column": 79
+                  }
+                ]
+              }
+            ],
+            "line": 18,
+            "column": 81
+          },
+          "line": 18,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 19,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 19,
+              "column": 11,
+              "value": "Post after soft delete (should be null):"
+            },
+            {
+              "kind": "Identifier",
+              "line": 19,
+              "column": 55,
+              "symbol": "postAfterDelete"
+            }
+          ],
+          "line": 19,
+          "column": 71
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "allTrashed",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 21,
+                "column": 22,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 21,
+                "column": 25,
+                "symbol": "onlyTrashed"
+              },
+              "computed": false,
+              "line": 21,
+              "column": 36
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 21,
+                "column": 37,
+                "value": "posts"
+              }
+            ],
+            "line": 21,
+            "column": 45
+          },
+          "line": 21,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 22,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 22,
+              "column": 11,
+              "value": "Total trashed posts:"
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 22,
+                "column": 35,
+                "symbol": "len"
+              },
+              "args": [
+                {
+                  "kind": "Identifier",
+                  "line": 22,
+                  "column": 39,
+                  "symbol": "allTrashed"
+                }
+              ],
+              "line": 22,
+              "column": 50
+            }
+          ],
+          "line": 22,
+          "column": 51
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 24,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 24,
+              "column": 8,
+              "symbol": "restore"
+            },
+            "computed": false,
+            "line": 24,
+            "column": 15
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 24,
+              "column": 16,
+              "value": "posts"
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 24,
+              "column": 25,
+              "value": "id=?"
+            },
+            {
+              "kind": "ArrayLiteral",
+              "elements": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 24,
+                    "column": 34,
+                    "symbol": "postRes"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 24,
+                    "column": 42,
+                    "symbol": "lastInsertRowid"
+                  },
+                  "computed": false,
+                  "line": 24,
+                  "column": 57
+                }
+              ]
+            }
+          ],
+          "line": 24,
+          "column": 59
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "postAfterRestore",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 25,
+                "column": 28,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 25,
+                "column": 31,
+                "symbol": "findOne"
+              },
+              "computed": false,
+              "line": 25,
+              "column": 38
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 25,
+                "column": 39,
+                "value": "posts"
+              },
+              {
+                "kind": "StringLiteral",
+                "line": 25,
+                "column": 48,
+                "value": "id=?"
+              },
+              {
+                "kind": "ArrayLiteral",
+                "elements": [
+                  {
+                    "kind": "MemberExpr",
+                    "object": {
+                      "kind": "Identifier",
+                      "line": 25,
+                      "column": 57,
+                      "symbol": "postRes"
+                    },
+                    "property": {
+                      "kind": "Identifier",
+                      "line": 25,
+                      "column": 65,
+                      "symbol": "lastInsertRowid"
+                    },
+                    "computed": false,
+                    "line": 25,
+                    "column": 80
+                  }
+                ]
+              }
+            ],
+            "line": 25,
+            "column": 82
+          },
+          "line": 25,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 26,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 26,
+              "column": 11,
+              "value": "Post recovered?"
+            },
+            {
+              "kind": "BinaryExpr",
+              "operator": "!=",
+              "left": {
+                "kind": "Identifier",
+                "line": 26,
+                "column": 30,
+                "symbol": "postAfterRestore"
+              },
+              "right": {
+                "kind": "Identifier",
+                "line": 26,
+                "column": 50,
+                "symbol": "null"
+              },
+              "line": 26,
+              "column": 54
+            }
+          ],
+          "line": 26,
+          "column": 55
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 29,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 29,
+              "column": 8,
+              "symbol": "insert"
+            },
+            "computed": false,
+            "line": 29,
+            "column": 14
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 29,
+              "column": 15,
+              "value": "posts"
+            },
+            {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "title",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 30,
+                    "column": 16,
+                    "value": "A"
+                  }
+                },
+                {
+                  "kind": "Property",
+                  "key": "content",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 30,
+                    "column": 30,
+                    "value": "A"
+                  }
+                }
+              ]
+            }
+          ],
+          "line": 31,
+          "column": 7
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 32,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 32,
+              "column": 8,
+              "symbol": "insert"
+            },
+            "computed": false,
+            "line": 32,
+            "column": 14
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 32,
+              "column": 15,
+              "value": "posts"
+            },
+            {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "title",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 33,
+                    "column": 16,
+                    "value": "B"
+                  }
+                },
+                {
+                  "kind": "Property",
+                  "key": "content",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 33,
+                    "column": 30,
+                    "value": "B"
+                  }
+                }
+              ]
+            }
+          ],
+          "line": 34,
+          "column": 7
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 35,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 35,
+              "column": 8,
+              "symbol": "insert"
+            },
+            "computed": false,
+            "line": 35,
+            "column": 14
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 35,
+              "column": 15,
+              "value": "posts"
+            },
+            {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "title",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 36,
+                    "column": 16,
+                    "value": "C"
+                  }
+                },
+                {
+                  "kind": "Property",
+                  "key": "content",
+                  "value": {
+                    "kind": "StringLiteral",
+                    "line": 36,
+                    "column": 30,
+                    "value": "C"
+                  }
+                }
+              ]
+            }
+          ],
+          "line": 37,
+          "column": 7
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "pageData",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 38,
+                "column": 20,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 38,
+                "column": 23,
+                "symbol": "paginate"
+              },
+              "computed": false,
+              "line": 38,
+              "column": 31
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 38,
+                "column": 32,
+                "value": "posts"
+              },
+              {
+                "kind": "NumericLiteral",
+                "line": 38,
+                "column": 41,
+                "value": 1
+              },
+              {
+                "kind": "NumericLiteral",
+                "line": 38,
+                "column": 44,
+                "value": 2
+              },
+              {
+                "kind": "ObjectLiteral",
+                "properties": [
+                  {
+                    "kind": "Property",
+                    "key": "orderBy",
+                    "value": {
+                      "kind": "StringLiteral",
+                      "line": 39,
+                      "column": 18,
+                      "value": "id ASC"
+                    }
+                  }
+                ]
+              }
+            ],
+            "line": 40,
+            "column": 7
+          },
+          "line": 38,
+          "column": 5
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 41,
+            "column": 5,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 41,
+              "column": 11,
+              "value": "Pagination Page 1 (Expected 2 items, total 4):"
+            },
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 41,
+                "column": 61,
+                "symbol": "len"
+              },
+              "args": [
+                {
+                  "kind": "MemberExpr",
+                  "object": {
+                    "kind": "Identifier",
+                    "line": 41,
+                    "column": 65,
+                    "symbol": "pageData"
+                  },
+                  "property": {
+                    "kind": "Identifier",
+                    "line": 41,
+                    "column": 74,
+                    "symbol": "data"
+                  },
+                  "computed": false,
+                  "line": 41,
+                  "column": 78
+                }
+              ],
+              "line": 41,
+              "column": 79
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 41,
+              "column": 81,
+              "value": "Total pages:"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 41,
+                "column": 97,
+                "symbol": "pageData"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 41,
+                "column": 106,
+                "symbol": "pages"
+              },
+              "computed": false,
+              "line": 41,
+              "column": 111
+            },
+            {
+              "kind": "StringLiteral",
+              "line": 41,
+              "column": 113,
+              "value": "Total items:"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 41,
+                "column": 129,
+                "symbol": "pageData"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 41,
+                "column": 138,
+                "symbol": "total"
+              },
+              "computed": false,
+              "line": 41,
+              "column": 143
+            }
+          ],
+          "line": 41,
+          "column": 144
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 44,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 44,
+              "column": 8,
+              "symbol": "execute"
+            },
+            "computed": false,
+            "line": 44,
+            "column": 15
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 44,
+              "column": 16,
+              "value": "CREATE TABLE game_states (id INTEGER PRIMARY KEY, data TEXT)"
+            }
+          ],
+          "line": 44,
+          "column": 79
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 45,
+              "column": 5,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 45,
+              "column": 8,
+              "symbol": "insertJSON"
+            },
+            "computed": false,
+            "line": 45,
+            "column": 18
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 45,
+              "column": 19,
+              "value": "game_states"
+            },
+            {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "id",
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "line": 46,
+                    "column": 13,
+                    "value": 1
+                  }
+                },
+                {
+                  "kind": "Property",
+                  "key": "data",
+                  "value": {
+                    "kind": "ObjectLiteral",
+                    "properties": [
+                      {
+                        "kind": "Property",
+                        "key": "level",
+                        "value": {
+                          "kind": "NumericLiteral",
+                          "line": 47,
+                          "column": 20,
+                          "value": 5
+                        }
+                      },
+                      {
+                        "kind": "Property",
+                        "key": "items",
+                        "value": {
+                          "kind": "ArrayLiteral",
+                          "elements": [
+                            {
+                              "kind": "StringLiteral",
+                              "line": 47,
+                              "column": 31,
+                              "value": "sword"
+                            },
+                            {
+                              "kind": "StringLiteral",
+                              "line": 47,
+                              "column": 40,
+                              "value": "shield"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "line": 48,
+          "column": 13
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "state",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 49,
+                "column": 21,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 49,
+                "column": 24,
+                "symbol": "getJSON"
+              },
+              "computed": false,
+              "line": 49,
+              "column": 31
+            },
+            "args": [
+              {
+                "kind": "StringLiteral",
+                "line": 49,
+                "column": 32,
+                "value": "game_states"
+              },
+              {
+                "kind": "StringLiteral",
+                "line": 49,
+                "column": 47,
+                "value": "data"
+              },
+              {
+                "kind": "StringLiteral",
+                "line": 49,
+                "column": 55,
+                "value": "id=?"
+              },
+              {
+                "kind": "ArrayLiteral",
+                "elements": [
+                  {
+                    "kind": "NumericLiteral",
+                    "line": 49,
+                    "column": 64,
+                    "value": 1
+                  }
+                ]
+              }
+            ],
+            "line": 49,
+            "column": 67
+          },
+          "line": 49,
+          "column": 9
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 50,
+            "column": 9,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 50,
+              "column": 15,
+              "value": "JSON Game State Level:"
+            },
+            {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 50,
+                "column": 41,
+                "symbol": "state"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 50,
+                "column": 47,
+                "symbol": "level"
+              },
+              "computed": false,
+              "line": 50,
+              "column": 52
+            }
+          ],
+          "line": 50,
+          "column": 53
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 53,
+              "column": 9,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 53,
+              "column": 12,
+              "symbol": "enableCache"
+            },
+            "computed": false,
+            "line": 53,
+            "column": 23
+          },
+          "args": [
+            {
+              "kind": "ObjectLiteral",
+              "properties": [
+                {
+                  "kind": "Property",
+                  "key": "ttl",
+                  "value": {
+                    "kind": "NumericLiteral",
+                    "line": 54,
+                    "column": 18,
+                    "value": 5000
+                  }
+                }
+              ]
+            }
+          ],
+          "line": 55,
+          "column": 11
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 56,
+              "column": 9,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 56,
+              "column": 12,
+              "symbol": "cacheQuery"
+            },
+            "computed": false,
+            "line": 56,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 56,
+              "column": 23,
+              "value": "SELECT * FROM posts"
+            }
+          ],
+          "line": 56,
+          "column": 45
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 57,
+              "column": 9,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 57,
+              "column": 12,
+              "symbol": "cacheQuery"
+            },
+            "computed": false,
+            "line": 57,
+            "column": 22
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 57,
+              "column": 23,
+              "value": "SELECT * FROM posts"
+            }
+          ],
+          "line": 57,
+          "column": 45
+        },
+        {
+          "kind": "VarDeclaration",
+          "identifier": "stats",
+          "constant": false,
+          "value": {
+            "kind": "CallExpr",
+            "caller": {
+              "kind": "MemberExpr",
+              "object": {
+                "kind": "Identifier",
+                "line": 58,
+                "column": 21,
+                "symbol": "db"
+              },
+              "property": {
+                "kind": "Identifier",
+                "line": 58,
+                "column": 24,
+                "symbol": "getCacheStats"
+              },
+              "computed": false,
+              "line": 58,
+              "column": 37
+            },
+            "args": [],
+            "line": 58,
+            "column": 39
+          },
+          "line": 58,
+          "column": 9
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "Identifier",
+            "line": 59,
+            "column": 9,
+            "symbol": "print"
+          },
+          "args": [
+            {
+              "kind": "StringLiteral",
+              "line": 59,
+              "column": 15,
+              "value": "Cache Stats expected 1 hit, 1 miss:"
+            },
+            {
+              "kind": "Identifier",
+              "line": 59,
+              "column": 54,
+              "symbol": "stats"
+            }
+          ],
+          "line": 59,
+          "column": 60
+        },
+        {
+          "kind": "CallExpr",
+          "caller": {
+            "kind": "MemberExpr",
+            "object": {
+              "kind": "Identifier",
+              "line": 61,
+              "column": 9,
+              "symbol": "db"
+            },
+            "property": {
+              "kind": "Identifier",
+              "line": 61,
+              "column": 12,
+              "symbol": "close"
+            },
+            "computed": false,
+            "line": 61,
+            "column": 17
+          },
+          "args": [],
+          "line": 61,
+          "column": 19
+        }
+      ],
+      "async": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 64,
+        "column": 5,
+        "symbol": "main"
+      },
+      "args": [],
+      "line": 64,
+      "column": 11
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

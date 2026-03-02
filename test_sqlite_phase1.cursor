@@ -1,0 +1,47 @@
+async fn main() {
+    let db = Database.sqlite(":memory:");
+    print("SQLite Database initialized.");
+
+    db.execute("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER)");
+
+    let inserted = db.insertMany("users", [
+        {
+            name: "Alice", age: 25
+        },
+        {
+            name: "Bob", age: 30
+        },
+        {
+            name: "Charlie", age: 35
+        }
+    ]);
+    print("Inserted many:", inserted);
+
+    let cnt = db.count("users");
+    print("Total count:", cnt);
+
+    let exists = db.exists("users", "name = ?", ["Alice"]);
+    print("Alice exists:", exists);
+
+    let upd = db.updateMany("users", "age > ?", [25], {
+        name: "Elder"
+    });
+    print("Updated many:", upd);
+
+    db.deleteMany("users", "name = ?", ["Alice"]);
+    print("Deleted Alice");
+
+    let one = db.findOne("users", "name = ?", ["Elder"]);
+    print("Find one Elder:", one);
+
+    print("Running transaction...");
+    await db.transaction(() -> {
+        db.execute("INSERT INTO users (name, age) VALUES (?, ?)", ["Dave", 40]);
+        db.execute("INSERT INTO users (name, age) VALUES (?, ?)", ["Eve", 45]);
+    });
+
+    print("Final records:", db.query("SELECT * FROM users"));
+    db.close();
+}
+
+main();

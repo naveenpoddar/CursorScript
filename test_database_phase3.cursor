@@ -1,0 +1,51 @@
+async fn main() {
+    print("--- Phase 3 Features Test ---");
+
+    // 1. Validation Layer
+    let schema = Database.validation({
+        username: {
+            type: "string", required: true, minLength: 3
+        },
+        age: {
+            type: "number", min: 18
+        }
+    });
+
+    let result1 = schema.validate({
+        username: "ai", age: 15
+    });
+    print("Validation Test 1 (Expected Invalid):", result1[0], result1[1]);
+
+    let result2 = schema.validate({
+        username: "aidude", age: 25
+    });
+    print("Validation Test 2 (Expected Valid):", result2[0]);
+
+    // 2. Query Logging & Upsert (SQLite)
+    let sqlDB = Database.sqlite(":memory:");
+    sqlDB.enableQueryLog();
+    sqlDB.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, email TEXT UNIQUE, name TEXT, login_count INTEGER)");
+
+    sqlDB.insert("users", {
+        email: "test@test.com", name: "Tester", login_count: 1
+    });
+
+    // Test Upsert
+    sqlDB.upsert("users", ["email"], {
+        email: "test@test.com", name: "Tester Update", login_count: 2
+    });
+    sqlDB.upsert("users", "email", {
+        email: "new@test.com", name: "New User", login_count: 1
+    });
+
+    let users = sqlDB.query("SELECT * FROM users ORDER BY id ASC");
+    print("Upsert Test Results:", users);
+
+    let logs = sqlDB.getQueryLog();
+    print("Query Log Length:", len(logs));
+    print("First Query Time:", logs[0].time, "ms");
+
+    sqlDB.close();
+}
+
+main();

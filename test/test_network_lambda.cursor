@@ -1,10 +1,22 @@
-print("Fetching data with lambda callback...")
+async fn main() {
+    print("Init");
+    const (data, error) = await Network.get("https://jsonplaceholder.typicode.com/todos/1");
+    const (data2, error2) = await Network.get("https://jsonplaceholder.typicode.com/todos/2");
+    print("After get");
 
-Network.get("htstps://jsonplaceholder.typicode.com/todos/1", (data) -> {
-    print("Received Data inside Lambda:")
-    print("ID:", data.id)
-    print("Title:", data.title)
-    print("Completed:", data.completed)
-})
+    if (error) {
+        printError("Request failed:", error);
+    } else {
+        print("Received data:", data);
+    }
 
-print("Request sent!")
+    if (error2) {
+        printError("Request failed:", error2);
+    } else {
+        print("Received data:", data2);
+    }
+}
+
+print("Before main");
+await main();
+print("After main");

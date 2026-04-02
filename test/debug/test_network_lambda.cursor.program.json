@@ -1,0 +1,141 @@
+{
+  "kind": "Program",
+  "body": [
+    {
+      "kind": "FunctionDeclaration",
+      "name": "main",
+      "parameters": [],
+      "body": [
+        {
+          "kind": "VarDeclaration",
+          "identifier": "",
+          "identifiers": [
+            "data",
+            "error"
+          ],
+          "constant": true,
+          "value": {
+            "kind": "AwaitExpr",
+            "argument": {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "MemberExpr",
+                "object": {
+                  "kind": "Identifier",
+                  "line": 2,
+                  "column": 33,
+                  "symbol": "Network"
+                },
+                "property": {
+                  "kind": "Identifier",
+                  "line": 2,
+                  "column": 41,
+                  "symbol": "get"
+                },
+                "computed": false,
+                "line": 2,
+                "column": 44
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 2,
+                  "column": 45,
+                  "value": "https://jsonplaceholder.typicode.com/todos/1"
+                }
+              ],
+              "line": 2,
+              "column": 92
+            },
+            "line": 2,
+            "column": 27
+          },
+          "line": 2,
+          "column": 5
+        },
+        {
+          "kind": "IfStmt",
+          "condition": {
+            "kind": "Identifier",
+            "line": 4,
+            "column": 9,
+            "symbol": "error"
+          },
+          "thenBranch": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 5,
+                "column": 9,
+                "symbol": "printError"
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 5,
+                  "column": 20,
+                  "value": "Request failed:"
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 5,
+                  "column": 39,
+                  "symbol": "error"
+                }
+              ],
+              "line": 5,
+              "column": 45
+            }
+          ],
+          "elseBranch": [
+            {
+              "kind": "CallExpr",
+              "caller": {
+                "kind": "Identifier",
+                "line": 7,
+                "column": 9,
+                "symbol": "print"
+              },
+              "args": [
+                {
+                  "kind": "StringLiteral",
+                  "line": 7,
+                  "column": 15,
+                  "value": "Received data:"
+                },
+                {
+                  "kind": "Identifier",
+                  "line": 7,
+                  "column": 33,
+                  "symbol": "data"
+                }
+              ],
+              "line": 7,
+              "column": 38
+            }
+          ],
+          "line": 0,
+          "column": 0
+        }
+      ],
+      "async": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "kind": "CallExpr",
+      "caller": {
+        "kind": "Identifier",
+        "line": 11,
+        "column": 1,
+        "symbol": "main"
+      },
+      "args": [],
+      "line": 11,
+      "column": 7
+    }
+  ],
+  "line": 0,
+  "column": 0
+}

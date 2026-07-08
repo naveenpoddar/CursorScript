@@ -28,7 +28,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
 
+      # Move workspace to C: drive on Windows to avoid Bun cross-drive compilation failures
+      - name: "Move Workspace to C: Drive (Windows)"
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -ItemType Directory -Force -Path C:\workspace
+          Get-ChildItem -Path . -Force | ForEach-Object { Move-Item -Path $_.FullName -Destination C:\workspace -Force }
+        shell: pwsh
+
       - name: Install Dependencies
+        working-directory: ${{ runner.os == 'Windows' && 'C:\workspace' || github.workspace }}
         run: bun install
 
       # Only run apt commands on Linux runners
@@ -46,8 +55,16 @@ jobs:
       # (Windows already has 7z pre-installed in the GitHub Actions environment)
 
       - name: Run Build Script
-        # Pass the matrix target to your script
+        working-directory: ${{ runner.os == 'Windows' && 'C:\workspace' || github.workspace }}
         run: bun run build.ts ${{ matrix.target }}
+
+      # Copy build artifacts back to default workspace so upload-artifact can find them
+      - name: Copy Artifacts to Workspace (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -ItemType Directory -Force -Path ${{ github.workspace }}/dist
+          Copy-Item -Path C:\workspace\dist\*.zip -Destination ${{ github.workspace }}\dist\ -Force
+        shell: pwsh
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -56,10 +73,53 @@ jobs:
           path: dist/*.zip
           retention-days: 1
 
-  # JOB 2: Aggregate and Release
+  # JOB 2: Verify Artifacts
+  verify-builds:
+    name: Verify Build Artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./all-dist
+          pattern: bin-*
+          merge-multiple: true
+
+      - name: Check files
+        run: |
+          echo "Checking built artifacts..."
+          ls -la ./all-dist
+          
+          # List of expected targets
+          targets=(
+            "cursorscript-linux-x64.zip"
+            "cursorscript-linux-arm64.zip"
+            "cursorscript-darwin-x64.zip"
+            "cursorscript-darwin-arm64.zip"
+            "cursorscript-windows-x64-baseline.zip"
+          )
+          
+          missing=0
+          for file in "${targets[@]}"; do
+            if [ ! -f "./all-dist/$file" ]; then
+              echo "❌ Error: Missing build file ./all-dist/$file"
+              missing=$((missing + 1))
+            else
+              echo "✅ Found $file"
+            fi
+          done
+          
+          if [ $missing -ne 0 ]; then
+            echo "❌ Validation failed! $missing build file(s) are missing."
+            exit 1
+          fi
+          echo "🎉 All builds are present!"
+
+  # JOB 3: Aggregate and Release
   release:
     name: Create GitHub Release
-    needs: build
+    needs: verify-builds
     runs-on: ubuntu-latest
     permissions:
       contents: write

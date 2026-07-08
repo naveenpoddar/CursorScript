@@ -6,6 +6,7 @@ CursorScript is a high-performance, interpreted programming language designed fo
 
 ## Why CursorScript? ✨
 
+
 * **🚀 Native Windowing**: Create windows, handle hardware-accelerated drawing, and capture input (keyboard/mouse) natively via `WindowLib`.
 * **⚡ Logical Gates**: First-class support for `&&` (AND), `||` (OR), and `!` (NOT) with short-circuiting.
 * **📦 Data Structures**: Support for nested **Objects** and dynamic **Arrays** (`push`, `pop`, `shift`, `unshift`, `len`).

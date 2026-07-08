@@ -1,6 +1,6 @@
 import { $ } from "bun";
 import pkg from "./package.json";
-import { existsSync } from "node:fs";
+import { existsSync, cpSync } from "node:fs";
 
 // 1. Configuration
 const entryPoint = "./src/main.ts";
@@ -96,7 +96,7 @@ for (const targetId of targets) {
     // 4. Asset Management
     const libSource = `./lib`;
     if (existsSync(libSource)) {
-      await $`cp -r ${libSource} ${targetFolder}/`;
+      cpSync(libSource, `${targetFolder}/lib`, { recursive: true, dereference: true });
     }
 
     console.log(`🔧 Compressing ${baseName}...`);
